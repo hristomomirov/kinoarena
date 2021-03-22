@@ -1,0 +1,25 @@
+ProjectionController:
+	-Add
+	-Remove
+	-Get
+	-Filter by genre
+	-image?
+CinemaController:
+	-Add
+	-Remove
+	-Get
+	-Filter by city
+UserController:
+	-Register
+	-Login
+	-Edit profile
+TicketController:
+	-Get
+	-Check Ticket
+	-Book ticket
+HallControler:
+	-Get?
+	-Add
+	-Remove
+	-Check available seats
+

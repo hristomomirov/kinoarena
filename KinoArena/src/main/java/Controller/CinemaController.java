@@ -21,11 +21,11 @@ public class CinemaController {
     @GetMapping(value = "/cinemas")
     public List<CinemaDTO> getAllCinemas(){
 
-        try {
-            return this.cinemaDao.getAllCinemas();
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
-            return null;
-        }
+        return this.cinemaDao.getAllCinemas();
+    }
+
+    @GetMapping(value = "/test")
+    public String testFunction(){
+        return "Tova e prosto show";
     }
 }

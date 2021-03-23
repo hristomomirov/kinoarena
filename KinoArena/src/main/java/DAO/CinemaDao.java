@@ -13,14 +13,18 @@ public class CinemaDao {
 
     private JdbcTemplate jdbcTemplate;
 
-    public List<CinemaDTO> getAllCinemas() throws SQLException {
-        Connection connection = jdbcTemplate.getDataSource().getConnection();
-        ResultSet rs = connection.createStatement().executeQuery("SELECT id,name,city FROM cinema;");
-
+    public List<CinemaDTO> getAllCinemas(){
         List<CinemaDTO> cinemas = new ArrayList<>();
-        while (rs.next()){
-            CinemaDTO cinema = new CinemaDTO(rs.getInt(1),rs.getString(2),rs.getString(3));
-            cinemas.add(cinema);
+        try (Connection connection = jdbcTemplate.getDataSource().getConnection();){
+            ResultSet rs = connection.createStatement().executeQuery("SELECT id,name,city FROM kinoarena.cinemas;");
+
+            while (rs.next()){
+                CinemaDTO cinema = new CinemaDTO(rs.getInt(1),rs.getString(2),rs.getString(3));
+                cinemas.add(cinema);
+            }
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
         return cinemas;
     };

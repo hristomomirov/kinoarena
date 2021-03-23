@@ -1,11 +1,8 @@
 package com.finals.kinoarena.Handler;
 
-public class UserAlreadyExistsException extends Exception {
-
-    private String message;
+public class UserAlreadyExistsException extends Exception{
 
     public UserAlreadyExistsException(String message) {
-        this.message =  message;
-
+        super(message);
     }
 }

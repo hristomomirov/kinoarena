@@ -1,6 +1,9 @@
 package com.finals.kinoarena.DAO;
 
+import com.finals.kinoarena.DTO.UserDTO;
 import com.finals.kinoarena.Handler.UserAlreadyExistsException;
+import com.finals.kinoarena.Handler.UserNotFoundException;
+import com.finals.kinoarena.Handler.WrongCredentialsException;
 import com.finals.kinoarena.Model.User;
 import com.finals.kinoarena.Model.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +18,6 @@ public class UserDao extends AbstractDao {
 
     @Autowired
     private UserRepository repository;
-
 
     public User getByUsername(String username) {
         return repository.findByUsername(username);
@@ -48,11 +50,34 @@ public class UserDao extends AbstractDao {
         }
     }
 
-    public User getById(long id) {
-        return repository.findById(id).get();
+
+    public User getById(long id) throws UserNotFoundException {
+
+        if (repository.findById(id).isPresent()){
+            return repository.findById(id).get();
+        }else {
+            throw new UserNotFoundException("User not found");
+        }
     }
 
     public List<User> getAllUsers() {
         return repository.findAll();
+    }
+
+    public User logInUser(UserDTO userDTO) throws WrongCredentialsException {
+        if (verifyUsername(userDTO.getUsername()) && verifyPassword(userDTO)){
+            return getByUsername(userDTO.getUsername());
+        }else {
+            throw new WrongCredentialsException("Username or Password incorrect");
+        }
+    }
+
+    private boolean verifyPassword(UserDTO userDTO) {
+        String password = repository.findByUsername(userDTO.getUsername()).getPassword();
+        return userDTO.getPassword().equals(password);
+    }
+
+    private boolean verifyUsername(String username) {
+        return repository.findByUsername(username) != null;
     }
 }

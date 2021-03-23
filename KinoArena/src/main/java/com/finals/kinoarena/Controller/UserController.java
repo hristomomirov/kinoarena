@@ -1,13 +1,14 @@
 package com.finals.kinoarena.Controller;
 
 import com.finals.kinoarena.DAO.UserDao;
-import com.finals.kinoarena.Handler.MissingFieldException;
-import com.finals.kinoarena.Handler.WrongCredentialsException;
-import com.finals.kinoarena.Handler.UserAlreadyExistsException;
+import com.finals.kinoarena.DTO.UserDTO;
+import com.finals.kinoarena.Handler.*;
 import com.finals.kinoarena.Model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @Component
@@ -17,42 +18,68 @@ public class UserController {
     @Autowired
     private UserDao dao;
 
-
     @PostMapping(value = "/user/register")
     public User registerUser(@RequestBody User user) throws UserAlreadyExistsException, MissingFieldException {
-        if (validateUser(user)){
+        if (validateUser(user)) {
             return dao.registerUser(user);
-        }else{
+        } else {
+            throw new MissingFieldException("Please fill all requested fields");
+        }
+    }
+
+    @PostMapping(value = "/user/login")
+    public User logIn(@RequestBody UserDTO userDTO) throws WrongCredentialsException, MissingFieldException {
+        if (validateDTO(userDTO)) {
+            return dao.logInUser(userDTO);
+        } else {
             throw new MissingFieldException("Please fill all necessary fields");
         }
     }
 
-    private boolean validateUser(User user) {
-        return false; //TODO
+    @GetMapping(value = "/userss")
+    public List<User> getAllUsers() {
+        return dao.getAllUsers();
     }
 
-    @PostMapping(value = "/user/login")
-    public User logIn(@RequestBody User user) throws WrongCredentialsException {
-        User user1 = dao.getByUsername(user.getUsername());
-        //TODO
-        if (user1 != null) {
-            if (user.getPassword().equals(user1.getPassword())) {
-                return dao.getById(user1.getId());
-            } else {
-                throw new WrongCredentialsException("Username or Password incorrect");
-            }
-        } else {
-            throw new WrongCredentialsException("Username or Password incorrect");
-        }
+    private boolean validateDTO(UserDTO userDTO) {
+        return !userDTO.getUsername().isEmpty() &&
+               !userDTO.getPassword().isEmpty();
     }
-    @GetMapping(value = "/userss")
-    public List<User> getAllUsers(){
-return dao.getAllUsers();
+
+    private boolean validateUser(User user) {
+        return  !user.getUsername().isEmpty() &&
+                !user.getPassword().isEmpty() &&
+                !user.getEmail().isEmpty() &&
+                !user.getFirstName().isEmpty() &&
+                !user.getLastName().isEmpty() &&
+                user.getAge() >= 0;
     }
-//
-//    private boolean validateUser(User user) {
-//        if (!user.getUsername().isEmpty() &&
-//            !user.getPassword().isEmpty() &&
-//            !user.get)
-//    }
+
+
+    @ExceptionHandler(MissingFieldException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleMissingFieldException(MissingFieldException e) {
+        return e.getMessage();
+    }
+
+    @ExceptionHandler(UserAlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleUserAlreadyExistsException(UserAlreadyExistsException e) {
+        return e.getMessage();
+    }
+
+    @ExceptionHandler(WrongCredentialsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleWrongCredentialsException(WrongCredentialsException e) {
+        return e.getMessage();
+    }
+
+    @ExceptionHandler(UserNotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public String handleUserNotFoundException(UserNotFoundException e) {
+        return e.getMessage();
+    }
 }
+
+
+

@@ -6,6 +6,7 @@ import com.finals.kinoarena.Handler.UserNotFoundException;
 import com.finals.kinoarena.Handler.WrongCredentialsException;
 import com.finals.kinoarena.Model.User;
 import com.finals.kinoarena.Model.UserRepository;
+import com.finals.kinoarena.Model.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -47,15 +48,7 @@ public class UserDao extends AbstractDao {
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         user.setEmail(userDTO.getEmail());
         user.setAge(userDTO.getAge());
-        //TODO needs rework
-        int age = userDTO.getAge();
-        if (age <= 19) {
-            user.setStatusId(1);
-        } else if (age <= 65) {
-            user.setStatusId(2);
-        } else {
-            user.setStatusId(3);
-        }
+        user.setStatusId(UserStatus.valueOf(userDTO.getStatus().toUpperCase()).ordinal() + 1);
         user.setRoleId(1);
         user.setCreatedAt(LocalDateTime.now());
         return repository.save(user);

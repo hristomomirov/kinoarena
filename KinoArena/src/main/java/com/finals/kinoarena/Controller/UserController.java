@@ -5,7 +5,10 @@ import com.finals.kinoarena.DTO.UserDTO;
 import com.finals.kinoarena.Handler.*;
 import com.finals.kinoarena.Model.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,9 +22,9 @@ public class UserController {
     private UserDao dao;
 
     @PostMapping(value = "/user/register")
-    public User registerUser(@RequestBody User user) throws UserAlreadyExistsException, MissingFieldException {
-        if (validateUser(user)) {
-            return dao.registerUser(user);
+    public User registerNewUser(@RequestBody UserDTO userDTO) throws UserAlreadyExistsException, MissingFieldException {
+        if (validateUser(userDTO)) {
+            return dao.registerUser(userDTO);
         } else {
             throw new MissingFieldException("Please fill all requested fields");
         }
@@ -46,7 +49,7 @@ public class UserController {
                !userDTO.getPassword().isEmpty();
     }
 
-    private boolean validateUser(User user) {
+    private boolean validateUser(UserDTO user) {
         return  !user.getUsername().isEmpty() &&
                 !user.getPassword().isEmpty() &&
                 !user.getEmail().isEmpty() &&
@@ -54,7 +57,6 @@ public class UserController {
                 !user.getLastName().isEmpty() &&
                 user.getAge() >= 0;
     }
-
 
     @ExceptionHandler(MissingFieldException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

@@ -1,4 +1,4 @@
-package Model;
+package com.finals.kinoarena.Model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@Entity
+@Entity(name = "tickets")
 public class Ticket {
 
     @Id

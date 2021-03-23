@@ -1,4 +1,4 @@
-package Model;
+package com.finals.kinoarena.Model;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -10,7 +10,7 @@ import javax.persistence.Id;
 @NoArgsConstructor
 @Getter
 @Setter
-@Entity
+@Entity(name = "cinems")
 public class Cinema {
 
     @Id

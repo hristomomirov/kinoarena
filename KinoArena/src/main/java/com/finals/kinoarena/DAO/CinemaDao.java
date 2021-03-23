@@ -1,7 +1,8 @@
-package DAO;
+package com.finals.kinoarena.DAO;
 
-import DTO.CinemaDTO;
+import com.finals.kinoarena.DTO.CinemaDTO;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -9,6 +10,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class CinemaDao {
 
     private JdbcTemplate jdbcTemplate;
@@ -23,5 +25,5 @@ public class CinemaDao {
             cinemas.add(cinema);
         }
         return cinemas;
-    };
+    }
 }

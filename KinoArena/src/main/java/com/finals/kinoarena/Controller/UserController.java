@@ -39,9 +39,13 @@ public class UserController {
         }
     }
 
-    @GetMapping(value = "/userss")
+    @GetMapping(value = "/users")
     public List<User> getAllUsers() {
         return dao.getAllUsers();
+    }
+    @PostMapping(value = "/user/edit")
+    public User editProfile(@RequestBody UserDTO userDTO){
+    return null;
     }
 
     private boolean validateDTO(UserDTO userDTO) {

@@ -25,7 +25,6 @@ public class UserDao extends AbstractDao {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-
     public User getByUsername(String username) {
         return repository.findByUsername(username);
     }
@@ -47,6 +46,7 @@ public class UserDao extends AbstractDao {
         user.setLastName(userDTO.getLastName());
         user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
         user.setEmail(userDTO.getEmail());
+        user.setAge(userDTO.getAge());
         //TODO needs rework
         int age = userDTO.getAge();
         if (age <= 19) {
@@ -84,6 +84,7 @@ public class UserDao extends AbstractDao {
     }
 
     public User logInUser(UserDTO userDTO) throws WrongCredentialsException {
+        //TODO verify crypted password
         if (verifyUsername(userDTO.getUsername()) && verifyPassword(userDTO)) {
             return getByUsername(userDTO.getUsername());
         } else {

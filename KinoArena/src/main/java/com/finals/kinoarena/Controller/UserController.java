@@ -35,7 +35,6 @@ public class UserController {
 
     @PostMapping(value = "/user/login")
     public User logIn(@RequestBody UserDTO userDTO) throws WrongCredentialsException, MissingFieldException {
-        //TODO validate crypted password
         if (validateDTO(userDTO)) {
             return dao.logInUser(userDTO);
         } else {
@@ -113,13 +112,13 @@ public class UserController {
         if (password.isBlank()) {
             throw new MissingFieldException("Please fill all necessary fields");
         }
-        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,20}$";
+        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,20}$";
         Pattern p = Pattern.compile(regex);
         Matcher m = p.matcher(password);
         if (m.matches()) {
             return true;
         }
-        throw new BadCredentialsException("Password must be between 8 and 20 symbols and must contain at least one upper and lower case letter, number and special symbol");
+        throw new BadCredentialsException("Password must be between 8 and 20 symbols and must contain at least one upper and lower case letter and number");
     }
 
     private boolean validateUsername(String username) throws BadCredentialsException, MissingFieldException {

@@ -23,7 +23,6 @@ public class UserDao extends AbstractDao {
     @Autowired
     private UserRepository repository;
 
-    @Autowired
     private PasswordEncoder passwordEncoder;
 
     public User getByUsername(String username) {
@@ -64,7 +63,6 @@ public class UserDao extends AbstractDao {
 
 
     public User getById(long id) throws UserNotFoundException {
-
         if (repository.findById(id).isPresent()) {
             return repository.findById(id).get();
         } else {
@@ -77,7 +75,6 @@ public class UserDao extends AbstractDao {
     }
 
     public User logInUser(UserDTO userDTO) throws WrongCredentialsException {
-        //TODO verify crypted password
         if (verifyUsername(userDTO.getUsername()) && verifyPassword(userDTO)) {
             return getByUsername(userDTO.getUsername());
         } else {
@@ -87,7 +84,8 @@ public class UserDao extends AbstractDao {
 
     private boolean verifyPassword(UserDTO userDTO) {
         String password = repository.findByUsername(userDTO.getUsername()).getPassword();
-        return userDTO.getPassword().equals(password);
+        return passwordEncoder.matches(userDTO.getPassword(),password);
+
     }
 
     private boolean verifyUsername(String username) {

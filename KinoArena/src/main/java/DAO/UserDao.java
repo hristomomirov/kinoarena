@@ -5,6 +5,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class UserDao {
+
     public User getByEmail(String username) {
         //TODO
         return null;

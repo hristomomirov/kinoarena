@@ -1,6 +1,6 @@
 package com.finals.kinoarena.Controller;
 
-import com.finals.kinoarena.Model.DAO.UserDao;
+import com.finals.kinoarena.Srvice.UserService;
 import com.finals.kinoarena.Model.DTO.UserDTO;
 import com.finals.kinoarena.Exceptions.*;
 import com.finals.kinoarena.Model.Entity.User;
@@ -18,7 +18,7 @@ import java.util.regex.Pattern;
 public class UserController extends AbstractController {
 
     @Autowired
-    private UserDao dao;
+    private UserService dao;
 
     @PutMapping(value = "/users")
     public User registerNewUser(@RequestBody UserDTO userDTO) throws UserAlreadyExistsException, MissingFieldException, BadCredentialsException {
@@ -30,7 +30,7 @@ public class UserController extends AbstractController {
     }
 
     @PostMapping(value = "/users")
-    public User logIn(@RequestBody UserDTO userDTO) throws WrongCredentialsException, MissingFieldException {
+    public User login(@RequestBody UserDTO userDTO) throws WrongCredentialsException, MissingFieldException {
         if (validateLogIn(userDTO)) {
             return dao.logInUser(userDTO);
         } else {

@@ -2,7 +2,7 @@ package com.finals.kinoarena.Controller;
 
 
 import com.finals.kinoarena.Exceptions.MissingCinemasInDBException;
-import com.finals.kinoarena.Model.DAO.CinemaDao;
+import com.finals.kinoarena.Srvice.CinemaService;
 import com.finals.kinoarena.Model.DTO.CinemaDTO;
 import com.finals.kinoarena.Model.Entity.Cinema;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ import java.util.List;
 public class CinemaController {
 
     @Autowired
-    private CinemaDao cinemaDao;
+    private CinemaService cinemaDao;
 
 
     @GetMapping(value = "/cinemas")

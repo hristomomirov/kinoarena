@@ -21,7 +21,7 @@ public class AbstractController {
     }
 
     @ExceptionHandler(WrongCredentialsException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public ErrorDTO handleWrongCredentialsException(WrongCredentialsException e) {
         return new ErrorDTO(e.getMessage());
     }

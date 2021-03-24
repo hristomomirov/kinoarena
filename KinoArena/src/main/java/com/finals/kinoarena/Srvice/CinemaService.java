@@ -1,4 +1,4 @@
-package com.finals.kinoarena.Model.DAO;
+package com.finals.kinoarena.Srvice;
 
 import com.finals.kinoarena.Model.DTO.CinemaDTO;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class CinemaDao extends AbstractDao {
+public class CinemaService extends AbstractService {
 
 
     @Autowired

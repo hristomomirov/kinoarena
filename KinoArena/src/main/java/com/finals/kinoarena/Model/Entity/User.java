@@ -1,6 +1,7 @@
 package com.finals.kinoarena.Model.Entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.finals.kinoarena.Model.DTO.RequestRegisterUserDTO;
 import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,4 +34,9 @@ public class User {
     private int statusId;
     @JsonIgnore
     private LocalDateTime createdAt;
+
+
+    public User(RequestRegisterUserDTO userDTO) {
+    }
 }
+

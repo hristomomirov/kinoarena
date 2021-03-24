@@ -1,4 +1,4 @@
-package com.finals.kinoarena.Model.DAO;
+package com.finals.kinoarena.Srvice;
 
 import com.finals.kinoarena.Model.DTO.UserDTO;
 import com.finals.kinoarena.Exceptions.UserAlreadyExistsException;
@@ -15,10 +15,11 @@ import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 
 @Component
-public class UserDao extends AbstractDao {
+public class UserService {
 
     @Autowired
     private UserRepository repository;
@@ -63,8 +64,9 @@ public class UserDao extends AbstractDao {
 
 
     public User getById(int id) throws UserNotFoundException {
-        if (repository.findById(id).isPresent()) {
-            return repository.findById(id).get();
+        Optional<User> user = repository.findById(id);
+        if (user.isPresent()) {
+            return user.get();
         } else {
             throw new UserNotFoundException("User not found");
         }

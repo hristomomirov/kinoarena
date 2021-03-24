@@ -14,7 +14,7 @@ import javax.persistence.Id;
 public class Cinema {
 
     @Id
-    private long id;
+    private int id;
     private String name;
     private String city;
 

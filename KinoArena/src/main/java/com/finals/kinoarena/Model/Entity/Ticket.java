@@ -15,11 +15,11 @@ import java.time.LocalDateTime;
 public class Ticket {
 
     @Id
-    private long id;
-    private long ownerId;
-    private long cinemaId;
-    private long hallId;
-    private long projectionId;
+    private int id;
+    private int ownerId;
+    private int cinemaId;
+    private int hallId;
+    private int projectionId;
     private int row;
     private int seat;
     private LocalDateTime purchasedAt;

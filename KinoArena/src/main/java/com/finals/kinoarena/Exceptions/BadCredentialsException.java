@@ -1,4 +1,4 @@
-package com.finals.kinoarena.Handler;
+package com.finals.kinoarena.Exceptions;
 
 public class BadCredentialsException extends Exception {
     public BadCredentialsException(String message) {

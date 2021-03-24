@@ -1,10 +1,9 @@
-package com.finals.kinoarena.Handler;
+package com.finals.kinoarena.Exceptions;
 
 public class MissingCinemasInDBException extends Exception {
-    private String message;
 
     public MissingCinemasInDBException(String message) {
-        this.message =  message;
+        super(message);
 
     }
 }

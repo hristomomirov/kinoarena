@@ -1,11 +1,11 @@
 package com.finals.kinoarena.Model.DAO;
 
 import com.finals.kinoarena.Model.DTO.UserDTO;
-import com.finals.kinoarena.Handler.UserAlreadyExistsException;
-import com.finals.kinoarena.Handler.UserNotFoundException;
-import com.finals.kinoarena.Handler.WrongCredentialsException;
+import com.finals.kinoarena.Exceptions.UserAlreadyExistsException;
+import com.finals.kinoarena.Exceptions.UserNotFoundException;
+import com.finals.kinoarena.Exceptions.WrongCredentialsException;
 import com.finals.kinoarena.Model.Entity.User;
-import com.finals.kinoarena.Repository.UserRepository;
+import com.finals.kinoarena.Model.Repository.UserRepository;
 import com.finals.kinoarena.Model.Entity.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -62,7 +62,7 @@ public class UserDao extends AbstractDao {
     }
 
 
-    public User getById(long id) throws UserNotFoundException {
+    public User getById(int id) throws UserNotFoundException {
         if (repository.findById(id).isPresent()) {
             return repository.findById(id).get();
         } else {

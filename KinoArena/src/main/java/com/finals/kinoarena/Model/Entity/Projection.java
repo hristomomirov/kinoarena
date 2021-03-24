@@ -15,12 +15,12 @@ import java.time.LocalDateTime;
 public class Projection {
 
     @Id
-    private long id;
+    private int id;
     private String title;
     private int length;
     private String description;
     private int ageRestriction;
-    private long genreId;
+    private int genreId;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
 

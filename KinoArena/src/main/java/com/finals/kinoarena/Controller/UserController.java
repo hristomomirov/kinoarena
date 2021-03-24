@@ -2,11 +2,10 @@ package com.finals.kinoarena.Controller;
 
 import com.finals.kinoarena.Model.DAO.UserDao;
 import com.finals.kinoarena.Model.DTO.UserDTO;
-import com.finals.kinoarena.Handler.*;
+import com.finals.kinoarena.Exceptions.*;
 import com.finals.kinoarena.Model.Entity.User;
 import com.finals.kinoarena.Model.Entity.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,14 +15,14 @@ import java.util.regex.Pattern;
 
 @Component
 @RestController
-public class UserController {
+public class UserController extends AbstractController {
 
     @Autowired
     private UserDao dao;
 
     @PutMapping(value = "/users")
     public User registerNewUser(@RequestBody UserDTO userDTO) throws UserAlreadyExistsException, MissingFieldException, BadCredentialsException {
-        if (validateUser(userDTO)) {
+        if (validateRegister(userDTO)) {
             return dao.registerUser(userDTO);
         } else {
             throw new MissingFieldException("Please fill all requested fields");
@@ -32,7 +31,7 @@ public class UserController {
 
     @PostMapping(value = "/users")
     public User logIn(@RequestBody UserDTO userDTO) throws WrongCredentialsException, MissingFieldException {
-        if (validateUserDTO(userDTO)) {
+        if (validateLogIn(userDTO)) {
             return dao.logInUser(userDTO);
         } else {
             throw new MissingFieldException("Please fill all necessary fields");
@@ -49,12 +48,12 @@ public class UserController {
         return null;
     }
 
-    private boolean validateUserDTO(UserDTO userDTO) {
+    private boolean validateLogIn(UserDTO userDTO) {
         return !userDTO.getUsername().isEmpty() &&
                 !userDTO.getPassword().isEmpty();
     }
 
-    private boolean validateUser(UserDTO userDTO) throws BadCredentialsException, MissingFieldException {
+    private boolean validateRegister(UserDTO userDTO) throws BadCredentialsException, MissingFieldException {
         return validateUsername(userDTO.getUsername()) &&
                 validatePassword(userDTO.getPassword()) &&
                 validateEmail(userDTO.getEmail()) &&
@@ -128,36 +127,6 @@ public class UserController {
             return true;
         }
         throw new BadCredentialsException("Username must include only letters and numbers");
-    }
-
-    @ExceptionHandler(MissingFieldException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleMissingFieldException(MissingFieldException e) {
-        return e.getMessage();
-    }
-
-    @ExceptionHandler(UserAlreadyExistsException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleUserAlreadyExistsException(UserAlreadyExistsException e) {
-        return e.getMessage();
-    }
-
-    @ExceptionHandler(WrongCredentialsException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleWrongCredentialsException(WrongCredentialsException e) {
-        return e.getMessage();
-    }
-
-    @ExceptionHandler(UserNotFoundException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleUserNotFoundException(UserNotFoundException e) {
-        return e.getMessage();
-    }
-
-    @ExceptionHandler(BadCredentialsException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public String handleUserBadCredentialsException(BadCredentialsException e) {
-        return e.getMessage();
     }
 }
 

@@ -14,8 +14,8 @@ import javax.persistence.Id;
 public class Hall {
 
     @Id
-    private long id;
+    private int id;
     private int number;
     private int capacity;
-    private long cinemaId;
+    private int cinemaId;
 }

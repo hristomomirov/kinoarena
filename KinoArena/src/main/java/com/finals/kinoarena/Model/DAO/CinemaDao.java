@@ -14,9 +14,10 @@ import java.util.List;
 @Component
 public class CinemaDao extends AbstractDao {
 
+
     @Autowired
     private JdbcTemplate jdbcTemplate;
-
+    //TODO rework with hybernate
     public List<CinemaDTO> getAllCinemas() throws SQLException {
         Connection connection = jdbcTemplate.getDataSource().getConnection();
         ResultSet rs = connection.createStatement().executeQuery("SELECT id,name,city FROM cinemas;");
@@ -25,6 +26,7 @@ public class CinemaDao extends AbstractDao {
         while (rs.next()) {
             CinemaDTO cinema = new CinemaDTO(rs.getInt(1), rs.getString(2), rs.getString(3));
             cinemas.add(cinema);
+
         }
         return cinemas;
     }

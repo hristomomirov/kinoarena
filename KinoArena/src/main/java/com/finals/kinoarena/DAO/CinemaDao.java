@@ -1,6 +1,7 @@
 package com.finals.kinoarena.DAO;
 
 import com.finals.kinoarena.DTO.CinemaDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -13,19 +14,19 @@ import java.util.List;
 @Component
 public class CinemaDao extends AbstractDao {
 
-    public List<CinemaDTO> getAllCinemas(){
-        //TODO rework with hybernate
+
+    @Autowired
+    private JdbcTemplate jdbcTemplate;
+    //TODO rework with hybernate
+    public List<CinemaDTO> getAllCinemas() throws SQLException {
+        Connection connection = jdbcTemplate.getDataSource().getConnection();
+        ResultSet rs = connection.createStatement().executeQuery("SELECT id,name,city FROM cinemas;");
+
         List<CinemaDTO> cinemas = new ArrayList<>();
-        try (Connection connection = jdbcTemplate.getDataSource().getConnection();){
-            ResultSet rs = connection.createStatement().executeQuery("SELECT id,name,city FROM kinoarena.cinemas;");
+        while (rs.next()) {
+            CinemaDTO cinema = new CinemaDTO(rs.getInt(1), rs.getString(2), rs.getString(3));
+            cinemas.add(cinema);
 
-            while (rs.next()){
-                CinemaDTO cinema = new CinemaDTO(rs.getInt(1),rs.getString(2),rs.getString(3));
-                cinemas.add(cinema);
-            }
-
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
         }
         return cinemas;
     }

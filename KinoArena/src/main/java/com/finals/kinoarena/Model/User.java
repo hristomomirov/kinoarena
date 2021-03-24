@@ -1,10 +1,11 @@
 package com.finals.kinoarena.Model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.sun.istack.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+
+import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
@@ -14,6 +15,7 @@ import java.time.LocalDateTime;
 public class User {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String username;
     @JsonIgnore
@@ -22,8 +24,11 @@ public class User {
     private String firstName;
     private String lastName;
     private int age;
+    @JsonIgnore
     private long roleId;
+    @JsonIgnore
     private long statusId;
+    @JsonIgnore
     private LocalDateTime createdAt;
 
 }

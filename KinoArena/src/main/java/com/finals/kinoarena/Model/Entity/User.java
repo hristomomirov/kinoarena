@@ -12,11 +12,14 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
 @Setter
-@Entity(name = "users")
+@Entity
+@Table(name = "users")
 public class User {
 
     public static final int ROLE_USER = 1;
@@ -34,8 +37,8 @@ public class User {
     private int roleId;
     private int statusId;
     private LocalDateTime createdAt;
-
-    // TODO map foreign keys
+    @OneToMany(mappedBy = "owner")
+    private List<Ticket> tickets;
 
     public User(RequestRegisterUserDTO dto) {
         this.username = dto.getUsername();
@@ -47,6 +50,7 @@ public class User {
         this.roleId = ROLE_USER;
         this.statusId = UserStatus.valueOf(dto.getStatus().toUpperCase()).ordinal() + 1;
         this.createdAt = LocalDateTime.now();
+        this.tickets = new ArrayList<>();
 
     }
 }

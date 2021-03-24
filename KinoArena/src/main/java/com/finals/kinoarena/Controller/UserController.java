@@ -1,15 +1,13 @@
 package com.finals.kinoarena.Controller;
 
-<<<<<<< HEAD
+
 import com.finals.kinoarena.Service.UserService;
-import com.finals.kinoarena.Model.DTO.UserDTO;
-=======
+
 import com.finals.kinoarena.Model.DTO.RequestLoginUserDTO;
 import com.finals.kinoarena.Model.DTO.ResponseLoginUserDTO;
 import com.finals.kinoarena.Model.DTO.ResponseRegisterUserDTO;
-import com.finals.kinoarena.Srvice.UserService;
+import com.finals.kinoarena.Service.UserService;
 import com.finals.kinoarena.Model.DTO.RequestRegisterUserDTO;
->>>>>>> 1fc85a876f1cd873a74d9f7f3ad995ef007976f3
 import com.finals.kinoarena.Exceptions.*;
 import com.finals.kinoarena.Model.Entity.User;
 import com.finals.kinoarena.Model.Entity.UserStatus;
@@ -17,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpSession;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -38,9 +37,12 @@ public class UserController extends AbstractController {
     }
 //TODO Interceptor,session
     @PostMapping(value = "/users")
-    public ResponseLoginUserDTO login(@RequestBody RequestLoginUserDTO requestLoginUserDTO) throws WrongCredentialsException, MissingFieldException {
+    public ResponseLoginUserDTO login(@RequestBody RequestLoginUserDTO requestLoginUserDTO, HttpSession ses) throws WrongCredentialsException, MissingFieldException {
         if (validateLogIn(requestLoginUserDTO)) {
-            return service.logInUser(requestLoginUserDTO.getUsername(),requestLoginUserDTO.getPassword());
+
+            ResponseLoginUserDTO r =service.logInUser(requestLoginUserDTO.getUsername(),requestLoginUserDTO.getPassword());
+            ses.setAttribute("LoggedUser",r.getId());  //pavel : трябваше ми за тестване
+            return r;
         } else {
             throw new MissingFieldException("Please fill all necessary fields");
         }

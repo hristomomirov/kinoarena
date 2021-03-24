@@ -3,7 +3,6 @@ package com.finals.kinoarena.Controller;
 
 import com.finals.kinoarena.Exceptions.*;
 import com.finals.kinoarena.Interfaces.IRegistrationLogin;
-import com.finals.kinoarena.Model.DTO.UserDTO;
 import com.finals.kinoarena.Service.CinemaService;
 import com.finals.kinoarena.Model.DTO.CinemaDTO;
 import com.finals.kinoarena.Model.Entity.Cinema;
@@ -49,11 +48,10 @@ public class CinemaController extends AbstractController implements IRegistratio
         if(!isLogged(ses)) {
             throw new UserNotFoundException("You need to be logged to have that functionality");
         }
-        int userId = (int) ses.getAttribute("userId");
+        int userId = (int) ses.getAttribute("LoggedUser");
         if(userService.getById(userId).getRoleId()!=2){
             throw new NotAdminException("Only admins can add new cinemas");
         }
-        //TODO more test ,cause something with the logging is not fine
         return  cinemaService.addCinema(cinemaDTO);
     }
 

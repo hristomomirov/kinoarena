@@ -68,10 +68,13 @@ public class CinemaService extends AbstractService {
     }
 
     public boolean cinemaExist(CinemaDTO cinemaDTO){
-       if(cinemaRepository.findByCityAndName(cinemaDTO.getCity(),cinemaDTO.getName())==null){
-           return true;
-       }else{
-           return false;
-       }
+        List<Cinema> cinemas =cinemaRepository.findByCity(cinemaDTO.getCity());
+        for (Cinema c: cinemas
+             ) {
+            if(c.getName().equals(cinemaDTO.getName())){
+                return true;
+            }
+        }
+        return false;
     }
 }

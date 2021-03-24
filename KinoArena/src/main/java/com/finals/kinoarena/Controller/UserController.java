@@ -6,10 +6,7 @@ import com.finals.kinoarena.Handler.*;
 import com.finals.kinoarena.Model.User;
 import com.finals.kinoarena.Model.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
@@ -79,7 +76,7 @@ public class UserController {
     }
 
     private boolean validateStatus(String status) throws BadCredentialsException, MissingFieldException {
-        if (status.isEmpty()) {
+        if (status.isBlank()) {
             throw new MissingFieldException("Please fill all necessary fields");
         }
         for (UserStatus s : UserStatus.values()) {
@@ -91,7 +88,7 @@ public class UserController {
     }
 
     private boolean validateName(String firstName, String lastName) throws MissingFieldException, BadCredentialsException {
-        if (firstName.isEmpty() || lastName.isEmpty()) {
+        if (firstName.isBlank() || lastName.isBlank()) {
             throw new MissingFieldException("Please fill all necessary fields");
         }
         String regex = "[a-zA-Z]+";

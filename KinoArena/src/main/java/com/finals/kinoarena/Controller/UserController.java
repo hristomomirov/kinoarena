@@ -1,7 +1,15 @@
 package com.finals.kinoarena.Controller;
 
+<<<<<<< HEAD
 import com.finals.kinoarena.Service.UserService;
 import com.finals.kinoarena.Model.DTO.UserDTO;
+=======
+import com.finals.kinoarena.Model.DTO.RequestLoginUserDTO;
+import com.finals.kinoarena.Model.DTO.ResponseLoginUserDTO;
+import com.finals.kinoarena.Model.DTO.ResponseRegisterUserDTO;
+import com.finals.kinoarena.Srvice.UserService;
+import com.finals.kinoarena.Model.DTO.RequestRegisterUserDTO;
+>>>>>>> 1fc85a876f1cd873a74d9f7f3ad995ef007976f3
 import com.finals.kinoarena.Exceptions.*;
 import com.finals.kinoarena.Model.Entity.User;
 import com.finals.kinoarena.Model.Entity.UserStatus;
@@ -18,21 +26,21 @@ import java.util.regex.Pattern;
 public class UserController extends AbstractController {
 
     @Autowired
-    private UserService dao;
+    private UserService service;
 
     @PutMapping(value = "/users")
-    public User registerNewUser(@RequestBody UserDTO userDTO) throws UserAlreadyExistsException, MissingFieldException, BadCredentialsException {
-        if (validateRegister(userDTO)) {
-            return dao.registerUser(userDTO);
+    public ResponseRegisterUserDTO registerNewUser(@RequestBody RequestRegisterUserDTO requestRegisterUserDTO) throws UserAlreadyExistsException, MissingFieldException, BadCredentialsException {
+        if (validateRegister(requestRegisterUserDTO)) {
+            return service.registerUser(requestRegisterUserDTO);
         } else {
             throw new MissingFieldException("Please fill all requested fields");
         }
     }
-
+//TODO Interceptor,session
     @PostMapping(value = "/users")
-    public User login(@RequestBody UserDTO userDTO) throws WrongCredentialsException, MissingFieldException {
-        if (validateLogIn(userDTO)) {
-            return dao.logInUser(userDTO);
+    public ResponseLoginUserDTO login(@RequestBody RequestLoginUserDTO requestLoginUserDTO) throws WrongCredentialsException, MissingFieldException {
+        if (validateLogIn(requestLoginUserDTO)) {
+            return service.logInUser(requestLoginUserDTO.getUsername(),requestLoginUserDTO.getPassword());
         } else {
             throw new MissingFieldException("Please fill all necessary fields");
         }
@@ -40,26 +48,26 @@ public class UserController extends AbstractController {
 
     @GetMapping(value = "/users")
     public List<User> getAllUsers() {
-        return dao.getAllUsers();
+        return service.getAllUsers();
     }
 
     @PostMapping(value = "/user/edit")
-    public User editProfile(@RequestBody UserDTO userDTO) {
+    public User editProfile(@RequestBody RequestRegisterUserDTO requestRegisterUserDTO) {
         return null;
     }
 
-    private boolean validateLogIn(UserDTO userDTO) {
-        return !userDTO.getUsername().isEmpty() &&
-                !userDTO.getPassword().isEmpty();
+    private boolean validateLogIn(RequestLoginUserDTO requestLoginUserDTO) {
+        return !requestLoginUserDTO.getUsername().isEmpty() &&
+                !requestLoginUserDTO.getPassword().isEmpty();
     }
 
-    private boolean validateRegister(UserDTO userDTO) throws BadCredentialsException, MissingFieldException {
-        return validateUsername(userDTO.getUsername()) &&
-                validatePassword(userDTO.getPassword()) &&
-                validateEmail(userDTO.getEmail()) &&
-                validateName(userDTO.getFirstName(), userDTO.getLastName()) &&
-                validateStatus(userDTO.getStatus()) &&
-                validateAge(userDTO.getAge());
+    private boolean validateRegister(RequestRegisterUserDTO requestRegisterUserDTO) throws BadCredentialsException, MissingFieldException {
+        return validateUsername(requestRegisterUserDTO.getUsername()) &&
+                validatePassword(requestRegisterUserDTO.getPassword(),requestRegisterUserDTO.getConfirmPassword()) &&
+                validateEmail(requestRegisterUserDTO.getEmail()) &&
+                validateName(requestRegisterUserDTO.getFirstName(), requestRegisterUserDTO.getLastName()) &&
+                validateStatus(requestRegisterUserDTO.getStatus()) &&
+                validateAge(requestRegisterUserDTO.getAge());
     }
 
     private boolean validateAge(Integer age) throws BadCredentialsException, MissingFieldException {
@@ -103,8 +111,8 @@ public class UserController extends AbstractController {
         return true;
     }
 
-    private boolean validatePassword(String password) throws MissingFieldException, BadCredentialsException {
-        if (password.isBlank()) {
+    private boolean validatePassword(String password, String confirmPassword) throws MissingFieldException, BadCredentialsException {
+        if (password.isBlank() || confirmPassword.isBlank()) {
             throw new MissingFieldException("Please fill all necessary fields");
         }
         String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,20}$";

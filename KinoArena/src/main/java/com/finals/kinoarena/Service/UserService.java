@@ -1,9 +1,13 @@
 package com.finals.kinoarena.Service;
 
-import com.finals.kinoarena.Model.DTO.UserDTO;
+import com.finals.kinoarena.Exceptions.BadCredentialsException;
+import com.finals.kinoarena.Model.DTO.RequestLoginUserDTO;
+import com.finals.kinoarena.Model.DTO.RequestRegisterUserDTO;
 import com.finals.kinoarena.Exceptions.UserAlreadyExistsException;
 import com.finals.kinoarena.Exceptions.UserNotFoundException;
 import com.finals.kinoarena.Exceptions.WrongCredentialsException;
+import com.finals.kinoarena.Model.DTO.ResponseLoginUserDTO;
+import com.finals.kinoarena.Model.DTO.ResponseRegisterUserDTO;
 import com.finals.kinoarena.Model.Entity.User;
 import com.finals.kinoarena.Model.Repository.UserRepository;
 import com.finals.kinoarena.Model.Entity.UserStatus;
@@ -23,6 +27,7 @@ public class UserService {
 
     @Autowired
     private UserRepository repository;
+
     @Autowired
     private PasswordEncoder passwordEncoder;
 
@@ -34,24 +39,19 @@ public class UserService {
         return repository.findByEmail(email);
     }
 
-    public User registerUser(UserDTO userDTO) throws UserAlreadyExistsException {
-        if (emailExist(userDTO.getEmail())) {
-            throw new UserAlreadyExistsException("There is already a user with that email address: " + userDTO.getEmail());
+    public ResponseRegisterUserDTO registerUser(RequestRegisterUserDTO requestRegisterUserDTO) throws UserAlreadyExistsException, BadCredentialsException {
+        if (emailExist(requestRegisterUserDTO.getEmail())) {
+            throw new UserAlreadyExistsException("There is already a user with that email address: " + requestRegisterUserDTO.getEmail());
         }
-        if (usernameExists(userDTO.getUsername())) {
-            throw new UserAlreadyExistsException("There is already a user with that username: " + userDTO.getUsername());
+        if (usernameExists(requestRegisterUserDTO.getUsername())) {
+            throw new UserAlreadyExistsException("There is already a user with that username: " + requestRegisterUserDTO.getUsername());
         }
-        User user = new User();
-        user.setUsername(userDTO.getUsername());
-        user.setFirstName(userDTO.getFirstName());
-        user.setLastName(userDTO.getLastName());
-        user.setPassword(passwordEncoder.encode(userDTO.getPassword()));
-        user.setEmail(userDTO.getEmail());
-        user.setAge(userDTO.getAge());
-        user.setStatusId(UserStatus.valueOf(userDTO.getStatus().toUpperCase()).ordinal() + 1);
-        user.setRoleId(1);
-        user.setCreatedAt(LocalDateTime.now());
-        return repository.save(user);
+        if (!requestRegisterUserDTO.getPassword().equals(requestRegisterUserDTO.getConfirmPassword())){
+            throw new BadCredentialsException("Passwords must match");
+        }
+        requestRegisterUserDTO.setPassword(passwordEncoder.encode(requestRegisterUserDTO.getPassword()));
+        User user = new User(requestRegisterUserDTO);
+        return new ResponseRegisterUserDTO(repository.save(user));
     }
 
     private boolean usernameExists(String username) {
@@ -76,17 +76,18 @@ public class UserService {
         return repository.findAll();
     }
 
-    public User logInUser(UserDTO userDTO) throws WrongCredentialsException {
-        if (verifyUsername(userDTO.getUsername()) && verifyPassword(userDTO)) {
-            return getByUsername(userDTO.getUsername());
+    public ResponseLoginUserDTO logInUser(String username, String password) throws WrongCredentialsException {
+        if (verifyUsername(username) && verifyPassword(username,password)) {
+            User user = getByUsername(username);
+            return new ResponseLoginUserDTO(user);
         } else {
             throw new WrongCredentialsException("Username or Password incorrect");
         }
     }
 
-    private boolean verifyPassword(UserDTO userDTO) {
-        String password = repository.findByUsername(userDTO.getUsername()).getPassword();
-        return passwordEncoder.matches(userDTO.getPassword(), password);
+    private boolean verifyPassword(String username,String password) {
+        String hashedPass = repository.findByUsername(username).getPassword();
+        return passwordEncoder.matches(password, hashedPass);
 
     }
 

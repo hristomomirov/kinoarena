@@ -1,4 +1,4 @@
-package com.finals.kinoarena.DTO;
+package com.finals.kinoarena.Model.DTO;
 
 public class CinemaDTO {
 

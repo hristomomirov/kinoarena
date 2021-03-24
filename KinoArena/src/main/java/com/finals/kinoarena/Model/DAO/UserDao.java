@@ -1,12 +1,12 @@
-package com.finals.kinoarena.DAO;
+package com.finals.kinoarena.Model.DAO;
 
-import com.finals.kinoarena.DTO.UserDTO;
+import com.finals.kinoarena.Model.DTO.UserDTO;
 import com.finals.kinoarena.Handler.UserAlreadyExistsException;
 import com.finals.kinoarena.Handler.UserNotFoundException;
 import com.finals.kinoarena.Handler.WrongCredentialsException;
-import com.finals.kinoarena.Model.User;
-import com.finals.kinoarena.Model.UserRepository;
-import com.finals.kinoarena.Model.UserStatus;
+import com.finals.kinoarena.Model.Entity.User;
+import com.finals.kinoarena.Repository.UserRepository;
+import com.finals.kinoarena.Model.Entity.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -22,7 +22,7 @@ public class UserDao extends AbstractDao {
 
     @Autowired
     private UserRepository repository;
-
+    @Autowired
     private PasswordEncoder passwordEncoder;
 
     public User getByUsername(String username) {
@@ -84,7 +84,7 @@ public class UserDao extends AbstractDao {
 
     private boolean verifyPassword(UserDTO userDTO) {
         String password = repository.findByUsername(userDTO.getUsername()).getPassword();
-        return passwordEncoder.matches(userDTO.getPassword(),password);
+        return passwordEncoder.matches(userDTO.getPassword(), password);
 
     }
 

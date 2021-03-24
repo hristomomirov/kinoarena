@@ -1,5 +1,6 @@
-package com.finals.kinoarena.Model;
+package com.finals.kinoarena.Repository;
 
+import com.finals.kinoarena.Model.Entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UserRepository extends JpaRepository<User, Long> {

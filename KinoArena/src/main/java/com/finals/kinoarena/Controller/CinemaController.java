@@ -1,7 +1,7 @@
 package com.finals.kinoarena.Controller;
 
-import com.finals.kinoarena.DAO.CinemaDao;
-import com.finals.kinoarena.DTO.CinemaDTO;
+import com.finals.kinoarena.Model.DAO.CinemaDao;
+import com.finals.kinoarena.Model.DTO.CinemaDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;

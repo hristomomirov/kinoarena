@@ -1,7 +1,4 @@
-package com.finals.kinoarena.DTO;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.finals.kinoarena.Model.User;
+package com.finals.kinoarena.Model.DTO;
 
 import lombok.Getter;
 

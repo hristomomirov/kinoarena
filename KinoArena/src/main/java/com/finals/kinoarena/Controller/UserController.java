@@ -1,10 +1,10 @@
 package com.finals.kinoarena.Controller;
 
-import com.finals.kinoarena.DAO.UserDao;
-import com.finals.kinoarena.DTO.UserDTO;
+import com.finals.kinoarena.Model.DAO.UserDao;
+import com.finals.kinoarena.Model.DTO.UserDTO;
 import com.finals.kinoarena.Handler.*;
-import com.finals.kinoarena.Model.User;
-import com.finals.kinoarena.Model.UserStatus;
+import com.finals.kinoarena.Model.Entity.User;
+import com.finals.kinoarena.Model.Entity.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ public class UserController {
     @Autowired
     private UserDao dao;
 
-    @PostMapping(value = "/user/register")
+    @PutMapping(value = "/users")
     public User registerNewUser(@RequestBody UserDTO userDTO) throws UserAlreadyExistsException, MissingFieldException, BadCredentialsException {
         if (validateUser(userDTO)) {
             return dao.registerUser(userDTO);
@@ -30,9 +30,9 @@ public class UserController {
         }
     }
 
-    @PostMapping(value = "/user/login")
+    @PostMapping(value = "/users")
     public User logIn(@RequestBody UserDTO userDTO) throws WrongCredentialsException, MissingFieldException {
-        if (validateDTO(userDTO)) {
+        if (validateUserDTO(userDTO)) {
             return dao.logInUser(userDTO);
         } else {
             throw new MissingFieldException("Please fill all necessary fields");
@@ -49,13 +49,12 @@ public class UserController {
         return null;
     }
 
-    private boolean validateDTO(UserDTO userDTO) {
+    private boolean validateUserDTO(UserDTO userDTO) {
         return !userDTO.getUsername().isEmpty() &&
                 !userDTO.getPassword().isEmpty();
     }
 
     private boolean validateUser(UserDTO userDTO) throws BadCredentialsException, MissingFieldException {
-
         return validateUsername(userDTO.getUsername()) &&
                 validatePassword(userDTO.getPassword()) &&
                 validateEmail(userDTO.getEmail()) &&

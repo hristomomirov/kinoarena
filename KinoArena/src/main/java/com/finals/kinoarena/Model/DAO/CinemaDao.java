@@ -1,6 +1,6 @@
-package com.finals.kinoarena.DAO;
+package com.finals.kinoarena.Model.DAO;
 
-import com.finals.kinoarena.DTO.CinemaDTO;
+import com.finals.kinoarena.Model.DTO.CinemaDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;

@@ -1,4 +1,4 @@
-package com.finals.kinoarena.Model;
+package com.finals.kinoarena.Model.Entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import lombok.Getter;

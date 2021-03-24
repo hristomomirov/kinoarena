@@ -1,48 +1,62 @@
 package com.finals.kinoarena.Controller;
 
 
-import com.finals.kinoarena.Exceptions.MissingCinemasInDBException;
-import com.finals.kinoarena.Srvice.CinemaService;
+import com.finals.kinoarena.Exceptions.*;
+import com.finals.kinoarena.Interfaces.IRegistrationLogin;
+import com.finals.kinoarena.Model.DTO.UserDTO;
+import com.finals.kinoarena.Service.CinemaService;
 import com.finals.kinoarena.Model.DTO.CinemaDTO;
 import com.finals.kinoarena.Model.Entity.Cinema;
+import com.finals.kinoarena.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.sql.SQLException;
+import javax.servlet.http.HttpSession;
 import java.util.List;
 
 
 @Component
 @RestController
-public class CinemaController {
+public class CinemaController extends AbstractController implements IRegistrationLogin {
 
     @Autowired
-    private CinemaService cinemaDao;
+    private CinemaService cinemaService;
+
+    @Autowired
+    private UserService userService;
 
 
     @GetMapping(value = "/cinemas")
-    public List<CinemaDTO> getAllCinemas() throws MissingCinemasInDBException, SQLException {
-        if (cinemaDao.getAllCinemas() != null) {
-            return this.cinemaDao.getAllCinemas();
-        } else {
-            throw new MissingCinemasInDBException("No cinemas found in the DB");
+    public List<CinemaDTO> getAllCinemas() throws MissingCinemasInDBException {
+      return   cinemaService.getAllCinemas();
+    }
+
+    @GetMapping(value = "/cinema/id/{id}")
+    public CinemaDTO getCinemaById(@PathVariable int id){
+        return cinemaService.getCinemaByID(id);
+    }
+
+    @GetMapping(value = "/cinemas/city/{city}")
+    public List<CinemaDTO> getAllCinemasByCity(@PathVariable String city) throws MissingCinemasInDBException {
+        return cinemaService.getAllCinemasByCity(city);
+    }
+
+    @PutMapping(value = "/cinemas")
+    public Cinema addCinema(@RequestBody CinemaDTO cinemaDTO, HttpSession ses) throws AlreadyLoggedException, UserNotFoundException, NotAdminException, CinemaAlreadyExistException {
+        if(!isLogged(ses)) {
+            throw new UserNotFoundException("You need to be logged to have that functionality");
         }
+        int userId = (int) ses.getAttribute("userId");
+        if(userService.getById(userId).getRoleId()!=2){
+            throw new NotAdminException("Only admins can add new cinemas");
+        }
+        //TODO more test ,cause something with the logging is not fine
+        return  cinemaService.addCinema(cinemaDTO);
     }
 
-    @PostMapping(value = "/admin/addCinema")
-    public Cinema addCinema(@RequestBody CinemaDTO cinema, HttpServletRequest request, HttpServletResponse response) {
-        //TODO
-        return null;
-    }
 
-    @GetMapping(value = "/test")
-    public String testFunction() {
-        return "Tova e prosto show";
-    }
+
 }

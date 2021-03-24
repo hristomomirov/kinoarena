@@ -1,4 +1,4 @@
-package com.finals.kinoarena.Srvice;
+package com.finals.kinoarena.Service;
 
 import com.finals.kinoarena.Model.DTO.UserDTO;
 import com.finals.kinoarena.Exceptions.UserAlreadyExistsException;

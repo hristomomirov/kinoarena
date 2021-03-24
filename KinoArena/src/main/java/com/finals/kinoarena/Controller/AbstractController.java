@@ -37,4 +37,36 @@ public class AbstractController {
     public ErrorDTO handleUserBadCredentialsException(BadCredentialsException e) {
         return new ErrorDTO(e.getMessage());
     }
+
+    @ExceptionHandler(MissingCinemasInDBException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public  ErrorDTO handleMissingCinemasInDBExceptopn(MissingCinemasInDBException e){
+        return new ErrorDTO(e.getMessage());
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public  ErrorDTO NotFoundException(NotFoundException e){
+        return new ErrorDTO(e.getMessage());
+    }
+
+    @ExceptionHandler(NotAdminException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public  ErrorDTO NotAdminException(NotAdminException e){
+        return new ErrorDTO(e.getMessage());
+    }
+
+    @ExceptionHandler(AlreadyLoggedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public  ErrorDTO AlreadyLoggedException(AlreadyLoggedException e){
+        return new ErrorDTO(e.getMessage());
+    }
+
+    @ExceptionHandler(CinemaAlreadyExistException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public  ErrorDTO CinemaAlreadyExistException(CinemaAlreadyExistException e){
+        return new ErrorDTO(e.getMessage());
+    }
+
+
 }

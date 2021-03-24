@@ -1,39 +1,26 @@
 package com.finals.kinoarena.Model.DTO;
 
+import com.finals.kinoarena.Model.Entity.Cinema;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+
+@NoArgsConstructor
+@Setter
+@Getter
+@AllArgsConstructor
 public class CinemaDTO {
 
     private long id;
     private String name;
     private String city;
 
-    public CinemaDTO(long id, String name, String city) {
-        this.id = id;
-        this.name = name;
-        this.city = city;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
+    public CinemaDTO(Cinema c){
+        this.id = c.getId();
+        this.name = c.getName();
+        this.city = c.getCity();
     }
 
     @Override

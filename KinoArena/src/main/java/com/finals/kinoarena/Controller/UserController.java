@@ -1,6 +1,6 @@
 package com.finals.kinoarena.Controller;
 
-import com.finals.kinoarena.Srvice.UserService;
+import com.finals.kinoarena.Service.UserService;
 import com.finals.kinoarena.Model.DTO.UserDTO;
 import com.finals.kinoarena.Exceptions.*;
 import com.finals.kinoarena.Model.Entity.User;

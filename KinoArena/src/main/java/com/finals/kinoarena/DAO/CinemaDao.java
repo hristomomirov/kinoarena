@@ -11,11 +11,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Component
-public class CinemaDao {
-
-    private JdbcTemplate jdbcTemplate;
+public class CinemaDao extends AbstractDao {
 
     public List<CinemaDTO> getAllCinemas(){
+        //TODO rework with hybernate
         List<CinemaDTO> cinemas = new ArrayList<>();
         try (Connection connection = jdbcTemplate.getDataSource().getConnection();){
             ResultSet rs = connection.createStatement().executeQuery("SELECT id,name,city FROM kinoarena.cinemas;");

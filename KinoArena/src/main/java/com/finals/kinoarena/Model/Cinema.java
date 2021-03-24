@@ -10,7 +10,7 @@ import javax.persistence.Id;
 @NoArgsConstructor
 @Getter
 @Setter
-@Entity(name = "cinems")
+@Entity(name = "cinemаs")
 public class Cinema {
 
     @Id

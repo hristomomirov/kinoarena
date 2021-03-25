@@ -1,12 +1,10 @@
 package com.finals.kinoarena.Service;
 
-import com.finals.kinoarena.Exceptions.BadCredentialsException;
-import com.finals.kinoarena.Exceptions.CinemaAlreadyExistException;
-import com.finals.kinoarena.Exceptions.MissingCinemasInDBException;
-import com.finals.kinoarena.Exceptions.NotFoundException;
+import com.finals.kinoarena.Exceptions.*;
 import com.finals.kinoarena.Model.DTO.CinemaDTO;
 import com.finals.kinoarena.Model.Entity.Cinema;
 import com.finals.kinoarena.Model.Repository.CinemaRepository;
+import com.finals.kinoarena.Model.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -20,6 +18,9 @@ public class CinemaService extends AbstractService {
 
     @Autowired
     private CinemaRepository cinemaRepository;
+
+    @Autowired
+    private UserRepository userRepository;
 
     public List<CinemaDTO> getAllCinemas() throws MissingCinemasInDBException {
         List<Cinema> cinemas = cinemaRepository.findAll();
@@ -58,7 +59,10 @@ public class CinemaService extends AbstractService {
     }
 
 
-    public CinemaDTO addCinema(CinemaDTO cinemaDTO) throws CinemaAlreadyExistException {
+    public CinemaDTO addCinema(CinemaDTO cinemaDTO,int userId) throws CinemaAlreadyExistException, NotAdminException {
+        if( userRepository.findById(userId).get().getRoleId()!=2){
+            throw new NotAdminException("Only admins can remove cinemas");
+        }
         if(cinemaExist(cinemaDTO)){
             throw new CinemaAlreadyExistException("There is already a cinema with that name in that city");
         }
@@ -79,13 +83,19 @@ public class CinemaService extends AbstractService {
         return false;
     }
 
-    public void removeCinema(int id) {
+    public void removeCinema(int id,int userId) throws NotAdminException {
+        if( userRepository.findById(userId).get().getRoleId()!=2){
+            throw new NotAdminException("Only admins can remove cinemas");
+        }
         CinemaDTO cinemaforDelete = getCinemaByID(id);
         cinemaRepository.deleteById(cinemaforDelete.getId());
 
     }
 
-    public CinemaDTO editCinema(CinemaDTO cinemaDTO,int id) throws BadCredentialsException {
+    public CinemaDTO editCinema(CinemaDTO cinemaDTO,int id,int userId) throws BadCredentialsException, NotAdminException {
+        if( userRepository.findById(userId).get().getRoleId()!=2){
+            throw new NotAdminException("Only admins can remove cinemas");
+        }
         Optional<Cinema> sCinema = cinemaRepository.findById(id);
         if(!sCinema.isPresent()){
             throw new NotFoundException("Cinema is not found");

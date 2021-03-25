@@ -49,13 +49,10 @@ public class CinemaController extends AbstractController implements IRegistratio
             throw new UserNotFoundException("You need to be logged to have that functionality");
         }
         int userId = (int) ses.getAttribute("LoggedUser");
-        if(userService.getById(userId).getRoleId()!=2){
-            throw new NotAdminException("Only admins can add new cinemas");
-        }
         if(!validateCinemaFields(cinemaDTO.getCity(),cinemaDTO.getName())){
             throw new MissingFieldException("Please fill all requested fields");
         }
-            return  cinemaService.addCinema(cinemaDTO);
+            return  cinemaService.addCinema(cinemaDTO,userId);
 
     }
 
@@ -65,10 +62,7 @@ public class CinemaController extends AbstractController implements IRegistratio
             throw new UserNotFoundException("You need to be logged to have that functionality");
         }
         int userId = (int) ses.getAttribute("LoggedUser");
-        if(userService.getById(userId).getRoleId()!=2){
-            throw new NotAdminException("Only admins can remove cinemas");
-        }
-        cinemaService.removeCinema(id);
+        cinemaService.removeCinema(id,userId);
         return "Cinema succesfully deleted";
     }
 
@@ -78,13 +72,11 @@ public class CinemaController extends AbstractController implements IRegistratio
             throw new UserNotFoundException("You need to be logged to have that functionality");
         }
         int userId = (int) ses.getAttribute("LoggedUser");
-        if(userService.getById(userId).getRoleId()!=2){
-            throw new NotAdminException("Only admins can add edit cinemas");
-        }
+
         if(!validateCinemaFields(cinemaDTO.getCity(),cinemaDTO.getName())){
             throw new MissingFieldException("Please fill all requested fields");
         }
-       return cinemaService.editCinema(cinemaDTO,id);
+       return cinemaService.editCinema(cinemaDTO,id,userId);
     }
 
     private boolean validateCinemaFields(String city,String name) throws MissingFieldException, BadCredentialsException {

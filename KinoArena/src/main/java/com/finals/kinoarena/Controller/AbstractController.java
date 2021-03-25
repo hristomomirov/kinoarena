@@ -51,7 +51,7 @@ public class AbstractController {
     }
 
     @ExceptionHandler(NotAdminException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
     public  ErrorDTO NotAdminException(NotAdminException e){
         return new ErrorDTO(e.getMessage());
     }

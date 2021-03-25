@@ -10,6 +10,6 @@ import java.util.List;
 public interface CinemaRepository extends JpaRepository<Cinema,Integer> {
 
     public List<Cinema> findByCity(String city);
-    public Cinema findByCityAndName(String city,String name);
+   // public Cinema findByCityAndName(String city,String name);
 
 }

@@ -13,7 +13,7 @@ import lombok.Setter;
 @AllArgsConstructor
 public class CinemaDTO {
 
-    private long id;
+    private int id;
     private String name;
     private String city;
 

@@ -44,7 +44,7 @@ public class CinemaController extends AbstractController implements IRegistratio
     }
 
     @PutMapping(value = "/cinemas")
-    public Cinema addCinema(@RequestBody CinemaDTO cinemaDTO, HttpSession ses) throws AlreadyLoggedException, UserNotFoundException, NotAdminException, CinemaAlreadyExistException {
+    public CinemaDTO addCinema(@RequestBody CinemaDTO cinemaDTO, HttpSession ses) throws AlreadyLoggedException, UserNotFoundException, NotAdminException, CinemaAlreadyExistException, MissingFieldException, BadCredentialsException {
         if(!isLogged(ses)) {
             throw new UserNotFoundException("You need to be logged to have that functionality");
         }
@@ -52,7 +52,49 @@ public class CinemaController extends AbstractController implements IRegistratio
         if(userService.getById(userId).getRoleId()!=2){
             throw new NotAdminException("Only admins can add new cinemas");
         }
-        return  cinemaService.addCinema(cinemaDTO);
+        if(!validatenewCinema(cinemaDTO.getCity(),cinemaDTO.getName())){
+            throw new MissingFieldException("Please fill all requested fields");
+        }
+            return  cinemaService.addCinema(cinemaDTO);
+
+    }
+
+    @DeleteMapping(value = "/cinemas/deleteCinema/{id}")
+    public String deleteCinema(@PathVariable int id,HttpSession ses) throws UserNotFoundException, NotAdminException {
+        if(!isLogged(ses)) {
+            throw new UserNotFoundException("You need to be logged to have that functionality");
+        }
+        int userId = (int) ses.getAttribute("LoggedUser");
+        if(userService.getById(userId).getRoleId()!=2){
+            throw new NotAdminException("Only admins can remove cinemas");
+        }
+        cinemaService.removeCinema(id);
+        return "Cinema succesfully deleted";
+    }
+
+    @PutMapping(value = "/cinemas/id/{id}")
+    public CinemaDTO editCinema(@PathVariable int id,@RequestBody CinemaDTO cinemaDTO,HttpSession ses) throws UserNotFoundException, NotAdminException, BadCredentialsException {
+        if(!isLogged(ses)) {
+            throw new UserNotFoundException("You need to be logged to have that functionality");
+        }
+        int userId = (int) ses.getAttribute("LoggedUser");
+        if(userService.getById(userId).getRoleId()!=2){
+            throw new NotAdminException("Only admins can add edit cinemas");
+        }
+       return cinemaService.editCinema(cinemaDTO,id);
+    }
+
+    private boolean validatenewCinema(String city,String name) throws MissingFieldException, BadCredentialsException {
+        if(city.isBlank() || name.isBlank()){
+            throw new MissingFieldException("Please fill all necessary fields");
+        }
+        if(city.length()>20 || city.length()<3){
+            throw new BadCredentialsException("City names must be with at least 3 letters or max with 20");
+        }
+        if(name.length()>25){
+            throw new BadCredentialsException("Name can contain maximum 25 letters");
+        }
+        return true;
     }
 
 

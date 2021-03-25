@@ -59,9 +59,9 @@ public class CinemaService extends AbstractService {
     }
 
 
-    public CinemaDTO addCinema(CinemaDTO cinemaDTO,int userId) throws CinemaAlreadyExistException, NotAdminException {
+    public CinemaDTO addCinema(CinemaDTO cinemaDTO,int userId) throws CinemaAlreadyExistException, BadRequestException {
         if( userRepository.findById(userId).get().getRoleId()!=2){
-            throw new NotAdminException("Only admins can remove cinemas");
+            throw new BadRequestException("Only admins can remove cinemas");
         }
         if(cinemaExist(cinemaDTO)){
             throw new CinemaAlreadyExistException("There is already a cinema with that name in that city");
@@ -83,18 +83,18 @@ public class CinemaService extends AbstractService {
         return false;
     }
 
-    public void removeCinema(int id,int userId) throws NotAdminException {
+    public void removeCinema(int id,int userId) throws BadRequestException {
         if( userRepository.findById(userId).get().getRoleId()!=2){
-            throw new NotAdminException("Only admins can remove cinemas");
+            throw new BadRequestException("Only admins can remove cinemas");
         }
         CinemaDTO cinemaforDelete = getCinemaByID(id);
         cinemaRepository.deleteById(cinemaforDelete.getId());
 
     }
 
-    public CinemaDTO editCinema(CinemaDTO cinemaDTO,int id,int userId) throws BadCredentialsException, NotAdminException {
+    public CinemaDTO editCinema(CinemaDTO cinemaDTO,int id,int userId) throws BadRequestException {
         if( userRepository.findById(userId).get().getRoleId()!=2){
-            throw new NotAdminException("Only admins can remove cinemas");
+            throw new BadRequestException("Only admins can remove cinemas");
         }
         Optional<Cinema> sCinema = cinemaRepository.findById(id);
         if(!sCinema.isPresent()){
@@ -102,7 +102,7 @@ public class CinemaService extends AbstractService {
         }
         Cinema cinema = sCinema.get();
         if(cinema.getName().equals(cinemaDTO.getName()) && cinema.getCity().equals(cinemaDTO.getCity())){
-            throw new BadCredentialsException("You need to change the fields for an edit");
+            throw new BadRequestException("You need to change the fields for an edit");
         }
         cinema.setCity(cinemaDTO.getCity());
         cinema.setName(cinemaDTO.getName());

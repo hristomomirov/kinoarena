@@ -41,18 +41,15 @@ public class CinemaController extends AbstractController {
     }
 
     @PutMapping(value = "/cinemas")
-    public CinemaDTO addCinema(@RequestBody CinemaDTO cinemaDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
+    public CinemaDTO addCinema(@RequestBody CinemaDTO cinemaDTO, HttpSession ses) throws BadRequestException, CinemaAlreadyExistException {
         if (!sessionManager.isLogged(ses)) {
             throw new BadRequestException("You need to be logged to have that functionality");
         }
         int userId = (int) ses.getAttribute(LOGGED_USER);
-        if (userService.getById(userId).getRoleId() != 2) {
-            throw new UnauthorizedException("Only admins can add new cinemas");
-        }
         if (!validateNewCinema(cinemaDTO.getCity(), cinemaDTO.getName())) {
             throw new BadRequestException("Please fill all requested fields");
         }
-        return cinemaService.addCinema(cinemaDTO);
+        return cinemaService.addCinema(cinemaDTO,userId);
 
     }
 
@@ -65,7 +62,7 @@ public class CinemaController extends AbstractController {
         if (userService.getById(userId).getRoleId() != 2) {
             throw new UnauthorizedException("Only admins can remove cinemas");
         }
-        cinemaService.removeCinema(id);
+        cinemaService.removeCinema(id,userId);
         return "Cinema successfully deleted";
     }
 
@@ -78,7 +75,7 @@ public class CinemaController extends AbstractController {
         if (userService.getById(userId).getRoleId() != 2) {
             throw new UnauthorizedException("Only admins can add edit cinemas");
         }
-        return cinemaService.editCinema(cinemaDTO, id);
+        return cinemaService.editCinema(cinemaDTO,id,userId);
     }
 
     private boolean validateNewCinema(String city, String name) throws BadRequestException {

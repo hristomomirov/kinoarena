@@ -1,7 +1,7 @@
 package com.finals.kinoarena.Service;
 
 import com.finals.kinoarena.Exceptions.BadRequestException;
-import com.finals.kinoarena.Model.DTO.RequestRegisterUserDTO;
+import com.finals.kinoarena.Model.DTO.RegisterDTO;
 
 import com.finals.kinoarena.Model.DTO.UserPasswordDTO;
 import com.finals.kinoarena.Model.DTO.UserWithoutPassDTO;
@@ -35,18 +35,18 @@ public class UserService {
         return repository.findByEmail(email);
     }
 
-    public UserWithoutPassDTO registerUser(RequestRegisterUserDTO requestRegisterUserDTO) throws BadRequestException {
-        if (emailExist(requestRegisterUserDTO.getEmail())) {
-            throw new BadRequestException("There is already a user with that email address: " + requestRegisterUserDTO.getEmail());
+    public UserWithoutPassDTO registerUser(RegisterDTO registerDTO) throws BadRequestException {
+        if (emailExist(registerDTO.getEmail())) {
+            throw new BadRequestException("There is already a user with that email address: " + registerDTO.getEmail());
         }
-        if (usernameExists(requestRegisterUserDTO.getUsername())) {
-            throw new BadRequestException("There is already a user with that username: " + requestRegisterUserDTO.getUsername());
+        if (usernameExists(registerDTO.getUsername())) {
+            throw new BadRequestException("There is already a user with that username: " + registerDTO.getUsername());
         }
-        if (!requestRegisterUserDTO.getPassword().equals(requestRegisterUserDTO.getConfirmPassword())) {
+        if (!registerDTO.getPassword().equals(registerDTO.getConfirmPassword())) {
             throw new BadRequestException("Passwords must match");
         }
-        requestRegisterUserDTO.setPassword(passwordEncoder.encode(requestRegisterUserDTO.getPassword()));
-        User user = new User(requestRegisterUserDTO);
+        registerDTO.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
+        User user = new User(registerDTO);
         return new UserWithoutPassDTO(repository.save(user));
     }
 
@@ -97,13 +97,13 @@ public class UserService {
     }
 
     public UserWithoutPassDTO changePassword(UserPasswordDTO passwordDTO) throws BadRequestException {
-        Optional<User> sUser = repository.findById(passwordDTO.getId());
-        if (sUser.isPresent()) {
-            User user = sUser.get();
-            user.setPassword(passwordEncoder.encode(passwordDTO.getPassword()));
-            return new UserWithoutPassDTO(repository.save(user));
-        } else {
-            throw new BadRequestException("User does not exist");
+        if (!passwordDTO.getNewPassword().equals(passwordDTO.getConfirmPassword())){
+            throw new BadRequestException("Passwords must match");
         }
+        User user = repository.findById(passwordDTO.getId()).get();
+        if (verifyPassword(user.getUsername(), passwordDTO.getOldPassword())) {
+            user.setPassword(passwordEncoder.encode(passwordDTO.getNewPassword()));
+        }
+        return new UserWithoutPassDTO(repository.save(user));
     }
 }

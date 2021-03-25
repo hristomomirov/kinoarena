@@ -1,6 +1,6 @@
 package com.finals.kinoarena.Model.Entity;
 
-import com.finals.kinoarena.Model.DTO.RequestRegisterUserDTO;
+import com.finals.kinoarena.Model.DTO.RegisterDTO;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,7 +37,7 @@ public class User {
     @OneToMany(mappedBy = "owner")
     private List<Ticket> tickets;
 
-    public User(RequestRegisterUserDTO dto) {
+    public User(RegisterDTO dto) {
         this.username = dto.getUsername();
         this.password = dto.getPassword();
         this.email = dto.getEmail();

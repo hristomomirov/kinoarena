@@ -2,9 +2,9 @@ package com.finals.kinoarena.Controller;
 
 import com.finals.kinoarena.Model.DTO.UserPasswordDTO;
 import com.finals.kinoarena.Service.UserService;
-import com.finals.kinoarena.Model.DTO.RequestLoginUserDTO;
+import com.finals.kinoarena.Model.DTO.LoginDTO;
 import com.finals.kinoarena.Model.DTO.UserWithoutPassDTO;
-import com.finals.kinoarena.Model.DTO.RequestRegisterUserDTO;
+import com.finals.kinoarena.Model.DTO.RegisterDTO;
 import com.finals.kinoarena.Exceptions.*;
 import com.finals.kinoarena.Model.Entity.User;
 import com.finals.kinoarena.Model.Entity.UserStatus;
@@ -21,33 +21,33 @@ import java.util.regex.Pattern;
 @RestController
 public class UserController extends AbstractController {
 
-    public static final String LOGGED_USER = "LoggedUser";
     @Autowired
     private UserService service;
     @Autowired
     private SessionManager sessionManager;
 
     @PutMapping(value = "/users")
-    public UserWithoutPassDTO registerNewUser(@RequestBody RequestRegisterUserDTO requestRegisterUserDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
-        if (sessionManager.isLogged(ses)) {
-            throw new UnauthorizedException("You are currently signed in to an account.Please logout");
-        }
-        if (validateRegister(requestRegisterUserDTO)) {
-            return service.registerUser(requestRegisterUserDTO);
-        } else {
+    public UserWithoutPassDTO registerNewUser(@RequestBody RegisterDTO registerDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
+        if (!sessionManager.isLogged(ses)) {
+            if (validateRegister(registerDTO)) {
+                return service.registerUser(registerDTO);
+            }
             throw new BadRequestException("Please fill all requested fields");
         }
+        throw new UnauthorizedException("You are currently signed in to an account.Please logout");
     }
 
     @PostMapping(value = "/users")
-    public UserWithoutPassDTO login(@RequestBody RequestLoginUserDTO requestLoginUserDTO, HttpSession ses) throws BadRequestException {
-        if (validateLogIn(requestLoginUserDTO)) {
-            UserWithoutPassDTO r = service.logInUser(requestLoginUserDTO.getUsername(), requestLoginUserDTO.getPassword());
-            ses.setAttribute(LOGGED_USER, r.getId());  //pavel : трябваше ми за тестване
-            return r;
-        } else {
+    public UserWithoutPassDTO login(@RequestBody LoginDTO loginDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
+        if (!sessionManager.isLogged(ses)) {
+            if (validateLogIn(loginDTO)) {
+                UserWithoutPassDTO dto = service.logInUser(loginDTO.getUsername(), loginDTO.getPassword());
+                sessionManager.loginUser(ses, dto.getId());
+                return dto;
+            }
             throw new BadRequestException("Please fill all necessary fields");
         }
+        throw new UnauthorizedException("You are currently signed in to an account.Please logout");
     }
 
     @GetMapping(value = "/users")
@@ -55,46 +55,38 @@ public class UserController extends AbstractController {
         return service.getAllUsers();
     }
 
-    @PostMapping(value = "/{id}/edit")
-    public UserWithoutPassDTO changePassword(@RequestBody UserPasswordDTO passwordDTO, HttpSession ses, @PathVariable int id) throws UnauthorizedException, BadRequestException {
-        if (ses.getAttribute(LOGGED_USER) == null) {
-            throw new UnauthorizedException("You need to be logged in");
-        }
-        int loggedId = (int) ses.getAttribute(LOGGED_USER);
-        if (loggedId != id) {
-            throw new BadRequestException("You can only edit your OWN account");
-
-        }
-        if (validatePassword(passwordDTO.getPassword(), passwordDTO.getConfirmPassword())) {
-            passwordDTO.setId(id);
-           return service.changePassword(passwordDTO);
+    @PostMapping(value = "/edit")
+    public UserWithoutPassDTO changePassword(@RequestBody UserPasswordDTO passwordDTO, HttpSession ses) throws UnauthorizedException, BadRequestException {
+        User user = sessionManager.getLoggedUser(ses);
+        passwordDTO.setId(user.getId());
+        if (validatePassword(passwordDTO.getNewPassword()) && validatePassword(passwordDTO.getConfirmPassword()) && validatePassword(passwordDTO.getOldPassword())) {
+            return service.changePassword(passwordDTO);
         }
         throw new BadRequestException("Password must be between 8 and 20 symbols and must contain at least one upper and lower case letter and number");
     }
 
-    private boolean validateLogIn(RequestLoginUserDTO requestLoginUserDTO) {
-        return !requestLoginUserDTO.getUsername().isBlank() &&
-                !requestLoginUserDTO.getPassword().isBlank();
+    private boolean validateLogIn(LoginDTO loginDTO) {
+        return !loginDTO.getUsername().isBlank() &&
+                !loginDTO.getPassword().isBlank();
     }
 
     @PostMapping(value = "/logout")
-//    public String logout(HttpSession ses) throws BadRequestException {
-//        if (validateLogIn(requestLoginUserDTO)) {
-//            UserWithoutPassDTO r = service.logInUser(requestLoginUserDTO.getUsername(), requestLoginUserDTO.getPassword());
-//            ses.setAttribute(LOGGED_USER, r.getId());  //pavel : трябваше ми за тестване
-//            return r;
-//        } else {
-//            throw new BadRequestException("Please fill all necessary fields");
-//        }
-//    }
+    public String logout(HttpSession ses) throws UnauthorizedException {
+        if (!sessionManager.isLogged(ses)) {
+            throw new UnauthorizedException("You need to be logged in");
+        }
+        sessionManager.logoutUser(ses);
+        return "You have been successfully logged out";
+    }
 
-    private boolean validateRegister(RequestRegisterUserDTO requestRegisterUserDTO) throws BadRequestException {
-        return validateUsername(requestRegisterUserDTO.getUsername()) &&
-                validatePassword(requestRegisterUserDTO.getPassword(), requestRegisterUserDTO.getConfirmPassword()) &&
-                validateEmail(requestRegisterUserDTO.getEmail()) &&
-                validateName(requestRegisterUserDTO.getFirstName(), requestRegisterUserDTO.getLastName()) &&
-                validateStatus(requestRegisterUserDTO.getStatus()) &&
-                validateAge(requestRegisterUserDTO.getAge());
+    private boolean validateRegister(RegisterDTO registerDTO) throws BadRequestException {
+        return validateUsername(registerDTO.getUsername()) &&
+                validatePassword(registerDTO.getPassword()) &&
+                validatePassword(registerDTO.getConfirmPassword()) &&
+                validateEmail(registerDTO.getEmail()) &&
+                validateName(registerDTO.getFirstName(), registerDTO.getLastName()) &&
+                validateStatus(registerDTO.getStatus()) &&
+                validateAge(registerDTO.getAge());
     }
 
     private boolean validateAge(Integer age) throws BadRequestException {
@@ -139,8 +131,8 @@ public class UserController extends AbstractController {
     }
 
     //TODO
-    private boolean validatePassword(String password, String confirmPassword) throws BadRequestException {
-        if (password.isBlank() || confirmPassword.isBlank()) {
+    private boolean validatePassword(String password) throws BadRequestException {
+        if (password.isBlank()) {
             throw new BadRequestException("Please fill all necessary fields");
         }
         String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,20}$";
@@ -165,6 +157,9 @@ public class UserController extends AbstractController {
         throw new BadRequestException("Username must include only letters and numbers");
     }
 }
+
+
+
 
 
 

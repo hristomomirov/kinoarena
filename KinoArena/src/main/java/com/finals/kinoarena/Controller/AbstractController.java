@@ -26,11 +26,11 @@ public class AbstractController {
 //        return new ErrorDTO(e.getMessage());
 //    }
 //
-//    @ExceptionHandler(UserNotFoundException.class)
-//    @ResponseStatus(HttpStatus.BAD_REQUEST)
-//    public ErrorDTO handleUserNotFoundException(UserNotFoundException e) {
-//        return new ErrorDTO(e.getMessage());
-//    }
+    @ExceptionHandler(UnauthorizedException.class)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    public ErrorDTO handleUserNotFoundException(UnauthorizedException e) {
+        return new ErrorDTO(e.getMessage());
+    }
 
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -40,7 +40,7 @@ public class AbstractController {
 
     @ExceptionHandler(MissingCinemasInDBException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public  ErrorDTO handleMissingCinemasInDBExceptopn(MissingCinemasInDBException e){
+    public  ErrorDTO handleMissingCinemasInDBException(MissingCinemasInDBException e){
         return new ErrorDTO(e.getMessage());
     }
 

@@ -11,6 +11,6 @@ public class UserPasswordDTO {
 
     private int id;
     private String oldPassword;
-    private String password;
+    private String newPassword;
     private String confirmPassword;
 }

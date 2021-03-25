@@ -18,6 +18,9 @@ public class Hall {
     private int id;
     private int number;
     private int capacity;
-    private int cinemaId;
+
+    @ManyToOne
+    @JoinColumn(name="cinema_id")
+    private Cinema cinema;
 
 }

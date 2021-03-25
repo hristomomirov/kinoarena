@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -20,8 +22,12 @@ public class Cinema {
     private String name;
     private String city;
 
+    @OneToMany(mappedBy = "cinema")
+    List<Hall> halls;
+
     public Cinema(String name, String city) {
         this.name = name;
         this.city = city;
+        halls =new ArrayList<>();
     }
 }

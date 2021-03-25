@@ -1,20 +1,17 @@
 package com.finals.kinoarena.Model.Entity;
 
 import com.finals.kinoarena.Model.DTO.RequestRegisterUserDTO;
-import com.finals.kinoarena.Model.DTO.ResponseRegisterUserDTO;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+@Component
 @NoArgsConstructor
 @Getter
 @Setter

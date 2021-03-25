@@ -1,6 +1,6 @@
 package com.finals.kinoarena.Service;
 
-import com.finals.kinoarena.Exceptions.BadCredentialsException;
+import com.finals.kinoarena.Exceptions.BadRequestException;
 import com.finals.kinoarena.Exceptions.CinemaAlreadyExistException;
 import com.finals.kinoarena.Exceptions.MissingCinemasInDBException;
 import com.finals.kinoarena.Exceptions.NotFoundException;
@@ -58,9 +58,9 @@ public class CinemaService extends AbstractService {
     }
 
 
-    public CinemaDTO addCinema(CinemaDTO cinemaDTO) throws CinemaAlreadyExistException {
+    public CinemaDTO addCinema(CinemaDTO cinemaDTO) throws BadRequestException {
         if(cinemaExist(cinemaDTO)){
-            throw new CinemaAlreadyExistException("There is already a cinema with that name in that city");
+            throw new BadRequestException("There is already a cinema with that name in that city");
         }
         Cinema c =cinemaRepository.save(new Cinema(cinemaDTO.getName(),cinemaDTO.getCity()));
         return new CinemaDTO(c);
@@ -85,14 +85,14 @@ public class CinemaService extends AbstractService {
 
     }
 
-    public CinemaDTO editCinema(CinemaDTO cinemaDTO,int id) throws BadCredentialsException {
+    public CinemaDTO editCinema(CinemaDTO cinemaDTO,int id) throws BadRequestException {
         Optional<Cinema> sCinema = cinemaRepository.findById(id);
         if(!sCinema.isPresent()){
             throw new NotFoundException("Cinema is not found");
         }
         Cinema cinema = sCinema.get();
         if(cinema.getName().equals(cinemaDTO.getName()) && cinema.getCity().equals(cinemaDTO.getCity())){
-            throw new BadCredentialsException("You need to change the fields for an edit");
+            throw new BadRequestException("You need to change the fields for an edit");
         }
         cinema.setCity(cinemaDTO.getCity());
         cinema.setName(cinemaDTO.getName());

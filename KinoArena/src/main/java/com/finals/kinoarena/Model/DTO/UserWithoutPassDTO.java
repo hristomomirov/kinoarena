@@ -9,10 +9,10 @@ import lombok.Setter;
 
 import java.util.List;
 
+@NoArgsConstructor
 @Getter
 @Setter
-@NoArgsConstructor
-public class ResponseRegisterUserDTO {
+public class UserWithoutPassDTO {
 
     private int id;
     private String username;
@@ -22,14 +22,14 @@ public class ResponseRegisterUserDTO {
     private String status;
     private List<Ticket> tickets;
 
-    public ResponseRegisterUserDTO(User user) {
+    public UserWithoutPassDTO(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
         this.email = user.getEmail();
         this.name = user.getFirstName() + " " + user.getLastName();
         this.age = user.getAge();
-        this.status = UserStatus.values()[user.getStatusId()-1].toString().toLowerCase();
+        this.status = UserStatus.values()[user.getStatusId() - 1].toString().toLowerCase();
 //        this.tickets = user.getTickets();
-// TODO needs rework
+//TODO needs rework
     }
 }

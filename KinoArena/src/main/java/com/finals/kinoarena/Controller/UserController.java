@@ -1,12 +1,9 @@
 package com.finals.kinoarena.Controller;
 
-
+import com.finals.kinoarena.Model.DTO.UserPasswordDTO;
 import com.finals.kinoarena.Service.UserService;
-
 import com.finals.kinoarena.Model.DTO.RequestLoginUserDTO;
-import com.finals.kinoarena.Model.DTO.ResponseLoginUserDTO;
-import com.finals.kinoarena.Model.DTO.ResponseRegisterUserDTO;
-import com.finals.kinoarena.Service.UserService;
+import com.finals.kinoarena.Model.DTO.UserWithoutPassDTO;
 import com.finals.kinoarena.Model.DTO.RequestRegisterUserDTO;
 import com.finals.kinoarena.Exceptions.*;
 import com.finals.kinoarena.Model.Entity.User;
@@ -24,27 +21,32 @@ import java.util.regex.Pattern;
 @RestController
 public class UserController extends AbstractController {
 
+    public static final String LOGGED_USER = "LoggedUser";
     @Autowired
     private UserService service;
+    @Autowired
+    private SessionManager sessionManager;
 
     @PutMapping(value = "/users")
-    public ResponseRegisterUserDTO registerNewUser(@RequestBody RequestRegisterUserDTO requestRegisterUserDTO) throws UserAlreadyExistsException, MissingFieldException, BadCredentialsException {
+    public UserWithoutPassDTO registerNewUser(@RequestBody RequestRegisterUserDTO requestRegisterUserDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
+        if (sessionManager.isLogged(ses)) {
+            throw new UnauthorizedException("You are currently signed in to an account.Please logout");
+        }
         if (validateRegister(requestRegisterUserDTO)) {
             return service.registerUser(requestRegisterUserDTO);
         } else {
-            throw new MissingFieldException("Please fill all requested fields");
+            throw new BadRequestException("Please fill all requested fields");
         }
     }
-//TODO Interceptor,session
-    @PostMapping(value = "/users")
-    public ResponseLoginUserDTO login(@RequestBody RequestLoginUserDTO requestLoginUserDTO, HttpSession ses) throws WrongCredentialsException, MissingFieldException {
-        if (validateLogIn(requestLoginUserDTO)) {
 
-            ResponseLoginUserDTO r =service.logInUser(requestLoginUserDTO.getUsername(),requestLoginUserDTO.getPassword());
-            ses.setAttribute("LoggedUser",r.getId());  //pavel : трябваше ми за тестване
+    @PostMapping(value = "/users")
+    public UserWithoutPassDTO login(@RequestBody RequestLoginUserDTO requestLoginUserDTO, HttpSession ses) throws BadRequestException {
+        if (validateLogIn(requestLoginUserDTO)) {
+            UserWithoutPassDTO r = service.logInUser(requestLoginUserDTO.getUsername(), requestLoginUserDTO.getPassword());
+            ses.setAttribute(LOGGED_USER, r.getId());  //pavel : трябваше ми за тестване
             return r;
         } else {
-            throw new MissingFieldException("Please fill all necessary fields");
+            throw new BadRequestException("Please fill all necessary fields");
         }
     }
 
@@ -53,69 +55,93 @@ public class UserController extends AbstractController {
         return service.getAllUsers();
     }
 
-    @PostMapping(value = "/user/edit")
-    public User editProfile(@RequestBody RequestRegisterUserDTO requestRegisterUserDTO) {
-        return null;
+    @PostMapping(value = "/{id}/edit")
+    public UserWithoutPassDTO changePassword(@RequestBody UserPasswordDTO passwordDTO, HttpSession ses, @PathVariable int id) throws UnauthorizedException, BadRequestException {
+        if (ses.getAttribute(LOGGED_USER) == null) {
+            throw new UnauthorizedException("You need to be logged in");
+        }
+        int loggedId = (int) ses.getAttribute(LOGGED_USER);
+        if (loggedId != id) {
+            throw new BadRequestException("You can only edit your OWN account");
+
+        }
+        if (validatePassword(passwordDTO.getPassword(), passwordDTO.getConfirmPassword())) {
+            passwordDTO.setId(id);
+           return service.changePassword(passwordDTO);
+        }
+        throw new BadRequestException("Password must be between 8 and 20 symbols and must contain at least one upper and lower case letter and number");
     }
 
     private boolean validateLogIn(RequestLoginUserDTO requestLoginUserDTO) {
-        return !requestLoginUserDTO.getUsername().isEmpty() &&
-                !requestLoginUserDTO.getPassword().isEmpty();
+        return !requestLoginUserDTO.getUsername().isBlank() &&
+                !requestLoginUserDTO.getPassword().isBlank();
     }
 
-    private boolean validateRegister(RequestRegisterUserDTO requestRegisterUserDTO) throws BadCredentialsException, MissingFieldException {
+    @PostMapping(value = "/logout")
+//    public String logout(HttpSession ses) throws BadRequestException {
+//        if (validateLogIn(requestLoginUserDTO)) {
+//            UserWithoutPassDTO r = service.logInUser(requestLoginUserDTO.getUsername(), requestLoginUserDTO.getPassword());
+//            ses.setAttribute(LOGGED_USER, r.getId());  //pavel : трябваше ми за тестване
+//            return r;
+//        } else {
+//            throw new BadRequestException("Please fill all necessary fields");
+//        }
+//    }
+
+    private boolean validateRegister(RequestRegisterUserDTO requestRegisterUserDTO) throws BadRequestException {
         return validateUsername(requestRegisterUserDTO.getUsername()) &&
-                validatePassword(requestRegisterUserDTO.getPassword(),requestRegisterUserDTO.getConfirmPassword()) &&
+                validatePassword(requestRegisterUserDTO.getPassword(), requestRegisterUserDTO.getConfirmPassword()) &&
                 validateEmail(requestRegisterUserDTO.getEmail()) &&
                 validateName(requestRegisterUserDTO.getFirstName(), requestRegisterUserDTO.getLastName()) &&
                 validateStatus(requestRegisterUserDTO.getStatus()) &&
                 validateAge(requestRegisterUserDTO.getAge());
     }
 
-    private boolean validateAge(Integer age) throws BadCredentialsException, MissingFieldException {
+    private boolean validateAge(Integer age) throws BadRequestException {
         //TODO age cant be letters
         if (age == null) {
-            throw new MissingFieldException("Please fill all necessary fields");
+            throw new BadRequestException("Please fill all necessary fields");
         }
         if (age >= 0 && age <= 120) {
             return true;
         }
-        throw new BadCredentialsException("Incorrect age.Age cannot be less than 0 and more than 120");
+        throw new BadRequestException("Incorrect age.Age cannot be less than 0 and more than 120");
     }
 
-    private boolean validateStatus(String status) throws BadCredentialsException, MissingFieldException {
+    private boolean validateStatus(String status) throws BadRequestException {
         if (status.isBlank()) {
-            throw new MissingFieldException("Please fill all necessary fields");
+            throw new BadRequestException("Please fill all necessary fields");
         }
         for (UserStatus s : UserStatus.values()) {
             if (s.toString().equals(status.toUpperCase())) {
                 return true;
             }
         }
-        throw new BadCredentialsException("Incorrect status");
+        throw new BadRequestException("Incorrect status");
     }
 
-    private boolean validateName(String firstName, String lastName) throws MissingFieldException, BadCredentialsException {
+    private boolean validateName(String firstName, String lastName) throws BadRequestException {
         if (firstName.isBlank() || lastName.isBlank()) {
-            throw new MissingFieldException("Please fill all necessary fields");
+            throw new BadRequestException("Please fill all necessary fields");
         }
         String regex = "[a-zA-Z]+";
         if (firstName.matches(regex) && lastName.matches(regex)) {
             return true;
         }
-        throw new BadCredentialsException("Name must contain only letters");
+        throw new BadRequestException("Name must contain only letters");
     }
 
-    private boolean validateEmail(String email) throws MissingFieldException {
+    private boolean validateEmail(String email) throws BadRequestException {
         if (email.isBlank()) {
-            throw new MissingFieldException("Please fill all necessary fields");
+            throw new BadRequestException("Please fill all necessary fields");
         }
         return true;
     }
 
-    private boolean validatePassword(String password, String confirmPassword) throws MissingFieldException, BadCredentialsException {
+    //TODO
+    private boolean validatePassword(String password, String confirmPassword) throws BadRequestException {
         if (password.isBlank() || confirmPassword.isBlank()) {
-            throw new MissingFieldException("Please fill all necessary fields");
+            throw new BadRequestException("Please fill all necessary fields");
         }
         String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=\\S+$).{8,20}$";
         Pattern p = Pattern.compile(regex);
@@ -123,12 +149,12 @@ public class UserController extends AbstractController {
         if (m.matches()) {
             return true;
         }
-        throw new BadCredentialsException("Password must be between 8 and 20 symbols and must contain at least one upper and lower case letter and number");
+        throw new BadRequestException("Password must be between 8 and 20 symbols and must contain at least one upper and lower case letter and number");
     }
 
-    private boolean validateUsername(String username) throws BadCredentialsException, MissingFieldException {
+    private boolean validateUsername(String username) throws BadRequestException {
         if (username.isBlank()) {
-            throw new MissingFieldException("Please fill all necessary fields");
+            throw new BadRequestException("Please fill all necessary fields");
         }
         String regex = "^[a-zA-Z0-9]*$";
         Pattern p = Pattern.compile(regex);
@@ -136,7 +162,7 @@ public class UserController extends AbstractController {
         if (m.matches()) {
             return true;
         }
-        throw new BadCredentialsException("Username must include only letters and numbers");
+        throw new BadRequestException("Username must include only letters and numbers");
     }
 }
 

@@ -52,7 +52,7 @@ public class CinemaController extends AbstractController implements IRegistratio
         if(userService.getById(userId).getRoleId()!=2){
             throw new NotAdminException("Only admins can add new cinemas");
         }
-        if(!validatenewCinema(cinemaDTO.getCity(),cinemaDTO.getName())){
+        if(!validateCinemaFields(cinemaDTO.getCity(),cinemaDTO.getName())){
             throw new MissingFieldException("Please fill all requested fields");
         }
             return  cinemaService.addCinema(cinemaDTO);
@@ -73,7 +73,7 @@ public class CinemaController extends AbstractController implements IRegistratio
     }
 
     @PutMapping(value = "/cinemas/id/{id}")
-    public CinemaDTO editCinema(@PathVariable int id,@RequestBody CinemaDTO cinemaDTO,HttpSession ses) throws UserNotFoundException, NotAdminException, BadCredentialsException {
+    public CinemaDTO editCinema(@PathVariable int id,@RequestBody CinemaDTO cinemaDTO,HttpSession ses) throws UserNotFoundException, NotAdminException, BadCredentialsException, MissingFieldException {
         if(!isLogged(ses)) {
             throw new UserNotFoundException("You need to be logged to have that functionality");
         }
@@ -81,10 +81,13 @@ public class CinemaController extends AbstractController implements IRegistratio
         if(userService.getById(userId).getRoleId()!=2){
             throw new NotAdminException("Only admins can add edit cinemas");
         }
+        if(!validateCinemaFields(cinemaDTO.getCity(),cinemaDTO.getName())){
+            throw new MissingFieldException("Please fill all requested fields");
+        }
        return cinemaService.editCinema(cinemaDTO,id);
     }
 
-    private boolean validatenewCinema(String city,String name) throws MissingFieldException, BadCredentialsException {
+    private boolean validateCinemaFields(String city,String name) throws MissingFieldException, BadCredentialsException {
         if(city.isBlank() || name.isBlank()){
             throw new MissingFieldException("Please fill all necessary fields");
         }

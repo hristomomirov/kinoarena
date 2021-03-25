@@ -1,10 +1,7 @@
 package com.finals.kinoarena.Controller;
 
-import com.finals.kinoarena.Model.DTO.UserPasswordDTO;
+import com.finals.kinoarena.Model.DTO.*;
 import com.finals.kinoarena.Service.UserService;
-import com.finals.kinoarena.Model.DTO.LoginDTO;
-import com.finals.kinoarena.Model.DTO.UserWithoutPassDTO;
-import com.finals.kinoarena.Model.DTO.RegisterDTO;
 import com.finals.kinoarena.Exceptions.*;
 import com.finals.kinoarena.Model.Entity.User;
 import com.finals.kinoarena.Model.Entity.UserStatus;
@@ -38,10 +35,10 @@ public class UserController extends AbstractController {
     }
 
     @PostMapping(value = "/users")
-    public UserWithoutPassDTO login(@RequestBody LoginDTO loginDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
+    public UserWithoutTicketAndPassDTO login(@RequestBody LoginDTO loginDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
         if (!sessionManager.isLogged(ses)) {
             if (validateLogIn(loginDTO)) {
-                UserWithoutPassDTO dto = service.logInUser(loginDTO.getUsername(), loginDTO.getPassword());
+                UserWithoutTicketAndPassDTO dto = service.logInUser(loginDTO.getUsername(), loginDTO.getPassword());
                 sessionManager.loginUser(ses, dto.getId());
                 return dto;
             }

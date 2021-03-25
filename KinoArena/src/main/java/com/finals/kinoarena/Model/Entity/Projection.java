@@ -1,5 +1,7 @@
 package com.finals.kinoarena.Model.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -22,10 +24,16 @@ public class Projection {
     private int length;
     private String description;
     private int ageRestriction;
-    private int genreId;
+    @ManyToOne
+    @JoinColumn(name = "genre_id")
+    @JsonManagedReference
+    private Genre genre;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
-
+    @ManyToOne
+    @JoinColumn(name = "hall_id")
+    @JsonManagedReference
+    private Hall hall;
 
 
 }

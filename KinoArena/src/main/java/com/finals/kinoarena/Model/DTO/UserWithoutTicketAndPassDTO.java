@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public class UserWithoutPassDTO {
+public class UserWithoutTicketAndPassDTO {
 
     private int id;
     private String username;
@@ -21,17 +21,13 @@ public class UserWithoutPassDTO {
     private String name;
     private int age;
     private String status;
-    private List<Ticket> tickets;
 
-    public UserWithoutPassDTO(User user) {
+    public UserWithoutTicketAndPassDTO(User user) {
         this.id = user.getId();
         this.username = user.getUsername();
         this.email = user.getEmail();
         this.name = user.getFirstName() + " " + user.getLastName();
         this.age = user.getAge();
         this.status = UserStatus.values()[user.getStatusId() - 1].toString().toLowerCase();
-        this.tickets = new ArrayList<>();
-        tickets.addAll(user.getTickets());
-
     }
 }

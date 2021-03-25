@@ -1,5 +1,7 @@
 package com.finals.kinoarena.Model.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,6 +21,7 @@ public class Ticket {
     private int id;
     @ManyToOne
     @JoinColumn(name = "owner_id")
+    @JsonBackReference
     private User owner;
     @ManyToOne
     @JoinColumn(name = "cinema_id")
@@ -28,6 +31,7 @@ public class Ticket {
     private Hall hall;
     @ManyToOne
     @JoinColumn(name = "projection_id")
+    @JsonBackReference
     private Projection projection;
     private int row;
     private int seat;

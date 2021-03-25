@@ -5,6 +5,7 @@ import com.finals.kinoarena.Model.DTO.RegisterDTO;
 
 import com.finals.kinoarena.Model.DTO.UserPasswordDTO;
 import com.finals.kinoarena.Model.DTO.UserWithoutPassDTO;
+import com.finals.kinoarena.Model.DTO.UserWithoutTicketAndPassDTO;
 import com.finals.kinoarena.Model.Entity.User;
 import com.finals.kinoarena.Model.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -72,10 +73,10 @@ public class UserService {
         return repository.findAll();
     }
 
-    public UserWithoutPassDTO logInUser(String username, String password) throws BadRequestException {
+    public UserWithoutTicketAndPassDTO logInUser(String username, String password) throws BadRequestException {
         if (verifyUsername(username) && verifyPassword(username, password)) {
             User user = getByUsername(username);
-            return new UserWithoutPassDTO(user);
+            return new UserWithoutTicketAndPassDTO(user);
         } else {
             throw new BadRequestException("Username or Password incorrect");
         }

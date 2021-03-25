@@ -45,7 +45,7 @@ public class AbstractController {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public  ErrorDTO NotFoundException(NotFoundException e){
         return new ErrorDTO(e.getMessage());
     }

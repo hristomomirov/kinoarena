@@ -1,5 +1,6 @@
 package com.finals.kinoarena.Model.Entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.finals.kinoarena.Model.DTO.RegisterDTO;
 
 import lombok.Getter;
@@ -35,6 +36,7 @@ public class User {
     private int statusId;
     private LocalDateTime createdAt;
     @OneToMany(mappedBy = "owner")
+    @JsonManagedReference
     private List<Ticket> tickets;
 
     public User(RegisterDTO dto) {

@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -27,5 +28,6 @@ public class Cinema {
     public Cinema(String name, String city) {
         this.name = name;
         this.city = city;
+        halls =new ArrayList<>();
     }
 }

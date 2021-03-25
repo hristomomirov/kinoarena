@@ -1,6 +1,7 @@
 package com.finals.kinoarena.Controller;
 
 import com.finals.kinoarena.Exceptions.*;
+import com.finals.kinoarena.Model.Entity.User;
 import com.finals.kinoarena.Service.CinemaService;
 import com.finals.kinoarena.Model.DTO.CinemaDTO;
 import com.finals.kinoarena.Service.UserService;
@@ -68,14 +69,11 @@ public class CinemaController extends AbstractController {
 
     @PutMapping(value = "/cinemas/id/{id}")
     public CinemaDTO editCinema(@PathVariable int id, @RequestBody CinemaDTO cinemaDTO, HttpSession ses) throws UnauthorizedException, BadRequestException {
-        if (!sessionManager.isLogged(ses)) {
-            throw new BadRequestException("You need to be logged to have that functionality");
-        }
-        int userId = (int) ses.getAttribute(LOGGED_USER);
-        if (userService.getById(userId).getRoleId() != 2) {
+        User user = sessionManager.getLoggedUser(ses);
+        if (userService.getById(user.getId()).getRoleId() != 2) {
             throw new UnauthorizedException("Only admins can add edit cinemas");
         }
-        return cinemaService.editCinema(cinemaDTO,id,userId);
+        return cinemaService.editCinema(cinemaDTO,id,user.getId());
     }
 
     private boolean validateNewCinema(String city, String name) throws BadRequestException {

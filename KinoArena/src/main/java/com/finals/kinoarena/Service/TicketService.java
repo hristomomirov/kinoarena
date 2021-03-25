@@ -62,8 +62,6 @@ public class TicketService {
         ticket.setRow(reserveTicketDTO.getRow());
         ticket.setPurchasedAt(LocalDateTime.now());
         return new ResponseTicketDTO(ticketRepository.save(ticket));
-
-
     }
 
     private boolean seatsAreTaken(int projectionId, ReserveTicketDTO reserveTicketDTO) {

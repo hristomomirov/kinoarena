@@ -67,9 +67,10 @@ public class TicketService {
     }
 
     private boolean seatsAreTaken(int projectionId, ReserveTicketDTO reserveTicketDTO) {
-        for (Ticket t : ticketRepository.findAllByProjectionId(projectionId)) {
+        List<Ticket> tickets = ticketRepository.findAllByProjectionId(projectionId);
+        for (Ticket t : tickets) {
             if (t.getSeat() == reserveTicketDTO.getSeat() &&
-                t.getRow() == reserveTicketDTO.getRow()) {
+                    t.getRow() == reserveTicketDTO.getRow()) {
                 return true;
             }
         }

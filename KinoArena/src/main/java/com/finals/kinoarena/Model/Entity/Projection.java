@@ -1,16 +1,15 @@
 package com.finals.kinoarena.Model.Entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
 
-@NoArgsConstructor
+
 @Getter
 @Setter
 @Entity
@@ -34,6 +33,18 @@ public class Projection {
     @JoinColumn(name = "hall_id")
     @JsonManagedReference
     private Hall hall;
+    @Transient
+    @JsonManagedReference
+    private ConcurrentHashMap<Integer, HashSet<Integer>> freePlaces;
 
-
+    public Projection() {
+        freePlaces = new ConcurrentHashMap<>();
+        for (int i = 1; i <= 5; i++) {
+            freePlaces.put(i, new HashSet<>());
+            for (int j = 1; j <= 20; j++) {
+                freePlaces.get(i).add(j);
+            }
+        }
+    }
 }
+

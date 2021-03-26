@@ -31,7 +31,7 @@ public class ProjectionDTO {
     private LocalDateTime endAt;
     private HallDTO hall;
 
-    ProjectionDTO(Projection projection){
+    public ProjectionDTO(Projection projection){
         id = projection.getId();
         title = projection.getTitle();
         length=projection.getLength();

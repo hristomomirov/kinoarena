@@ -25,7 +25,6 @@ public class Hall {
     @JsonBackReference
     private Cinema cinema;
 
-
     public Hall(HallDTO hallDTO) {
         number = hallDTO.getNumber();
         capacity=hallDTO.getCapacity();

@@ -61,6 +61,8 @@ public class TicketService {
         ticket.setSeat(reserveTicketDTO.getSeat());
         ticket.setRow(reserveTicketDTO.getRow());
         ticket.setPurchasedAt(LocalDateTime.now());
+
+        projection.getFreePlaces().get(ticket.getRow()).remove(ticket.getSeat());
         return new ResponseTicketDTO(ticketRepository.save(ticket));
     }
 

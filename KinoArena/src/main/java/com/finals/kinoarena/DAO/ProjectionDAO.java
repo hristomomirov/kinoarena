@@ -24,12 +24,12 @@ public class ProjectionDAO {
 
     public ProjectionDTO getProjectionsById(int projectionId) throws SQLException {
         Connection c = jdbcTemplate.getDataSource().getConnection();
-        String sql ="SELECT p.id,p.title,p.length,p.description,p.age_restriction,p.genre_id,g.type,p.start_at,p.end_at,p.hall_id,h.number,h.capacity,h.cinema_id\n" +
+        String sql = "SELECT p.id,p.title,p.length,p.description,p.age_restriction,p.genre_id,g.type,p.start_at,p.end_at,p.hall_id,h.number,h.capacity,h.cinema_id\n" +
                 " FROM projections AS p JOIN genres g on p.genre_id =g.id \n" +
                 " JOIN halls h on p.hall_id = h.id \n" +
-                "Where p.id = ?";
+                "WHERE p.id = ?";
         PreparedStatement ps = c.prepareStatement(sql);
-        ps.setInt(1,projectionId);
+        ps.setInt(1, projectionId);
         ResultSet rs = ps.executeQuery();
         rs.next();
         ProjectionDTO projectionDTO = new ProjectionDTO();
@@ -49,9 +49,17 @@ public class ProjectionDAO {
         hall.setNumber(rs.getInt(11));
         hall.setCapacity(rs.getInt(12));
         int cinemaId = rs.getInt(13);
-        hall.setCinema_id(cinemaId);
+        // hall.setCinema(cinemaId);
         projectionDTO.setHall(hall);
         return projectionDTO;
     }
 
+    public void addSeats() throws SQLException {
+        Connection c = jdbcTemplate.getDataSource().getConnection();
+        for (int i = 3; i <= 200; i++) {
+            PreparedStatement ps = c.prepareStatement("INSERT INTO seats (id) VALUES (?);");
+            ps.setInt(1,i);
+            ps.executeUpdate();
+        }
+    }
 }

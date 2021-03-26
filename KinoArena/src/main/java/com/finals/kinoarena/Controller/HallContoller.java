@@ -2,8 +2,10 @@ package com.finals.kinoarena.Controller;
 
 import com.finals.kinoarena.Exceptions.BadRequestException;
 import com.finals.kinoarena.Exceptions.CinemaAlreadyExistException;
+import com.finals.kinoarena.Exceptions.UnauthorizedException;
 import com.finals.kinoarena.Model.DTO.CinemaDTO;
 import com.finals.kinoarena.Model.DTO.HallDTO;
+import com.finals.kinoarena.Model.Entity.User;
 import com.finals.kinoarena.Service.CinemaService;
 import com.finals.kinoarena.Service.HallService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,20 +28,17 @@ public class HallContoller extends AbstractController {
     private CinemaService cinemaService;
 
     @GetMapping(value="/hall/{id}")
-    public HallDTO getHallbyId(@PathVariable int id){
-       return hallService.getHallbyId(id);
+    public HallDTO getHallById(@PathVariable int id){
+       return hallService.getHallById(id);
     }
 
     @PutMapping(value ="/hall" )
-      public HallDTO addHall(@RequestBody HallDTO hallDTO, HttpSession ses) throws BadRequestException  {
-        if (!sessionManager.isLogged(ses)) {
-            throw new BadRequestException("You need to be logged to have that functionality");
-        }
-        int userId = (int) ses.getAttribute(LOGGED_USER);
+      public HallDTO addHall(@RequestBody HallDTO hallDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
+        User user = sessionManager.getLoggedUser(ses);
         if (!validateNewHall(hallDTO.getCapacity())) {
             throw new BadRequestException("Please fill all requested fields");
         }
-        return hallService.addHall(hallDTO,userId);
+        return hallService.addHall(hallDTO,user.getId());
     }
 
     @DeleteMapping(value = "/cinema/{id}/hall/{hallId}")
@@ -53,7 +52,7 @@ public class HallContoller extends AbstractController {
     }
 
     @PutMapping(value = "/cinema/{id}/hall/{hallId}")
-    public HallDTO edintHall(@PathVariable int id,@PathVariable int hallId,@RequestBody HallDTO hallDTO, HttpSession ses) throws BadRequestException {
+    public HallDTO editHall(@PathVariable int id, @PathVariable int hallId, @RequestBody HallDTO hallDTO, HttpSession ses) throws BadRequestException {
         if (!sessionManager.isLogged(ses)) {
             throw new BadRequestException("You need to be logged to have that functionality");
         }
@@ -62,6 +61,7 @@ public class HallContoller extends AbstractController {
     }
 
     private boolean validateNewHall(int capacity) throws BadRequestException {
+        //TODO discuss capacity
         if(capacity<20 || capacity> 250){
             throw new BadRequestException("Capacity must be between 20 and 250");
         }

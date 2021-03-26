@@ -1,9 +1,7 @@
 package com.finals.kinoarena.Service;
 
 import com.finals.kinoarena.Exceptions.BadRequestException;
-import com.finals.kinoarena.Exceptions.CinemaAlreadyExistException;
 import com.finals.kinoarena.Exceptions.NotFoundException;
-import com.finals.kinoarena.Model.DTO.CinemaDTO;
 import com.finals.kinoarena.Model.DTO.HallDTO;
 import com.finals.kinoarena.Model.Entity.Cinema;
 import com.finals.kinoarena.Model.Entity.Hall;
@@ -27,7 +25,7 @@ public class HallService extends AbstractService {
     @Autowired
     private UserRepository userRepository;
 
-    public HallDTO getHallbyId(int id){
+    public HallDTO getHallById(int id){
         Optional<Hall> schrodingerHall = hallRepository.findById(id);
         if (schrodingerHall.isPresent()) {
             return new HallDTO(schrodingerHall.get());
@@ -44,7 +42,7 @@ public class HallService extends AbstractService {
             throw new BadRequestException("There is already a hall with that number in that cinema");
         }
         Hall hall = new Hall(hallDTO);
-        hall.setCinema(cinemaRepository.findById(hallDTO.getCinema_id()).get());
+        hall.setCinema(hallDTO.getCinema());
         hallRepository.save(hall);
         return new HallDTO(hall);
     }
@@ -57,7 +55,7 @@ public class HallService extends AbstractService {
         if (sCinema.isEmpty()) {
             throw new NotFoundException("Cinema is not found");
         }
-        if(!cinemaHaveThatHall(sCinema.get(),hallId)){
+        if(!cinemaHasHall(sCinema.get(),hallId)){
             throw new NotFoundException("No hall with that id in this cinema");
         }
         hallRepository.deleteById(hallId);
@@ -71,7 +69,7 @@ public class HallService extends AbstractService {
         if (sCinema.isEmpty()) {
             throw new NotFoundException("Cinema is not found");
         }
-        if(!cinemaHaveThatHall(sCinema.get(),hallId)){
+        if(!cinemaHasHall(sCinema.get(),hallId)){
             throw new NotFoundException("No hall with that id in this cinema");
         }
         Optional<Hall> sHall = hallRepository.findById(hallId);
@@ -87,7 +85,7 @@ public class HallService extends AbstractService {
     }
 
     private boolean hallValidation(HallDTO hallDTO) throws BadRequestException {
-        Optional<Cinema> sCinema = cinemaRepository.findById(hallDTO.getCinema_id());
+        Optional<Cinema> sCinema = cinemaRepository.findById(hallDTO.getCinema().getId());
         if (sCinema.isEmpty()) {
             throw new NotFoundException("Cinema is not found");
         }
@@ -101,9 +99,8 @@ public class HallService extends AbstractService {
     }
 
 
-    private boolean cinemaHaveThatHall(Cinema c,int hallId){
-        for (Hall h: c.getHalls()
-        ) {
+    private boolean cinemaHasHall(Cinema c, int hallId){
+        for (Hall h: c.getHalls()) {
                 if(h.getId()==hallId){
                     return true;
                 }

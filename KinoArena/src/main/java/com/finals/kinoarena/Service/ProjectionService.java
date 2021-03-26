@@ -1,14 +1,17 @@
 package com.finals.kinoarena.Service;
 
 import com.finals.kinoarena.Exceptions.BadRequestException;
+import com.finals.kinoarena.Exceptions.MissingCinemasInDBException;
 import com.finals.kinoarena.Exceptions.NotFoundException;
 import com.finals.kinoarena.Model.DTO.AddProjectionDTO;
 import com.finals.kinoarena.Model.DTO.ProjectionDTO;
+import com.finals.kinoarena.Model.Entity.Cinema;
+import com.finals.kinoarena.Model.Entity.Genre;
 import com.finals.kinoarena.Model.Entity.Hall;
 import com.finals.kinoarena.Model.Entity.Projection;
-import com.finals.kinoarena.Model.Repository.HallRepository;
-import com.finals.kinoarena.Model.Repository.ProjectionRepository;
+import com.finals.kinoarena.Model.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import com.finals.kinoarena.Model.Repository.UserRepository;
 import org.springframework.stereotype.Component;
 
 import java.sql.SQLException;
@@ -21,7 +24,14 @@ public class ProjectionService extends AbstractService {
     @Autowired
     private ProjectionRepository projectionRepository;
     @Autowired
+    private UserRepository userRepository;
+    @Autowired
+    private GenreRepository genreRepository;
+    @Autowired
+    private CinemaRepository cinemaRepository;
+    @Autowired
     private HallRepository hallRepository;
+
 
     public ProjectionDTO getProjectionById(int id) throws SQLException {
         Optional<Projection> sProjection = projectionRepository.findById(id);
@@ -30,7 +40,6 @@ public class ProjectionService extends AbstractService {
         }
         return new ProjectionDTO(sProjection.get());
     }
-
     //TODO
     public String getFreePlaces(int id) throws BadRequestException {
         Optional<Projection> sProjection = projectionRepository.findById(id);
@@ -39,6 +48,7 @@ public class ProjectionService extends AbstractService {
         }
         return null;
     }
+
 
     public ProjectionDTO addProjection(AddProjectionDTO addProjectionDTO, int userId, int hallId) throws BadRequestException {
         Optional<Hall> hall = hallRepository.findById(hallId);
@@ -66,5 +76,88 @@ public class ProjectionService extends AbstractService {
             }
         }
         return true;
+    }
+    public List<ProjectionDTO> getProjectionByGenre(int id) {
+        List<Projection> projections = projectionRepository.findByGenre_Id(id);
+        if (projections.isEmpty()) {
+            throw new NotFoundException("No movies with this genre found");
+        }
+        List<ProjectionDTO> projectionDTOS = new ArrayList<>();
+        for (Projection p : projections
+        ) {
+            projectionDTOS.add(new ProjectionDTO(p));
+        }
+        return projectionDTOS;
+    }
+
+    public List<GenreDTO> getAllGenres() {
+        List<Genre> genres = genreRepository.findAll();
+        if (genres.isEmpty()) {
+            throw new NotFoundException("No found genres");
+        }
+        List<GenreDTO> genreDTOS = new ArrayList<GenreDTO>();
+        for (Genre g : genres
+        ) {
+            genreDTOS.add(new GenreDTO(g));
+        }
+        return genreDTOS;
+    }
+
+    public void removeProjection(int id, int userId) throws BadRequestException {
+        if (userRepository.findById(userId).get().getRoleId() != 2) {
+            throw new BadRequestException("Only admins can remove cinemas");
+        }
+        Optional<Projection> sProjection = projectionRepository.findById(id);
+        if(!sProjection.isPresent()){
+            throw new NotFoundException("No projection with that id");
+        }
+        projectionRepository.deleteById(id);
+    }
+
+    public List<ProjectionDTO> getProjectionByCinema(int id) {
+        List<Projection> projections = new ArrayList<>();
+        Optional<Cinema> sCinema = cinemaRepository.findById(id);
+        if (!sCinema.isPresent()) {
+            throw new NotFoundException("Cinema is not found");
+        }
+        for (Hall h:sCinema.get().getHalls()
+        ) {
+            projections.addAll(projectionRepository.findByHall_id(h.getId()));
+        }
+
+        if (projections.isEmpty()) {
+            throw new NotFoundException("No projections found for this cinema");
+        }
+        List<ProjectionDTO> projectionDTOS = new ArrayList<>();
+        for (Projection p : projections
+        ) {
+            projectionDTOS.add(new ProjectionDTO(p));
+        }
+        return projectionDTOS;
+    }
+
+    public List<ProjectionDTO> getProjectionByCity(String city) {
+        List<Projection> projections = new ArrayList<>();
+        List<Cinema> cinemas = cinemaRepository.findByCity(city);
+        if (cinemas.isEmpty()) {
+            throw new NotFoundException("No found cinemas in this city");
+        }
+        for (Cinema c:cinemas
+        ) {
+            for (Hall h:c.getHalls()
+            ) {
+                projections.addAll(projectionRepository.findByHall_id(h.getId()));
+            }
+        }
+
+        if (projections.isEmpty()) {
+            throw new NotFoundException("No projections found for this city");
+        }
+        List<ProjectionDTO> projectionDTOS = new ArrayList<>();
+        for (Projection p : projections
+        ) {
+            projectionDTOS.add(new ProjectionDTO(p));
+        }
+        return projectionDTOS;
     }
 }

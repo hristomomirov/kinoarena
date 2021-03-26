@@ -96,7 +96,7 @@ public class CinemaService extends AbstractService {
             throw new BadRequestException("Only admins can remove cinemas");
         }
         Optional<Cinema> sCinema = cinemaRepository.findById(id);
-        if (sCinema.isEmpty()) {
+        if (!sCinema.isPresent()) {
             throw new NotFoundException("Cinema is not found");
         }
         Cinema cinema = sCinema.get();

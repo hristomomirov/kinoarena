@@ -15,7 +15,6 @@ import javax.persistence.Table;
 @Setter
 @NoArgsConstructor
 @Entity
-
 @Table(name = "genres")
 public class Genre {
 

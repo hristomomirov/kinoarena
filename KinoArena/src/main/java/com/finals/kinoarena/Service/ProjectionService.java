@@ -1,9 +1,9 @@
 package com.finals.kinoarena.Service;
 
 import com.finals.kinoarena.Exceptions.BadRequestException;
-import com.finals.kinoarena.Exceptions.MissingCinemasInDBException;
 import com.finals.kinoarena.Exceptions.NotFoundException;
 import com.finals.kinoarena.Model.DTO.AddProjectionDTO;
+import com.finals.kinoarena.Model.DTO.GenreDTO;
 import com.finals.kinoarena.Model.DTO.ProjectionDTO;
 import com.finals.kinoarena.Model.Entity.Cinema;
 import com.finals.kinoarena.Model.Entity.Genre;
@@ -15,6 +15,7 @@ import com.finals.kinoarena.Model.Repository.UserRepository;
 import org.springframework.stereotype.Component;
 
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -40,16 +41,6 @@ public class ProjectionService extends AbstractService {
         }
         return new ProjectionDTO(sProjection.get());
     }
-    //TODO
-    public String getFreePlaces(int id) throws BadRequestException {
-        Optional<Projection> sProjection = projectionRepository.findById(id);
-        if (sProjection.isEmpty()) {
-            throw new BadRequestException("Projection does not exist");
-        }
-        return null;
-    }
-
-
     public ProjectionDTO addProjection(AddProjectionDTO addProjectionDTO, int userId, int hallId) throws BadRequestException {
         Optional<Hall> hall = hallRepository.findById(hallId);
         if (!isAdmin(userId)) {
@@ -63,7 +54,14 @@ public class ProjectionService extends AbstractService {
         projection.setHall(hall.get());
         return new ProjectionDTO(projectionRepository.save(projection));
 
+    }   public String getFreePlaces(int id) throws BadRequestException {
+        Optional<Projection> sProjection = projectionRepository.findById(id);
+        if (sProjection.isEmpty()) {
+            throw new BadRequestException("Projection does not exist");
+        }
+        return null;
     }
+
 
     private boolean projectionValidation(AddProjectionDTO addProjectionDTO, Optional<Hall> hall) throws BadRequestException {
         if (hall.isEmpty()) {
@@ -77,6 +75,7 @@ public class ProjectionService extends AbstractService {
         }
         return true;
     }
+
     public List<ProjectionDTO> getProjectionByGenre(int id) {
         List<Projection> projections = projectionRepository.findByGenre_Id(id);
         if (projections.isEmpty()) {
@@ -95,7 +94,7 @@ public class ProjectionService extends AbstractService {
         if (genres.isEmpty()) {
             throw new NotFoundException("No found genres");
         }
-        List<GenreDTO> genreDTOS = new ArrayList<GenreDTO>();
+        List<GenreDTO> genreDTOS = new ArrayList<>();
         for (Genre g : genres
         ) {
             genreDTOS.add(new GenreDTO(g));
@@ -108,7 +107,7 @@ public class ProjectionService extends AbstractService {
             throw new BadRequestException("Only admins can remove cinemas");
         }
         Optional<Projection> sProjection = projectionRepository.findById(id);
-        if(!sProjection.isPresent()){
+        if (!sProjection.isPresent()) {
             throw new NotFoundException("No projection with that id");
         }
         projectionRepository.deleteById(id);
@@ -120,7 +119,7 @@ public class ProjectionService extends AbstractService {
         if (!sCinema.isPresent()) {
             throw new NotFoundException("Cinema is not found");
         }
-        for (Hall h:sCinema.get().getHalls()
+        for (Hall h : sCinema.get().getHalls()
         ) {
             projections.addAll(projectionRepository.findByHall_id(h.getId()));
         }
@@ -142,10 +141,8 @@ public class ProjectionService extends AbstractService {
         if (cinemas.isEmpty()) {
             throw new NotFoundException("No found cinemas in this city");
         }
-        for (Cinema c:cinemas
-        ) {
-            for (Hall h:c.getHalls()
-            ) {
+        for (Cinema c : cinemas) {
+            for (Hall h : c.getHalls()) {
                 projections.addAll(projectionRepository.findByHall_id(h.getId()));
             }
         }

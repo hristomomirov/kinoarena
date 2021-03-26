@@ -16,7 +16,7 @@ public class GenreDTO {
     private int id;
     private String type;
 
-    public GenreDTO(Genre genre){
+    public GenreDTO(Genre genre) {
         id = genre.getId();
         type = genre.getType();
     }

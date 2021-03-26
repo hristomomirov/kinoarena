@@ -127,7 +127,6 @@ public class UserController extends AbstractController {
         return true;
     }
 
-    //TODO
     private boolean validatePassword(String password) throws BadRequestException {
         if (password.isBlank()) {
             throw new BadRequestException("Please fill all necessary fields");

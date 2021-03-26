@@ -29,6 +29,5 @@ public class Hall {
     public Hall(HallDTO hallDTO) {
         number = hallDTO.getNumber();
         capacity=hallDTO.getCapacity();
-
     }
 }

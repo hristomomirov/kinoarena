@@ -1,6 +1,7 @@
 package com.finals.kinoarena.Model.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -15,6 +16,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @Entity
+@AllArgsConstructor
 @Table(name = "genres")
 public class Genre {
 

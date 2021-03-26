@@ -52,7 +52,6 @@ public class ProjectionService extends AbstractService {
         Projection projection = new Projection(addProjectionDTO);
         projection.setHall(hall.get());
         return new ProjectionDTO(projectionRepository.save(projection));
-
     }
 
     private boolean projectionValidation(AddProjectionDTO addProjectionDTO, Optional<Hall> hall) throws BadRequestException {

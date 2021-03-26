@@ -59,10 +59,6 @@ public class ProjectionController extends AbstractController {
         }
         return projectionService.addProjection(addProjectionDTO, user.getId(), hallId);
     }
-    @PutMapping(value = "/seats")
-    public void addNumber() throws SQLException {
-        dao.addSeats();
-    }
 
     private boolean validateNewProjection(AddProjectionDTO dto) throws BadRequestException {
         return validateTitle(dto.getTitle()) &&
@@ -83,7 +79,7 @@ public class ProjectionController extends AbstractController {
             dto.setStartAt(dateTime);
             return true;
         }
-        throw new BadRequestException("Starting time must be after" + LocalDateTime.now().toString());
+        throw new BadRequestException("Starting time must be after " + LocalDateTime.now());
     }
 
     private boolean validateGenre(AddProjectionDTO dto) throws BadRequestException {

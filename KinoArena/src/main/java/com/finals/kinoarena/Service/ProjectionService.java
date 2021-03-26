@@ -110,4 +110,29 @@ public class ProjectionService extends AbstractService {
         }
         return projectionDTOS;
     }
+
+    public List<ProjectionDTO> getProjectionByCity(String city) {
+        List<Projection> projections = new ArrayList<>();
+        List<Cinema> cinemas = cinemaRepository.findByCity(city);
+        if (cinemas.isEmpty()) {
+            throw new NotFoundException("No found cinemas in this city");
+        }
+        for (Cinema c:cinemas
+             ) {
+            for (Hall h:c.getHalls()
+            ) {
+                projections.addAll(projectionRepository.findByHall_id(h.getId()));
+            }
+        }
+
+        if (projections.isEmpty()) {
+            throw new NotFoundException("No projections found for this city");
+        }
+        List<ProjectionDTO> projectionDTOS = new ArrayList<>();
+        for (Projection p : projections
+        ) {
+            projectionDTOS.add(new ProjectionDTO(p));
+        }
+        return projectionDTOS;
+    }
 }

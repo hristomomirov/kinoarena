@@ -67,9 +67,14 @@ public class ProjectionController extends AbstractController{
         return "Projection succesfully deleted";
     }
 
-    @GetMapping(value = "/cinema/{id}/projections")
+    @GetMapping(value = "/projections/cinema/{id}")
     public List<ProjectionDTO> getAllProjectionsForCinema(@PathVariable int id){
         return projectionService.getProjectionByCinema(id);
+    }
+
+    @GetMapping(value = "/projections/city/{city}")
+    public List<ProjectionDTO> getAllProjectionsForCinema(@PathVariable String city){
+        return projectionService.getProjectionByCity(city);
     }
 
 

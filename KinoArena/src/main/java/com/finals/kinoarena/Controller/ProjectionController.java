@@ -4,6 +4,7 @@ import com.finals.kinoarena.DAO.ProjectionDAO;
 import com.finals.kinoarena.Exceptions.BadRequestException;
 import com.finals.kinoarena.Exceptions.UnauthorizedException;
 import com.finals.kinoarena.Model.DTO.AddProjectionDTO;
+import com.finals.kinoarena.Model.DTO.GenreDTO;
 import com.finals.kinoarena.Model.DTO.ProjectionDTO;
 import com.finals.kinoarena.Model.Entity.Genre;
 import com.finals.kinoarena.Model.Entity.Projection;
@@ -60,6 +61,37 @@ public class ProjectionController extends AbstractController {
         return projectionService.addProjection(addProjectionDTO, user.getId(), hallId);
     }
 
+    @GetMapping(value = "/projections/cinema/{id}")
+    public List<ProjectionDTO> getAllProjectionsForCity(@PathVariable int id) {
+        return projectionService.getProjectionByCinema(id);
+    }
+
+    @GetMapping(value = "/projections/city/{city}")
+    public List<ProjectionDTO> getAllProjectionsForCity(@PathVariable String city) {
+        return projectionService.getProjectionByCity(city);
+    }
+
+    @GetMapping(value = "/genre/{id}")
+    public List<ProjectionDTO> getProjectionsByGenre(@PathVariable int id) {
+        return projectionService.getProjectionByGenre(id);
+    }
+
+    @GetMapping(value = "/genres")
+    public List<GenreDTO> getAllGenres() {
+        return projectionService.getAllGenres();
+    }
+
+    @DeleteMapping(value = "/projections/{id}")
+    public String deleteProjection(@PathVariable int id, HttpSession ses) throws BadRequestException {
+        if (!sessionManager.isLogged(ses)) {
+            throw new BadRequestException("You need to be logged to have that functionality");
+        }
+        int userId = (int) ses.getAttribute(LOGGED_USER);
+        projectionService.removeProjection(id, userId);
+        return "Projection successfully deleted";
+    }
+
+
     private boolean validateNewProjection(AddProjectionDTO dto) throws BadRequestException {
         return validateTitle(dto.getTitle()) &&
                 validateLength(dto.getLength()) &&
@@ -70,12 +102,12 @@ public class ProjectionController extends AbstractController {
     }
 
     private boolean validateStartAt(AddProjectionDTO dto) throws BadRequestException {
-        if (dto.getTime().isBlank()){
+        if (dto.getTime().isBlank()) {
             throw new BadRequestException("Please fill all requested fields");
         }
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime dateTime = LocalDateTime.parse(dto.getTime(), formatter);
-        if (dateTime.isAfter(LocalDateTime.now())) {
+        if (dateTime.isBefore(LocalDateTime.now())) {
             dto.setStartAt(dateTime);
             return true;
         }
@@ -118,7 +150,6 @@ public class ProjectionController extends AbstractController {
         }
         throw new BadRequestException("Name cannot be empty or more than 200 characters");
     }
-
 
 
 }

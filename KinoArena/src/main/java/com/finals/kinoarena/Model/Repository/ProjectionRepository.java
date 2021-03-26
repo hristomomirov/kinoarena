@@ -10,5 +10,7 @@ import java.util.List;
 public interface ProjectionRepository extends JpaRepository<Projection, Integer> {
 
     List<Projection> findByHall(Hall hall);
+    List<Projection> findByGenreId(int genreId);
+    List<Projection> findByHallId(int hallId);
 
 }

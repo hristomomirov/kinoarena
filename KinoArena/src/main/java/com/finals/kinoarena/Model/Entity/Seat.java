@@ -1,27 +1,28 @@
 package com.finals.kinoarena.Model.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.Table;
+import java.util.List;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
-@AllArgsConstructor
-@Table(name = "genres")
-public class Genre {
+@Table(name = "seats")
+public class Seat {
 
     @Id
     private int id;
-    private String type;
+    private int number;
+//    @ManyToMany(mappedBy = "seats")
+//    @JsonBackReference
+//    List<Projection> projections;
 
 }
-

@@ -18,7 +18,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Setter
 @Getter
-@AllArgsConstructor
 public class ProjectionDTO {
 
     private int id;

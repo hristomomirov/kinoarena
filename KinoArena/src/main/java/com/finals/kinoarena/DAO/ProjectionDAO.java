@@ -49,17 +49,19 @@ public class ProjectionDAO {
         hall.setNumber(rs.getInt(11));
         hall.setCapacity(rs.getInt(12));
         int cinemaId = rs.getInt(13);
-        // hall.setCinema(cinemaId);
+        //hall.setCinema(cinemaId);
         projectionDTO.setHall(hall);
         return projectionDTO;
     }
 
     public void addSeats() throws SQLException {
         Connection c = jdbcTemplate.getDataSource().getConnection();
-        for (int i = 3; i <= 200; i++) {
-            PreparedStatement ps = c.prepareStatement("INSERT INTO seats (id) VALUES (?);");
+        for (int i = 1; i <= 200; i++) {
+            PreparedStatement ps = c.prepareStatement("UPDATE seats SET number = ? WHERE id = ?;");
             ps.setInt(1,i);
+            ps.setInt(2,i);
             ps.executeUpdate();
         }
     }
+
 }

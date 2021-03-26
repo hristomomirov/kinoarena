@@ -25,7 +25,7 @@ public class HallService extends AbstractService {
     @Autowired
     private UserRepository userRepository;
 
-    public HallDTO getHallById(int id){
+    public HallDTO getHallById(int id) {
         Optional<Hall> schrodingerHall = hallRepository.findById(id);
         if (schrodingerHall.isPresent()) {
             return new HallDTO(schrodingerHall.get());
@@ -34,7 +34,7 @@ public class HallService extends AbstractService {
         }
     }
 
-    public HallDTO addHall(HallDTO hallDTO,int userId) throws BadRequestException {
+    public HallDTO addHall(HallDTO hallDTO, int userId) throws BadRequestException {
         if (userRepository.findById(userId).get().getRoleId() != 2) {
             throw new BadRequestException("Only admins can remove cinemas");
         }
@@ -47,7 +47,7 @@ public class HallService extends AbstractService {
         return new HallDTO(hall);
     }
 
-    public void removeHall(int cinemaId,int hallId, int userId) throws BadRequestException {
+    public void removeHall(int cinemaId, int hallId, int userId) throws BadRequestException {
         if (userRepository.findById(userId).get().getRoleId() != 2) {
             throw new BadRequestException("Only admins can remove cinemas");
         }
@@ -55,13 +55,13 @@ public class HallService extends AbstractService {
         if (sCinema.isEmpty()) {
             throw new NotFoundException("Cinema is not found");
         }
-        if(!cinemaHasHall(sCinema.get(),hallId)){
+        if (!cinemaHasHall(sCinema.get(), hallId)) {
             throw new NotFoundException("No hall with that id in this cinema");
         }
         hallRepository.deleteById(hallId);
     }
 
-    public HallDTO editHall(HallDTO hallDTO, int cinemaID,int hallId, int userId) throws BadRequestException {
+    public HallDTO editHall(HallDTO hallDTO, int cinemaID, int hallId, int userId) throws BadRequestException {
         if (userRepository.findById(userId).get().getRoleId() != 2) {
             throw new BadRequestException("Only admins can remove cinemas");
         }
@@ -69,13 +69,13 @@ public class HallService extends AbstractService {
         if (sCinema.isEmpty()) {
             throw new NotFoundException("Cinema is not found");
         }
-        if(!cinemaHasHall(sCinema.get(),hallId)){
+        if (!cinemaHasHall(sCinema.get(), hallId)) {
             throw new NotFoundException("No hall with that id in this cinema");
         }
         Optional<Hall> sHall = hallRepository.findById(hallId);
 
         Hall hall = sHall.get();
-        if (hall.getNumber()==hallDTO.getNumber() && hall.getCapacity()==hallDTO.getCapacity()) {
+        if (hall.getNumber() == hallDTO.getNumber() && hall.getCapacity() == hallDTO.getCapacity()) {
             throw new BadRequestException("You need to change the fields for an edit");
         }
         hall.setNumber(hallDTO.getNumber());
@@ -89,9 +89,8 @@ public class HallService extends AbstractService {
         if (sCinema.isEmpty()) {
             throw new NotFoundException("Cinema is not found");
         }
-        for (Hall h: sCinema.get().getHalls()
-             ) {
-            if(h.getNumber()==hallDTO.getNumber()){
+        for (Hall h : sCinema.get().getHalls()) {
+            if (h.getNumber() == hallDTO.getNumber()) {
                 return false;
             }
         }
@@ -99,12 +98,12 @@ public class HallService extends AbstractService {
     }
 
 
-    private boolean cinemaHasHall(Cinema c, int hallId){
-        for (Hall h: c.getHalls()) {
-                if(h.getId()==hallId){
-                    return true;
-                }
+    private boolean cinemaHasHall(Cinema c, int hallId) {
+        for (Hall h : c.getHalls()) {
+            if (h.getId() == hallId) {
+                return true;
             }
+        }
         return false;
     }
 }

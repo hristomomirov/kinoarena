@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import java.time.DateTimeException;
+
 public class AbstractController {
 
 //    @ExceptionHandler(MissingFieldException.class)
@@ -50,11 +52,11 @@ public class AbstractController {
         return new ErrorDTO(e.getMessage());
     }
 
-////    @ExceptionHandler(NotAdminException.class)
-////    @ResponseStatus(HttpStatus.UNAUTHORIZED)
-////    public  ErrorDTO NotAdminException(NotAdminException e){
-////        return new ErrorDTO(e.getMessage());
-//    }
+    @ExceptionHandler(DateTimeException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public  ErrorDTO NotAdminException(DateTimeException e){
+        return new ErrorDTO(e.getMessage());
+    }
 
     @ExceptionHandler(AlreadyLoggedException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

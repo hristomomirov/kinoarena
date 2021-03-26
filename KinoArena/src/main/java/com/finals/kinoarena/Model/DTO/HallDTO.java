@@ -21,13 +21,13 @@ public class HallDTO {
     private int id;
     private int number;
     private int capacity;
-   // private int cinema_id;
+    private int cinema_id;
 
     public HallDTO(Hall hall){
         this.id = hall.getId();
         this.number = hall.getNumber();
         this.capacity = hall.getCapacity();
-        //this.cinema_id=hall.getCinema().getId();
+        this.cinema_id=hall.getCinema().getId();
 
     }
 }

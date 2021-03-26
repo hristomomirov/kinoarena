@@ -1,6 +1,7 @@
 package com.finals.kinoarena.Model.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.finals.kinoarena.Model.DTO.HallDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -25,5 +26,9 @@ public class Hall {
     private Cinema cinema;
 
 
+    public Hall(HallDTO hallDTO) {
+        number = hallDTO.getNumber();
+        capacity=hallDTO.getCapacity();
 
+    }
 }

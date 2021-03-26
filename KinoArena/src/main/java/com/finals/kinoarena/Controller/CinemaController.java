@@ -60,9 +60,6 @@ public class CinemaController extends AbstractController {
             throw new BadRequestException("You need to be logged to have that functionality");
         }
         int userId = (int) ses.getAttribute(LOGGED_USER);
-        if (userService.getById(userId).getRoleId() != 2) {
-            throw new UnauthorizedException("Only admins can remove cinemas");
-        }
         cinemaService.removeCinema(id,userId);
         return "Cinema successfully deleted";
     }
@@ -70,9 +67,7 @@ public class CinemaController extends AbstractController {
     @PutMapping(value = "/cinemas/id/{id}")
     public CinemaDTO editCinema(@PathVariable int id, @RequestBody CinemaDTO cinemaDTO, HttpSession ses) throws UnauthorizedException, BadRequestException {
         User user = sessionManager.getLoggedUser(ses);
-        if (userService.getById(user.getId()).getRoleId() != 2) {
-            throw new UnauthorizedException("Only admins can add edit cinemas");
-        }
+
         return cinemaService.editCinema(cinemaDTO,id,user.getId());
     }
 

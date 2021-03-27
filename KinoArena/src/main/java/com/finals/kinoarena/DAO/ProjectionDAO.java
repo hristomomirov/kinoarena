@@ -54,14 +54,17 @@ public class ProjectionDAO {
         return projectionDTO;
     }
 
-    public void addSeats() throws SQLException {
+
+
+    public boolean getProjectionsInCinema(int cinemaId, int projectionId) throws SQLException {
         Connection c = jdbcTemplate.getDataSource().getConnection();
-        for (int i = 1; i <= 200; i++) {
-            PreparedStatement ps = c.prepareStatement("UPDATE seats SET number = ? WHERE id = ?;");
-            ps.setInt(1,i);
-            ps.setInt(2,i);
-            ps.executeUpdate();
-        }
+        String sql = "SELECT * FROM projections AS p JOIN halls AS h ON p.hall_id = h.id JOIN cinemas AS c ON h.cinema_id = c.id WHERE c.id = ? AND p.id = ?";
+        PreparedStatement ps = c.prepareStatement(sql);
+        ps.setInt(1, cinemaId);
+        ps.setInt(2,projectionId);
+        ResultSet rs = ps.executeQuery();
+        return rs.next();
     }
+
 
 }

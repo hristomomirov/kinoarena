@@ -15,7 +15,6 @@ public class TicketWithoutUserDTO {
     private Cinema cinema;
     private Hall hall;
     private HalfProjectionDTO projection;
-    private int row;
     private int seat;
 
     public TicketWithoutUserDTO(Ticket t) {
@@ -24,6 +23,5 @@ public class TicketWithoutUserDTO {
         hall = t.getHall();
         projection = new HalfProjectionDTO(t.getProjection());
         seat = t.getSeat();
-        row = t.getRow();
     }
 }

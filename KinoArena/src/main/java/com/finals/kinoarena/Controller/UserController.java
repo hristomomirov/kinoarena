@@ -22,7 +22,6 @@ import java.util.regex.Pattern;
 @Component
 @RestController
 public class UserController extends AbstractController {
-
     @Autowired
     private UserService service;
     @Autowired
@@ -78,7 +77,7 @@ public class UserController extends AbstractController {
                     sessionManager.loginUser(ses, dto.getId());
                     return dto;
                 } else {
-                    throw new BadRequestException("You need to verified your email first");
+                    throw new BadRequestException("You need to verify your email first");
                 }
             }
             throw new BadRequestException("Please fill all necessary fields");
@@ -166,6 +165,7 @@ public class UserController extends AbstractController {
         return true;
     }
 
+    //TODO
     private boolean validatePassword(String password) throws BadRequestException {
         if (password.isBlank()) {
             throw new BadRequestException("Please fill all necessary fields");
@@ -192,9 +192,3 @@ public class UserController extends AbstractController {
         throw new BadRequestException("Username must include only letters and numbers");
     }
 }
-
-
-
-
-
-

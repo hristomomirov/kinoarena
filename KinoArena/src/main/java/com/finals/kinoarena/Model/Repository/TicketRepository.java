@@ -1,6 +1,5 @@
 package com.finals.kinoarena.Model.Repository;
 
-import com.finals.kinoarena.Model.DTO.ResponseTicketDTO;
 import com.finals.kinoarena.Model.DTO.TicketWithoutUserDTO;
 import com.finals.kinoarena.Model.Entity.Ticket;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,5 +14,4 @@ public interface TicketRepository extends JpaRepository<Ticket, Integer> {
 
     List<Ticket> findAllByProjectionId(int Id);
 
-    int findBySeatAndRow(int seat,int row);
 }

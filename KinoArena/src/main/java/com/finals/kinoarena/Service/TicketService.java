@@ -1,6 +1,7 @@
 package com.finals.kinoarena.Service;
 
-import com.finals.kinoarena.DAO.TicketDAO;
+import com.finals.kinoarena.DAO.ProjectionDAO;
+import com.finals.kinoarena.DAO.SeatDAO;
 import com.finals.kinoarena.Exceptions.BadRequestException;
 import com.finals.kinoarena.Exceptions.NotFoundException;
 import com.finals.kinoarena.Model.DTO.ReserveTicketDTO;
@@ -28,7 +29,9 @@ public class TicketService {
     @Autowired
     private ProjectionRepository projectionRepository;
     @Autowired
-    private TicketDAO ticketDAO;
+    private ProjectionDAO projectionDAO;
+    @Autowired
+    private SeatDAO seatDAO;
 
     public List<TicketWithoutUserDTO> getAllUserTickets(User user) {
         return ticketRepository.findAllByOwnerId(user.getId());
@@ -47,7 +50,7 @@ public class TicketService {
         if (!cinemaHasProjection(cinemaId, projectionId)) {
             throw new BadRequestException("There is no such projection at that cinema");
         }
-        if (seatsAreTaken(projectionId, reserveTicketDTO)) {
+        if (seatsAreTaken(projectionId, reserveTicketDTO.getSeat())) {
             throw new BadRequestException("Seats already taken.Please select different seats");
         }
         Cinema cinema = sCinema.get();
@@ -59,24 +62,21 @@ public class TicketService {
         ticket.setHall(hall);
         ticket.setProjection(projection);
         ticket.setSeat(reserveTicketDTO.getSeat());
-        ticket.setRow(reserveTicketDTO.getRow());
+        seatDAO.removeSeat(reserveTicketDTO.getSeat(),projectionId);
         ticket.setPurchasedAt(LocalDateTime.now());
         return new ResponseTicketDTO(ticketRepository.save(ticket));
     }
 
-    private boolean seatsAreTaken(int projectionId, ReserveTicketDTO reserveTicketDTO) {
-        List<Ticket> tickets = ticketRepository.findAllByProjectionId(projectionId);
-        for (Ticket t : tickets) {
-            if (t.getSeat() == reserveTicketDTO.getSeat() &&
-                    t.getRow() == reserveTicketDTO.getRow()) {
-                return true;
-            }
+    private boolean seatsAreTaken(int projectionId, int seat) throws SQLException, BadRequestException {
+        List<Integer> freeSeats = seatDAO.getFreeSeatsForProjection(projectionId);
+        if (freeSeats.isEmpty()){
+            throw new BadRequestException("We are sorry, all seats are taken");
         }
-        return false;
+       return !freeSeats.contains(seat);
     }
 
     private boolean cinemaHasProjection(int cinemaId, int projectionId) throws SQLException {
-        return ticketDAO.getProjectionsInCinema(cinemaId, projectionId);
+        return projectionDAO.getProjectionsInCinema(cinemaId, projectionId);
     }
 
 }

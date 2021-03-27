@@ -33,9 +33,6 @@ public class UserService {
     private ConfirmationTokenRepository confirmationTokenRepository;
 
 
-    @Autowired
-    private ConfirmationTokenRepository confirmationTokenRepository;
-
     public User getByUsername(String username) {
         return repository.findByUsername(username);
     }
@@ -60,7 +57,6 @@ public class UserService {
         ConfirmationToken confirmationToken = new ConfirmationToken(user);
         confirmationTokenRepository.save(confirmationToken);
         return new UserWithoutPassDTO(user);
-
     }
 
     private boolean usernameExists(String username) {
@@ -110,7 +106,7 @@ public class UserService {
     }
 
     public UserWithoutPassDTO changePassword(UserPasswordDTO passwordDTO) throws BadRequestException {
-        if (!passwordDTO.getNewPassword().equals(passwordDTO.getConfirmPassword())){
+        if (!passwordDTO.getNewPassword().equals(passwordDTO.getConfirmPassword())) {
             throw new BadRequestException("Passwords must match");
         }
         User user = repository.findById(passwordDTO.getId()).get();

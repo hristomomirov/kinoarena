@@ -1,7 +1,5 @@
 package com.finals.kinoarena.Model.Entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -31,7 +29,6 @@ public class Ticket {
     @ManyToOne
     @JoinColumn(name = "projection_id")
     private Projection projection;
-    private int row;
     private int seat;
     private LocalDateTime purchasedAt;
 }

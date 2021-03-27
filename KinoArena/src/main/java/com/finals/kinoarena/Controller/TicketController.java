@@ -7,7 +7,6 @@ import com.finals.kinoarena.Model.DTO.ResponseTicketDTO;
 import com.finals.kinoarena.Model.DTO.TicketWithoutUserDTO;
 import com.finals.kinoarena.Model.Entity.User;
 import com.finals.kinoarena.Service.TicketService;
-import com.finals.kinoarena.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
@@ -20,8 +19,6 @@ import java.util.List;
 @RestController
 public class TicketController extends AbstractController {
 
-    @Autowired
-    private UserService userService;
     @Autowired
     private SessionManager sessionManager;
     @Autowired
@@ -39,22 +36,18 @@ public class TicketController extends AbstractController {
                                            @PathVariable(name = "cinema_id") int cinemaId,
                                            @PathVariable(name = "projection_id") int projectionId)
                                            throws UnauthorizedException, BadRequestException, SQLException {
-        if (!validateReservation(reserveTicketDTO)) {
-            throw new BadRequestException("Seat must be between 1 and 20 and row between 1 and 5");
-        }
         User user = sessionManager.getLoggedUser(ses);
+        if (!validateReservation(reserveTicketDTO)) {
+            throw new BadRequestException("Invalid seat number");
+        }
         return ticketService.reserveTicket(cinemaId, projectionId, user, reserveTicketDTO);
     }
 
     private boolean validateReservation(ReserveTicketDTO reserveTicketDTO) {
-        return validateSeat(reserveTicketDTO.getSeat()) && validateRow(reserveTicketDTO.getRow());
-    }
-
-    private boolean validateRow(int row) {
-        return row >= 1 && row <= 5;
+        return validateSeat(reserveTicketDTO.getSeat());
     }
 
     private boolean validateSeat(int seat) {
-        return seat >= 1 && seat <= 20;
+        return seat >= 1 && seat <= 200;
     }
 }

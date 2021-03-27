@@ -15,29 +15,16 @@ import java.util.List;
 @Setter
 @Getter
 @AllArgsConstructor
-public class CinemaDTO {
+public class CinemaWithoutHallDTO {
 
     private int id;
     private String name;
     private String city;
-    private List<HallDTO> halls;
 
-    public CinemaDTO(Cinema c){
+
+    public CinemaWithoutHallDTO(Cinema c) {
         this.id = c.getId();
         this.name = c.getName();
         this.city = c.getCity();
-        halls = new ArrayList<>();
-        for (Hall h: c.getHalls()) {
-            halls.add(new HallDTO(h));
-        }
-    }
-
-    @Override
-    public String toString() {
-        return "CinemaDTO{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", city='" + city + '\'' +
-                '}';
     }
 }

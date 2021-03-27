@@ -1,6 +1,7 @@
 package com.finals.kinoarena.Model.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.finals.kinoarena.Model.DTO.AddProjectionDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -33,14 +34,6 @@ public class Projection {
     @JoinColumn(name = "hall_id")
     @JsonBackReference(value = "hall-projection")
     private Hall hall;
-//    @ManyToMany
-//    @JoinTable(
-//            name = "projections_have_seats",
-//            joinColumns = { @JoinColumn(name = "projection_id") },
-//            inverseJoinColumns = { @JoinColumn(name = "seat_id") }
-//    )
-//    @JsonManagedReference
-//    List<Seat> seats;
 
     public Projection(AddProjectionDTO dto) {
         title = dto.getTitle();

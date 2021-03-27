@@ -24,7 +24,7 @@ public class Cinema {
     private String name;
     private String city;
     @OneToMany(mappedBy = "cinema")
-    @JsonBackReference
+    @JsonManagedReference
     List<Hall> halls;
 
     public Cinema(String name, String city) {

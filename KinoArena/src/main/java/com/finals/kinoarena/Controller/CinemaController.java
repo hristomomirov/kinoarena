@@ -83,6 +83,4 @@ public class CinemaController extends AbstractController {
         }
         return true;
     }
-
-
 }

@@ -9,6 +9,5 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ReserveTicketDTO {
 
-    private int row;
-    private int seat;
+   private int seat;
 }

@@ -5,6 +5,7 @@ import com.finals.kinoarena.Model.Entity.Projection;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.time.LocalDateTime;
 
 @NoArgsConstructor
@@ -18,6 +19,8 @@ public class HalfProjectionDTO {
     private int length;
     private int ageRestriction;
     private LocalDateTime startAt;
+    private HallWithoutCinemaDTO hall;
+    private CinemaWithoutHallDTO cinema;
 
     public HalfProjectionDTO(Projection p) {
         id = p.getId();
@@ -25,5 +28,7 @@ public class HalfProjectionDTO {
         length = p.getLength();
         ageRestriction = p.getAgeRestriction();
         startAt = p.getStartAt();
+        hall = new HallWithoutCinemaDTO(p.getHall());
+        cinema = new CinemaWithoutHallDTO(p.getHall().getCinema());
     }
 }

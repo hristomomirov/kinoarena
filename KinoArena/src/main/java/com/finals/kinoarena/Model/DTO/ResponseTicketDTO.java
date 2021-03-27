@@ -16,7 +16,6 @@ public class ResponseTicketDTO {
     private Cinema cinema;
     private Hall hall;
     private Projection projection;
-    private int row;
     private int seat;
 
     public ResponseTicketDTO(Ticket t) {
@@ -26,6 +25,6 @@ public class ResponseTicketDTO {
         hall = t.getHall();
         projection = t.getProjection();
         seat = t.getSeat();
-        row = t.getRow();
+
     }
 }

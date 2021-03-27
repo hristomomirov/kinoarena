@@ -20,10 +20,10 @@ import java.util.UUID;
 public class ConfirmationToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name="id")
+    @Column(name = "id")
     private long tokenId;
 
-    @Column(name="confirmation_token")
+    @Column(name = "confirmation_token")
     private String confirmationToken;
 
 //    @Temporal(TemporalType.DATE)
@@ -38,5 +38,4 @@ public class ConfirmationToken {
         //createdDate = LocalDateTime.now();
         confirmationToken = UUID.randomUUID().toString();
     }
-
 }

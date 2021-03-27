@@ -33,6 +33,9 @@ public class UserService {
     private ConfirmationTokenRepository confirmationTokenRepository;
 
 
+    @Autowired
+    private ConfirmationTokenRepository confirmationTokenRepository;
+
     public User getByUsername(String username) {
         return repository.findByUsername(username);
     }

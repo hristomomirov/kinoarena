@@ -1,11 +1,16 @@
 package com.finals.kinoarena.Controller;
 
 import com.finals.kinoarena.Model.DTO.*;
+import com.finals.kinoarena.Model.Entity.ConfirmationToken;
+import com.finals.kinoarena.Model.Repository.ConfirmationTokenRepository;
+import com.finals.kinoarena.Model.Repository.UserRepository;
+import com.finals.kinoarena.Service.EmailSenderService;
 import com.finals.kinoarena.Service.UserService;
 import com.finals.kinoarena.Exceptions.*;
 import com.finals.kinoarena.Model.Entity.User;
 import com.finals.kinoarena.Model.Entity.UserStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,25 +27,65 @@ public class UserController extends AbstractController {
     private UserService service;
     @Autowired
     private SessionManager sessionManager;
+    @Autowired
+    private EmailSenderService emailSenderService;
+    @Autowired
+    private ConfirmationTokenRepository confirmationTokenRepository;
+    @Autowired
+    private UserRepository userRepository;
 
     @PutMapping(value = "/users")
-    public UserWithoutPassDTO registerNewUser(@RequestBody RegisterDTO registerDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
+    public String registerNewUser(@RequestBody RegisterDTO registerDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
         if (!sessionManager.isLogged(ses)) {
             if (validateRegister(registerDTO)) {
-                return service.registerUser(registerDTO);
+                UserWithoutPassDTO register = service.registerUser(registerDTO);
+                SimpleMailMessage mailMessage = new SimpleMailMessage();
+                mailMessage.setTo(registerDTO.getEmail());
+                mailMessage.setSubject("Complete Registration!");
+                mailMessage.setFrom("chand312902@gmail.com");
+                mailMessage.setText("To confirm your account, please click here : "
+                        +"http://localhost:8888/confirm-account?token="+
+                        confirmationTokenRepository.findByUser_Id(register.getId()).getConfirmationToken());
+                emailSenderService.sendEmail(mailMessage);
+
+                return "A confirmation email was sent to " + registerDTO.getEmail();
             }
             throw new BadRequestException("Please fill all requested fields");
         }
         throw new UnauthorizedException("You are currently signed in to an account.Please logout");
     }
 
+    @RequestMapping(value="/confirm-account", method= {RequestMethod.GET, RequestMethod.POST})
+    public String confirmUserAccount( @RequestParam("token")String confirmationToken)
+    {
+        ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(confirmationToken);
+
+        if(token != null)
+        {
+            User user = service.getByEmail(token.getUser().getEmail());
+            user.setEnabled(true);
+            userRepository.save(user);
+            return "Acount verifcated";
+        }
+        else
+        {
+         return "Eror!Message in the link is broken or missing";
+        }
+
+
+    }
+
     @PostMapping(value = "/users")
     public UserWithoutTicketAndPassDTO login(@RequestBody LoginDTO loginDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
         if (!sessionManager.isLogged(ses)) {
             if (validateLogIn(loginDTO)) {
-                UserWithoutTicketAndPassDTO dto = service.logInUser(loginDTO.getUsername(), loginDTO.getPassword());
-                sessionManager.loginUser(ses, dto.getId());
-                return dto;
+                if(service.getByUsername(loginDTO.getUsername()).isEnabled()) {
+                    UserWithoutTicketAndPassDTO dto = service.logInUser(loginDTO.getUsername(), loginDTO.getPassword());
+                    sessionManager.loginUser(ses, dto.getId());
+                    return dto;
+                }else{
+                    throw new BadRequestException("You need to verified your email first");
+                }
             }
             throw new BadRequestException("Please fill all necessary fields");
         }

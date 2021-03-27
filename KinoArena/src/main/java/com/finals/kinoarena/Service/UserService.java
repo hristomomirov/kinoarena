@@ -6,7 +6,9 @@ import com.finals.kinoarena.Model.DTO.RegisterDTO;
 import com.finals.kinoarena.Model.DTO.UserPasswordDTO;
 import com.finals.kinoarena.Model.DTO.UserWithoutPassDTO;
 import com.finals.kinoarena.Model.DTO.UserWithoutTicketAndPassDTO;
+import com.finals.kinoarena.Model.Entity.ConfirmationToken;
 import com.finals.kinoarena.Model.Entity.User;
+import com.finals.kinoarena.Model.Repository.ConfirmationTokenRepository;
 import com.finals.kinoarena.Model.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -28,6 +30,9 @@ public class UserService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    @Autowired
+    private ConfirmationTokenRepository confirmationTokenRepository;
+
     public User getByUsername(String username) {
         return repository.findByUsername(username);
     }
@@ -48,7 +53,11 @@ public class UserService {
         }
         registerDTO.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
         User user = new User(registerDTO);
-        return new UserWithoutPassDTO(repository.save(user));
+        user = repository.save(user);
+        ConfirmationToken confirmationToken = new ConfirmationToken(user);
+        confirmationTokenRepository.save(confirmationToken);
+        return new UserWithoutPassDTO(user);
+
     }
 
     private boolean usernameExists(String username) {

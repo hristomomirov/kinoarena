@@ -18,4 +18,5 @@ public class RegisterDTO {
     private String lastName;
     private Integer age;
     private String status;
+
 }

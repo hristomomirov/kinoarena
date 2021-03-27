@@ -38,6 +38,7 @@ public class User {
     @OneToMany(mappedBy = "owner")
     @JsonManagedReference
     private List<Ticket> tickets;
+    private boolean isEnabled;
 
     public User(RegisterDTO dto) {
         this.username = dto.getUsername();
@@ -50,6 +51,7 @@ public class User {
         this.statusId = UserStatus.valueOf(dto.getStatus().toUpperCase()).ordinal() + 1;
         this.createdAt = LocalDateTime.now();
         this.tickets = new ArrayList<>();
+        this.isEnabled=false;
 
     }
 }

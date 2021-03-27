@@ -1,7 +1,6 @@
 package com.finals.kinoarena.Model.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.finals.kinoarena.Model.DTO.AddProjectionDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

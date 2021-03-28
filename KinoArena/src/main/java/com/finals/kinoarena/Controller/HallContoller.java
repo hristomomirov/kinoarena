@@ -61,7 +61,6 @@ public class HallContoller extends AbstractController {
     }
 
     private boolean validateNewHall(int capacity) throws BadRequestException {
-        //TODO discuss capacity
         if(capacity<20 || capacity> 250){
             throw new BadRequestException("Capacity must be between 20 and 250");
         }

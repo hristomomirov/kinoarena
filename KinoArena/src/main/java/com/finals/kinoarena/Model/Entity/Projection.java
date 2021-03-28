@@ -34,6 +34,14 @@ public class Projection {
     @JoinColumn(name = "hall_id")
     @JsonBackReference(value = "hall-projection")
     private Hall hall;
+    @ManyToMany
+    @JoinTable(
+            name = "projections_have_seats",
+            joinColumns = { @JoinColumn(name = "projection_id") },
+            inverseJoinColumns = { @JoinColumn(name = "seat_id") }
+    )
+    @JsonManagedReference
+    List<Seat> freeSeats;
 
     public Projection(AddProjectionDTO dto) {
         title = dto.getTitle();

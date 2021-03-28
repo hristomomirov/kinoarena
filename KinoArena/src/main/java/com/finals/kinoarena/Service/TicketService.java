@@ -76,7 +76,7 @@ public class TicketService {
     }
 
     private boolean cinemaHasProjection(int cinemaId, int projectionId) throws SQLException {
-        return projectionDAO.getProjectionsInCinema(cinemaId, projectionId);
+        return projectionDAO.isProjectionInCinema(cinemaId, projectionId);
     }
 
 }

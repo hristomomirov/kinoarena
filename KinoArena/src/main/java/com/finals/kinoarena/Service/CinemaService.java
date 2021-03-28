@@ -15,10 +15,8 @@ import java.util.Optional;
 @Component
 public class CinemaService extends AbstractService {
 
-
     @Autowired
     private CinemaRepository cinemaRepository;
-
     @Autowired
     private UserRepository userRepository;
 
@@ -28,8 +26,7 @@ public class CinemaService extends AbstractService {
             throw new MissingCinemasInDBException("No found cinemas");
         }
         List<CinemaDTO> cinemaDTOS = new ArrayList<>();
-        for (Cinema c : cinemas
-        ) {
+        for (Cinema c : cinemas) {
             cinemaDTOS.add(new CinemaDTO(c));
         }
         return cinemaDTOS;
@@ -50,29 +47,24 @@ public class CinemaService extends AbstractService {
             throw new MissingCinemasInDBException("No found cinemas in this city");
         }
         List<CinemaDTO> cinemaDTOS = new ArrayList<>();
-        for (Cinema c : cinemas
-        ) {
+        for (Cinema c : cinemas) {
             cinemaDTOS.add(new CinemaDTO(c));
         }
         return cinemaDTOS;
 
     }
 
-
     public CinemaDTO addCinema(CinemaDTO cinemaDTO, int userId) throws CinemaAlreadyExistException, BadRequestException {
-        if (userRepository.findById(userId).get().getRoleId() != 2) {
+        if (!isAdmin(userId)) {
             throw new BadRequestException("Only admins can remove cinemas");
         }
-        if (cinemaExist(cinemaDTO)) {
+        if (cinemaExists(cinemaDTO)) {
             throw new CinemaAlreadyExistException("There is already a cinema with that name in that city");
         }
-        Cinema c = cinemaRepository.save(new Cinema(cinemaDTO.getName(), cinemaDTO.getCity()));
-        return new CinemaDTO(c);
-
-
+      return new CinemaDTO(cinemaRepository.save(new Cinema(cinemaDTO.getName(),cinemaDTO.getCity()))); // работи!
     }
 
-    public boolean cinemaExist(CinemaDTO cinemaDTO) {
+    public boolean cinemaExists(CinemaDTO cinemaDTO) {
         List<Cinema> cinemas = cinemaRepository.findByCity(cinemaDTO.getCity());
         for (Cinema c : cinemas) {
             if (c.getName().equals(cinemaDTO.getName())) {
@@ -82,13 +74,12 @@ public class CinemaService extends AbstractService {
         return false;
     }
 
-    public void removeCinema(int id, int userId) throws BadRequestException {
-        if (userRepository.findById(userId).get().getRoleId() != 2) {
-            throw new BadRequestException("Only admins can remove cinemas");
+    public void removeCinema(int id, int userId) throws UnauthorizedException, BadRequestException {
+        if (!isAdmin(userId)) {
+            throw new UnauthorizedException("Only admins can remove cinemas");
         }
-        CinemaDTO cinemaforDelete = getCinemaByID(id);
-        cinemaRepository.deleteById(cinemaforDelete.getId());
-
+        CinemaDTO cinemaForDelete = getCinemaByID(id);
+        cinemaRepository.deleteById(cinemaForDelete.getId());
     }
 
     public CinemaDTO editCinema(CinemaDTO cinemaDTO, int id, int userId) throws BadRequestException {
@@ -96,7 +87,7 @@ public class CinemaService extends AbstractService {
             throw new BadRequestException("Only admins can remove cinemas");
         }
         Optional<Cinema> sCinema = cinemaRepository.findById(id);
-        if (!sCinema.isPresent()) {
+        if (sCinema.isEmpty()) {
             throw new NotFoundException("Cinema is not found");
         }
         Cinema cinema = sCinema.get();

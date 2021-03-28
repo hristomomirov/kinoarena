@@ -31,16 +31,13 @@ public class ProjectionController extends AbstractController {
     @Autowired
     private ProjectionService projectionService;
     @Autowired
-    private ProjectionDAO dao;
-    @Autowired
     private GenreRepository genreRepository;
 
     @GetMapping(value = "/projections/{id}")
-    public HalfProjectionDTO getProjectionById(@PathVariable int id) throws SQLException {
+    public HalfProjectionDTO getProjectionById(@PathVariable int id) {
         return projectionService.getProjectionById(id);
     }
 
-    //TODO can be done with many to many
     @GetMapping(value = "/projections/{id}/places")
     public List<Integer> getFreePlacesForProjection(@PathVariable int id) throws BadRequestException, SQLException {
         return projectionService.getFreePlaces(id);
@@ -78,12 +75,11 @@ public class ProjectionController extends AbstractController {
     @PutMapping(value = "/projection/{id}")
     public HalfProjectionDTO editProjection(@RequestBody AddProjectionDTO addProjectionDTO,HttpSession ses,@PathVariable int id) throws BadRequestException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
-        projectionService.getProjectionById(id);//if doesn not exist this will throw exception
+        projectionService.getProjectionById(id);//if does not exist this will throw exception
         if (!validateNewProjection(addProjectionDTO)) {
             throw new BadRequestException("Please fill all requested fields");
         }
-        int userId = (int) ses.getAttribute(LOGGED_USER);
-        return projectionService.editProjection(userId,addProjectionDTO,id);
+        return projectionService.editProjection(user.getId(), addProjectionDTO,id);
     }
 
     @DeleteMapping(value = "/projections/{id}")

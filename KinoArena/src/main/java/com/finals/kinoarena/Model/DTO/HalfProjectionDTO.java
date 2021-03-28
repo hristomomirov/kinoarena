@@ -2,11 +2,14 @@ package com.finals.kinoarena.Model.DTO;
 
 
 import com.finals.kinoarena.Model.Entity.Projection;
+import com.finals.kinoarena.Model.Entity.Seat;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @NoArgsConstructor
 @Getter
@@ -21,6 +24,7 @@ public class HalfProjectionDTO {
     private LocalDateTime startAt;
     private HallWithoutCinemaDTO hall;
     private CinemaWithoutHallDTO cinema;
+    private List<Seat> seats;
 
     public HalfProjectionDTO(Projection p) {
         id = p.getId();
@@ -30,5 +34,6 @@ public class HalfProjectionDTO {
         startAt = p.getStartAt();
         hall = new HallWithoutCinemaDTO(p.getHall());
         cinema = new CinemaWithoutHallDTO(p.getHall().getCinema());
+        seats = new ArrayList<>(p.getFreeSeats());
     }
 }

@@ -48,16 +48,19 @@ public class ProjectionService extends AbstractService {
     }
 
     public HalfProjectionDTO addProjection(AddProjectionDTO addProjectionDTO, int userId, int hallId) throws BadRequestException, SQLException {
-        Optional<Hall> hall = hallRepository.findById(hallId);
+        Optional<Hall> sHall = hallRepository.findById(hallId);
         if (!isAdmin(userId)) {
             throw new BadRequestException("Only admins can add projections");
         }
+        if (sHall.isEmpty()) {
+            throw new NotFoundException("Hall not found");
+        }
+        Hall hall = sHall.get();
         if (!projectionValidation(addProjectionDTO, hall)) {
             throw new BadRequestException("There is already a hall with that number in that cinema");
         }
-        addProjectionDTO.setHall(hall.get());
+        addProjectionDTO.setHall(hall);
         Projection projection = new Projection(addProjectionDTO);
-        projection.setHall(hall.get());
         HalfProjectionDTO halfProjectionDTO = new HalfProjectionDTO(projectionRepository.save(projection));
         seatDAO.addFreeSeats(halfProjectionDTO.getId(), halfProjectionDTO.getHall().getCapacity());
         return halfProjectionDTO;
@@ -71,11 +74,8 @@ public class ProjectionService extends AbstractService {
         return seatDAO.getFreeSeatsForProjection(id);
     }
 
-    private boolean projectionValidation(AddProjectionDTO addProjectionDTO, Optional<Hall> hall) throws BadRequestException {
-        if (hall.isEmpty()) {
-            throw new NotFoundException("Hall not found");
-        }
-        List<Projection> projections = projectionRepository.findByHall(hall.get());
+    private boolean projectionValidation(AddProjectionDTO addProjectionDTO, Hall hall) throws BadRequestException {
+        List<Projection> projections = projectionRepository.findByHall(hall);
         for (Projection p : projections) {
             if (isBetween(p.getStartAt(), p.getEndAt(), addProjectionDTO.getStartAt())) {
                 throw new BadRequestException("There is already a projection during this time in the hall");
@@ -89,13 +89,12 @@ public class ProjectionService extends AbstractService {
     }
 
     public List<HalfProjectionDTO> getProjectionByGenre(int id) {
-        List<Projection> projections = projectionRepository.findByGenre_Id(id);
+        List<Projection> projections = projectionRepository.findByGenreId(id);
         if (projections.isEmpty()) {
             throw new NotFoundException("No movies with this genre found");
         }
         List<HalfProjectionDTO> projectionDTOS = new ArrayList<>();
-        for (Projection p : projections
-        ) {
+        for (Projection p : projections) {
             projectionDTOS.add(new HalfProjectionDTO(p));
         }
         return projectionDTOS;
@@ -107,8 +106,7 @@ public class ProjectionService extends AbstractService {
             throw new NotFoundException("No found genres");
         }
         List<GenreDTO> genreDTOS = new ArrayList<>();
-        for (Genre g : genres
-        ) {
+        for (Genre g : genres) {
             genreDTOS.add(new GenreDTO(g));
         }
         return genreDTOS;
@@ -132,7 +130,7 @@ public class ProjectionService extends AbstractService {
             throw new NotFoundException("Cinema is not found");
         }
         for (Hall h : sCinema.get().getHalls()) {
-            projections.addAll(projectionRepository.findByHall_id(h.getId()));
+            projections.addAll(projectionRepository.findByHallId(h.getId()));
         }
         if (projections.isEmpty()) {
             throw new NotFoundException("No projections found for this cinema");
@@ -150,9 +148,10 @@ public class ProjectionService extends AbstractService {
         if (cinemas.isEmpty()) {
             throw new NotFoundException("Cinema is not in this city");
         }
+        // TODO can be done in DAO
         for (Cinema c : cinemas) {
             for (Hall h : c.getHalls()) {
-                projections.addAll(projectionRepository.findByHall_id(h.getId()));
+                projections.addAll(projectionRepository.findByHallId(h.getId()));
             }
         }
         if (projections.isEmpty()) {
@@ -169,12 +168,16 @@ public class ProjectionService extends AbstractService {
         if (!isAdmin(userId)) {
             throw new BadRequestException("Only admins can edit projections");
         }
-        Optional<Hall> hall=hallRepository.findById(addProjectionDTO.getHallId());
+        Optional<Hall> sHall=hallRepository.findById(addProjectionDTO.getHallId());
+        if (sHall.isEmpty()) {
+            throw new NotFoundException("Hall not found");
+        }
+        Hall hall = sHall.get();
         if(!projectionValidation(addProjectionDTO,hall)){
             throw new BadRequestException("The edit of this projection is in constrain to the time or hall");
         }
         Projection p = projectionRepository.findById(projId).get();
-        p.setHall(hall.get());
+        p.setHall(sHall.get());
         p.setTitle(addProjectionDTO.getTitle());
         p.setLength(addProjectionDTO.getLength());
         p.setDescription(addProjectionDTO.getDescription());
@@ -182,7 +185,6 @@ public class ProjectionService extends AbstractService {
         p.setGenre(addProjectionDTO.getGenre());
         p.setStartAt(addProjectionDTO.getStartAt());
         p.setEndAt(addProjectionDTO.getStartAt().plusMinutes(addProjectionDTO.getLength()));
-        HalfProjectionDTO halfProjectionDTO = new HalfProjectionDTO(projectionRepository.save(p));
-        return halfProjectionDTO;
+        return new HalfProjectionDTO(projectionRepository.save(p));
     }
 }

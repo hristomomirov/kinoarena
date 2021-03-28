@@ -25,7 +25,7 @@ import java.util.List;
 @RestController
 public class ProjectionController extends AbstractController {
 
-
+    private static final String LOGGED_USER = "LoggedUser";
     @Autowired
     private SessionManager sessionManager;
     @Autowired
@@ -75,6 +75,17 @@ public class ProjectionController extends AbstractController {
         return projectionService.getAllGenres();
     }
 
+    @PutMapping(value = "/projection/{id}")
+    public HalfProjectionDTO editProjection(@RequestBody AddProjectionDTO addProjectionDTO,HttpSession ses,@PathVariable int id) throws BadRequestException, UnauthorizedException {
+        User user = sessionManager.getLoggedUser(ses);
+        projectionService.getProjectionById(id);//if doesn not exist this will throw exception
+        if (!validateNewProjection(addProjectionDTO)) {
+            throw new BadRequestException("Please fill all requested fields");
+        }
+        int userId = (int) ses.getAttribute(LOGGED_USER);
+        return projectionService.editProjection(userId,addProjectionDTO,id);
+    }
+
     @DeleteMapping(value = "/projections/{id}")
     public String deleteProjection(@PathVariable int id, HttpSession ses) throws BadRequestException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
@@ -95,7 +106,7 @@ public class ProjectionController extends AbstractController {
         if (dto.getTime().isBlank()) {
             throw new BadRequestException("Please fill all requested fields");
         }
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime dateTime = LocalDateTime.parse(dto.getTime(), formatter);
         if (dateTime.isAfter(LocalDateTime.now())) {
             dto.setStartAt(dateTime);

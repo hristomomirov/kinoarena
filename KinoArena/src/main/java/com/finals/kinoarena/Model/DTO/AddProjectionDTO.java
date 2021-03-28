@@ -23,6 +23,7 @@ public class AddProjectionDTO {
     private int ageRestriction;
     private String type;
     private String time;
+    private int hallId;
     private Hall hall;
     private Genre genre;
     private LocalDateTime startAt;

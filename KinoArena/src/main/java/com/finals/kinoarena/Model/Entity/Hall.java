@@ -27,7 +27,7 @@ public class Hall {
     @JsonBackReference
     private Cinema cinema;
     @OneToMany(mappedBy = "hall")
-    @JsonManagedReference(value = "hall-projection")
+    @JsonBackReference(value = "hall-projection") //TODO
     private List<Projection> projections;
 
     public Hall(HallDTO hallDTO) {

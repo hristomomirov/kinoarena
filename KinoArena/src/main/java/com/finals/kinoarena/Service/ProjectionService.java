@@ -164,4 +164,25 @@ public class ProjectionService extends AbstractService {
         }
         return projectionDTOS;
     }
+
+    public HalfProjectionDTO editProjection(int userId, AddProjectionDTO addProjectionDTO,int projId) throws BadRequestException {
+        if (!isAdmin(userId)) {
+            throw new BadRequestException("Only admins can edit projections");
+        }
+        Optional<Hall> hall=hallRepository.findById(addProjectionDTO.getHallId());
+        if(!projectionValidation(addProjectionDTO,hall)){
+            throw new BadRequestException("The edit of this projection is in constrain to the time or hall");
+        }
+        Projection p = projectionRepository.findById(projId).get();
+        p.setHall(hall.get());
+        p.setTitle(addProjectionDTO.getTitle());
+        p.setLength(addProjectionDTO.getLength());
+        p.setDescription(addProjectionDTO.getDescription());
+        p.setAgeRestriction(addProjectionDTO.getAgeRestriction());
+        p.setGenre(addProjectionDTO.getGenre());
+        p.setStartAt(addProjectionDTO.getStartAt());
+        p.setEndAt(addProjectionDTO.getStartAt().plusMinutes(addProjectionDTO.getLength()));
+        HalfProjectionDTO halfProjectionDTO = new HalfProjectionDTO(projectionRepository.save(p));
+        return halfProjectionDTO;
+    }
 }

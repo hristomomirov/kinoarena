@@ -1,4 +1,4 @@
-package com.finals.kinoarena.Controller;
+package com.finals.kinoarena.controller;
 
 import com.finals.kinoarena.Exceptions.BadRequestException;
 import com.finals.kinoarena.Exceptions.UnauthorizedException;

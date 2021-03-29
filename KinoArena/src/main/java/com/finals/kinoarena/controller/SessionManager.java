@@ -1,7 +1,6 @@
-package com.finals.kinoarena.Controller;
+package com.finals.kinoarena.controller;
 
 import com.finals.kinoarena.Exceptions.UnauthorizedException;
-import com.finals.kinoarena.Model.DTO.LoginDTO;
 import com.finals.kinoarena.Model.Entity.User;
 import com.finals.kinoarena.Model.Repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

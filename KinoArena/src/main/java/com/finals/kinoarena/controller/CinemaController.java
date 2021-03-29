@@ -1,4 +1,4 @@
-package com.finals.kinoarena.Controller;
+package com.finals.kinoarena.controller;
 
 import com.finals.kinoarena.Exceptions.*;
 import com.finals.kinoarena.Model.DTO.CinemaWithoutHallDTO;
@@ -48,7 +48,7 @@ public class CinemaController extends AbstractController {
         return cinemaService.addCinema(cinemaDTO, userId);
     }
 
-    @DeleteMapping(value = "/cinemas/delete/{cinema_id}")
+    @DeleteMapping(value = "/cinemas/{cinema_id}")
     public CinemaDTO deleteCinema(@PathVariable(name = "cinema_id") int cinemaId, HttpSession ses) throws BadRequestException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
         int userId = user.getId();

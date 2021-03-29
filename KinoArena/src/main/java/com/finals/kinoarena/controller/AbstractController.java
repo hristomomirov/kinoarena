@@ -1,4 +1,4 @@
-package com.finals.kinoarena.Controller;
+package com.finals.kinoarena.controller;
 
 import com.finals.kinoarena.Exceptions.*;
 import com.finals.kinoarena.Model.DTO.ErrorDTO;

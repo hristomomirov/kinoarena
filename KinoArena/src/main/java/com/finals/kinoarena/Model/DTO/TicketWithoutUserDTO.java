@@ -19,8 +19,6 @@ public class TicketWithoutUserDTO {
 
     public TicketWithoutUserDTO(Ticket t) {
         id = t.getId();
-        cinema = t.getCinema();
-        hall = t.getHall();
         projection = new HalfProjectionDTO(t.getProjection());
         seat = t.getSeat();
     }

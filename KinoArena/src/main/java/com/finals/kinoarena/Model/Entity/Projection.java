@@ -11,6 +11,7 @@ import lombok.Setter;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor
@@ -36,16 +37,15 @@ public class Projection {
     @ManyToMany
     @JoinTable(
             name = "projections_have_seats",
-            joinColumns = { @JoinColumn(name = "projection_id") },
-            inverseJoinColumns = { @JoinColumn(name = "seat_id") }
+            joinColumns = {@JoinColumn(name = "projection_id")},
+            inverseJoinColumns = {@JoinColumn(name = "seat_id")}
     )
+    @JsonManagedReference
     List<Seat> freeSeats;
 
     public Projection(AddProjectionDTO dto) {
-        movie = dto.getMovie();
         startAt = dto.getStartAt();
-        endAt = startAt.plusMinutes(movie.getLength());
-        hall = dto.getHall();
+        freeSeats = new ArrayList<>();
     }
 }
 

@@ -21,8 +21,6 @@ public class ResponseTicketDTO {
     public ResponseTicketDTO(Ticket t) {
         id = t.getId();
         owner = new UserWithoutTicketAndPassDTO(t.getOwner());
-        cinema = t.getCinema();
-        hall = t.getHall();
         projection = t.getProjection();
         seat = t.getSeat();
 

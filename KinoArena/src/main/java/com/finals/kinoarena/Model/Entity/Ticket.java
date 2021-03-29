@@ -21,12 +21,6 @@ public class Ticket {
     @JoinColumn(name = "owner_id")
     private User owner;
     @ManyToOne
-    @JoinColumn(name = "cinema_id")
-    private Cinema cinema;
-    @ManyToOne
-    @JoinColumn(name = "hall_id")
-    private Hall hall;
-    @ManyToOne
     @JoinColumn(name = "projection_id")
     private Projection projection;
     private int seat;

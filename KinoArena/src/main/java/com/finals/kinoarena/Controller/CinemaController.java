@@ -1,6 +1,7 @@
 package com.finals.kinoarena.Controller;
 
 import com.finals.kinoarena.Exceptions.*;
+import com.finals.kinoarena.Model.DTO.CinemaWithoutHallDTO;
 import com.finals.kinoarena.Model.Entity.User;
 import com.finals.kinoarena.Service.CinemaService;
 import com.finals.kinoarena.Model.DTO.CinemaDTO;
@@ -23,7 +24,7 @@ public class CinemaController extends AbstractController {
 
 
     @GetMapping(value = "/cinemas")
-    public List<CinemaDTO> getAllCinemas() throws NotFoundException {
+    public List<CinemaWithoutHallDTO> getAllCinemas() throws NotFoundException {
         return cinemaService.getAllCinemas();
     }
 

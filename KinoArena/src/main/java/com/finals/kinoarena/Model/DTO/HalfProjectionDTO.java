@@ -1,6 +1,7 @@
 package com.finals.kinoarena.Model.DTO;
 
 
+import com.finals.kinoarena.Model.Entity.Movie;
 import com.finals.kinoarena.Model.Entity.Projection;
 import com.finals.kinoarena.Model.Entity.Seat;
 import lombok.Getter;
@@ -18,19 +19,16 @@ public class HalfProjectionDTO {
 
 
     private int id;
-    private String title;
-    private int length;
-    private int ageRestriction;
+    private Movie movie;
     private LocalDateTime startAt;
     private HallWithoutCinemaDTO hall;
     private CinemaWithoutHallDTO cinema;
-    private List<Seat> seats;
 
     public HalfProjectionDTO(Projection p) {
         id = p.getId();
         startAt = p.getStartAt();
+        movie = p.getMovie();
         hall = new HallWithoutCinemaDTO(p.getHall());
         cinema = new CinemaWithoutHallDTO(p.getHall().getCinema());
-        seats = new ArrayList<>(p.getFreeSeats());
     }
 }

@@ -1,9 +1,7 @@
 package com.finals.kinoarena.Model.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.finals.kinoarena.Model.DTO.AddMovieDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -31,6 +29,7 @@ public class Movie {
     @JsonBackReference
     private Genre genre;
     @OneToMany(mappedBy = "movie")
+    @JsonManagedReference
     private List<Projection> projections;
     private String imdbId;
 

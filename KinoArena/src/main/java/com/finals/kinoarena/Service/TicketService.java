@@ -38,7 +38,6 @@ public class TicketService {
     }
 
     public ResponseTicketDTO reserveTicket(int cinemaId, int projectionId, User user, ReserveTicketDTO reserveTicketDTO) throws BadRequestException, SQLException {
-        Hall hall = projectionRepository.findById(projectionId).get().getHall();
         Optional<Cinema> sCinema = cinemaRepository.findById(cinemaId);
         Optional<Projection> sProjection = projectionRepository.findById(projectionId);
         if (sCinema.isEmpty()) {
@@ -53,13 +52,9 @@ public class TicketService {
         if (seatsAreTaken(projectionId, reserveTicketDTO.getSeat())) {
             throw new BadRequestException("Seats already taken.Please select different seats");
         }
-        Cinema cinema = sCinema.get();
         Projection projection = sProjection.get();
-
         Ticket ticket = new Ticket();
         ticket.setOwner(user);
-        ticket.setCinema(cinema);
-        ticket.setHall(hall);
         ticket.setProjection(projection);
         ticket.setSeat(reserveTicketDTO.getSeat());
         seatDAO.removeSeat(reserveTicketDTO.getSeat(),projectionId);

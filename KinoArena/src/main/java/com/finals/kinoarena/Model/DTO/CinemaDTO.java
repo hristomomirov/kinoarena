@@ -20,7 +20,7 @@ public class CinemaDTO {
     private int id;
     private String name;
     private String city;
-    private List<HallDTO> halls;
+    private List<HallWithoutCinemaDTO> halls;
 
     public CinemaDTO(Cinema c){
         this.id = c.getId();
@@ -28,16 +28,7 @@ public class CinemaDTO {
         this.city = c.getCity();
         halls = new ArrayList<>();
         for (Hall h: c.getHalls()) {
-            halls.add(new HallDTO(h));
+            halls.add(new HallWithoutCinemaDTO(h));
         }
-    }
-
-    @Override
-    public String toString() {
-        return "CinemaDTO{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", city='" + city + '\'' +
-                '}';
     }
 }

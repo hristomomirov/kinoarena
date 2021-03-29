@@ -47,9 +47,9 @@ public class UserController extends AbstractController {
         mailMessage.setSubject("Complete Registration!");
         mailMessage.setFrom("chand312902@gmail.com");
         mailMessage.setText("To confirm your account, please click here : " +
-                      "http://localhost:8888/confirm-account?token=" +
-                confirmationTokenRepository.findByUserId(register.getId()).getConfirmationToken());
-        emailSenderService.sendEmail(mailMessage);
+                            "http://localhost:8888/confirm-account?token=" +
+                            confirmationTokenRepository.findByUserId(register.getId()).getConfirmationToken());
+                            emailSenderService.sendEmail(mailMessage);
         return "A confirmation email was sent to " + registerDTO.getEmail();
     }
 
@@ -151,10 +151,10 @@ public class UserController extends AbstractController {
             throw new BadRequestException("Please fill all necessary fields");
         }
         String regex = "[a-zA-Z]+";
-        if (firstName.matches(regex) && lastName.matches(regex)) {
-            return true;
+        if (!firstName.matches(regex) && !lastName.matches(regex)) {
+            throw new BadRequestException("Name must contain only letters");
         }
-        throw new BadRequestException("Name must contain only letters");
+        return true;
     }
 
     private boolean validateEmail(String email) throws BadRequestException {

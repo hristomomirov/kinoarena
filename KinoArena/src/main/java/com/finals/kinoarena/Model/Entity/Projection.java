@@ -1,7 +1,9 @@
 package com.finals.kinoarena.Model.Entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import com.finals.kinoarena.Model.DTO.AddProjectionDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -21,13 +23,10 @@ public class Projection {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-    private String title;
-    private int length;
-    private String description;
-    private int ageRestriction;
     @ManyToOne
-    @JoinColumn(name = "genre_id")
-    private Genre genre;
+    @JoinColumn(name = "movie_id")
+    @JsonBackReference
+    private Movie movie;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
     @ManyToOne
@@ -40,17 +39,12 @@ public class Projection {
             joinColumns = { @JoinColumn(name = "projection_id") },
             inverseJoinColumns = { @JoinColumn(name = "seat_id") }
     )
-    @JsonManagedReference
     List<Seat> freeSeats;
 
     public Projection(AddProjectionDTO dto) {
-        title = dto.getTitle();
-        length = dto.getLength();
-        description = dto.getDescription();
-        ageRestriction = dto.getAgeRestriction();
-        genre = dto.getGenre();
+        movie = dto.getMovie();
         startAt = dto.getStartAt();
-        endAt = startAt.plusMinutes(length);
+        endAt = startAt.plusMinutes(movie.getLength());
         hall = dto.getHall();
     }
 }

@@ -16,7 +16,6 @@ import java.util.List;
 @RestController
 public class CinemaController extends AbstractController {
 
-    private static final String LOGGED_USER = "LoggedUser";
     @Autowired
     private CinemaService cinemaService;
     @Autowired
@@ -24,34 +23,31 @@ public class CinemaController extends AbstractController {
 
 
     @GetMapping(value = "/cinemas")
-    public List<CinemaDTO> getAllCinemas() throws MissingCinemasInDBException {
+    public List<CinemaDTO> getAllCinemas() throws NotFoundException {
         return cinemaService.getAllCinemas();
     }
 
     @GetMapping(value = "/cinema/{cinema_id}")
     public CinemaDTO getCinemaById(@PathVariable(name = "cinema_id") int cinema_Id) {
-        return cinemaService.getcinemabyid(cinema_Id);
+        return cinemaService.getCinemaById(cinema_Id);
     }
 
     @GetMapping(value = "/cinemas/city/{city}")
-    public List<CinemaDTO> getAllCinemasByCity(@PathVariable String city) throws MissingCinemasInDBException {
+    public List<CinemaDTO> getAllCinemasByCity(@PathVariable String city) throws NotFoundException {
         return cinemaService.getAllCinemasByCity(city);
     }
 
     @PutMapping(value = "/cinemas")
-    public CinemaDTO addCinema(@RequestBody CinemaDTO cinemaDTO, HttpSession ses) throws BadRequestException, CinemaAlreadyExistException {
-        if (!sessionManager.isLogged(ses)) {
-            throw new BadRequestException("You need to be logged to have that functionality");
-        }
-        int userId = (int) ses.getAttribute(LOGGED_USER);
+    public CinemaDTO addCinema(@RequestBody CinemaDTO cinemaDTO, HttpSession ses) throws BadRequestException, NotFoundException, UnauthorizedException {
+        User user = sessionManager.getLoggedUser(ses);
+        int userId = user.getId();
         if (!validateNewCinema(cinemaDTO.getCity(), cinemaDTO.getName())) {
             throw new BadRequestException("Please fill all requested fields");
         }
         return cinemaService.addCinema(cinemaDTO, userId);
-
     }
 
-    @DeleteMapping(value = "/cinemas/deleteCinema/{cinema_id}")
+    @DeleteMapping(value = "/cinemas/delete/{cinema_id}")
     public String deleteCinema(@PathVariable(name = "cinema_id") int cinemaId, HttpSession ses) throws BadRequestException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
         int userId = user.getId();
@@ -59,10 +55,9 @@ public class CinemaController extends AbstractController {
         return "Cinema successfully deleted";
     }
 
-    @PutMapping(value = "/cinemas/{cinema_id}")
+    @PostMapping(value = "/cinemas/{cinema_id}")
     public CinemaDTO editCinema(@PathVariable(name = "cinema_id") int cinemaId, @RequestBody CinemaDTO cinemaDTO, HttpSession ses) throws UnauthorizedException, BadRequestException {
         User user = sessionManager.getLoggedUser(ses);
-
         return cinemaService.editCinema(cinemaDTO, cinemaId, user.getId());
     }
 

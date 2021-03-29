@@ -1,6 +1,5 @@
 package com.finals.kinoarena.Controller;
 
-import com.finals.kinoarena.DAO.ProjectionDAO;
 import com.finals.kinoarena.Exceptions.BadRequestException;
 import com.finals.kinoarena.Exceptions.UnauthorizedException;
 import com.finals.kinoarena.Model.DTO.AddProjectionDTO;
@@ -29,8 +28,6 @@ public class ProjectionController extends AbstractController {
     private SessionManager sessionManager;
     @Autowired
     private ProjectionService projectionService;
-    @Autowired
-    private GenreRepository genreRepository;
 
     @GetMapping(value = "/projections/{projection_id}")
     public HalfProjectionDTO getProjectionById(@PathVariable(name = "projection_id") int projectionId) {
@@ -52,7 +49,7 @@ public class ProjectionController extends AbstractController {
         return projectionService.addProjection(addProjectionDTO, user.getId(), hallId);
     }
 
-    @GetMapping(value = "/projections/cinema/{cinema_id}")
+    @GetMapping(value = "/cinema/{cinema_id}/projections")
     public List<HalfProjectionDTO> getAllProjectionsForCinema(@PathVariable(name = "cinema_id") int cinemaId) {
         return projectionService.getProjectionByCinema(cinemaId);
     }
@@ -62,17 +59,7 @@ public class ProjectionController extends AbstractController {
         return projectionService.getProjectionByCity(city);
     }
 
-    @GetMapping(value = "/genre/{genre_id}")
-    public List<HalfProjectionDTO> getProjectionsByGenre(@PathVariable(name = "genre_id") int genreId) {
-        return projectionService.getProjectionByGenre(genreId);
-    }
-
-    @GetMapping(value = "/genres")
-    public List<GenreDTO> getAllGenres() {
-        return projectionService.getAllGenres();
-    }
-
-    @PutMapping(value = "/projection/{projection_id}")
+    @PostMapping(value = "/projection/{projection_id}")
     public HalfProjectionDTO editProjection(@RequestBody AddProjectionDTO addProjectionDTO,HttpSession ses,
                                             @PathVariable(name = "projection_id") int projectionId) throws BadRequestException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
@@ -91,11 +78,7 @@ public class ProjectionController extends AbstractController {
     }
 
     private boolean validateNewProjection(AddProjectionDTO dto) throws BadRequestException {
-        return validateTitle(dto.getTitle()) &&
-                validateLength(dto.getLength()) &&
-                validateDescription(dto.getDescription()) &&
-                validateAgeRestriction(dto.getAgeRestriction()) &&
-                validateGenre(dto) &&
+        return
                 validateStartAt(dto);
     }
 
@@ -112,42 +95,7 @@ public class ProjectionController extends AbstractController {
         throw new BadRequestException("Starting time must be after " + LocalDateTime.now());
     }
 
-    private boolean validateGenre(AddProjectionDTO dto) throws BadRequestException {
-        List<Genre> g = genreRepository.findAllByType(dto.getType());
-        if (g.isEmpty()) {
-            throw new BadRequestException("Invalid genre");
-        }
-        dto.setGenre(g.get(0));
-        return true;
-    }
 
-    private boolean validateAgeRestriction(int ageRestriction) throws BadRequestException {
-        if (ageRestriction >= 3) {
-            return true;
-        }
-        throw new BadRequestException("Age restriction cannot be less than 3");
-    }
-
-    private boolean validateDescription(String description) throws BadRequestException {
-        if (!description.isBlank()) {
-            return true;
-        }
-        throw new BadRequestException("Description cannot be empty");
-    }
-
-    private boolean validateLength(int length) throws BadRequestException {
-        if (length > 60 && length <= 300) {
-            return true;
-        }
-        throw new BadRequestException("Length must be between 60 and 300 minutes");
-    }
-
-    private boolean validateTitle(String title) throws BadRequestException {
-        if (!title.isBlank() && title.length() <= 200) {
-            return true;
-        }
-        throw new BadRequestException("Name cannot be empty or more than 200 characters");
-    }
 
 
 }

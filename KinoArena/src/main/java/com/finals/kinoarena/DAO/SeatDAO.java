@@ -66,4 +66,12 @@ public class SeatDAO {
         rs.next();
         return rs.getInt("max");
     }
+
+    public int getMinSeatNum() throws SQLException {
+        Connection c = jdbcTemplate.getDataSource().getConnection();
+        PreparedStatement ps = c.prepareStatement("SELECT MIN(number) AS min FROM seats");
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        return rs.getInt("min");
+    }
 }

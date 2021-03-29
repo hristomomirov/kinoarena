@@ -3,6 +3,7 @@ package com.finals.kinoarena.Service;
 import com.finals.kinoarena.DAO.SeatDAO;
 import com.finals.kinoarena.Exceptions.BadRequestException;
 import com.finals.kinoarena.Exceptions.NotFoundException;
+import com.finals.kinoarena.Exceptions.UnauthorizedException;
 import com.finals.kinoarena.Model.DTO.AddProjectionDTO;
 import com.finals.kinoarena.Model.DTO.GenreDTO;
 import com.finals.kinoarena.Model.DTO.HalfProjectionDTO;
@@ -28,8 +29,6 @@ public class ProjectionService extends AbstractService {
     @Autowired
     private ProjectionRepository projectionRepository;
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
     private GenreRepository genreRepository;
     @Autowired
     private CinemaRepository cinemaRepository;
@@ -47,10 +46,10 @@ public class ProjectionService extends AbstractService {
         return new HalfProjectionDTO(sProjection.get());
     }
 
-    public HalfProjectionDTO addProjection(AddProjectionDTO addProjectionDTO, int userId, int hallId) throws BadRequestException, SQLException {
+    public HalfProjectionDTO addProjection(AddProjectionDTO addProjectionDTO, int userId, int hallId) throws BadRequestException, SQLException, UnauthorizedException {
         Optional<Hall> sHall = hallRepository.findById(hallId);
         if (!isAdmin(userId)) {
-            throw new BadRequestException("Only admins can add projections");
+            throw new UnauthorizedException("Only admins can add projections");
         }
         if (sHall.isEmpty()) {
             throw new NotFoundException("Hall not found");
@@ -88,33 +87,9 @@ public class ProjectionService extends AbstractService {
         return start.compareTo(date) * date.compareTo(end) >= 0;
     }
 
-    public List<HalfProjectionDTO> getProjectionByGenre(int id) {
-        List<Projection> projections = projectionRepository.findByGenreId(id);
-        if (projections.isEmpty()) {
-            throw new NotFoundException("No movies with this genre found");
-        }
-        List<HalfProjectionDTO> projectionDTOS = new ArrayList<>();
-        for (Projection p : projections) {
-            projectionDTOS.add(new HalfProjectionDTO(p));
-        }
-        return projectionDTOS;
-    }
-
-    public List<GenreDTO> getAllGenres() {
-        List<Genre> genres = genreRepository.findAll();
-        if (genres.isEmpty()) {
-            throw new NotFoundException("No found genres");
-        }
-        List<GenreDTO> genreDTOS = new ArrayList<>();
-        for (Genre g : genres) {
-            genreDTOS.add(new GenreDTO(g));
-        }
-        return genreDTOS;
-    }
-
-    public void removeProjection(int id, int userId) throws BadRequestException {
-        if (userRepository.findById(userId).get().getRoleId() != 2) {
-            throw new BadRequestException("Only admins can remove cinemas");
+    public void removeProjection(int id, int userId) throws UnauthorizedException {
+        if (!isAdmin(userId)) {
+            throw new UnauthorizedException("Only admins can remove projections");
         }
         Optional<Projection> sProjection = projectionRepository.findById(id);
         if (sProjection.isEmpty()) {
@@ -122,7 +97,7 @@ public class ProjectionService extends AbstractService {
         }
         projectionRepository.deleteById(id);
     }
-
+// TODO can be refactored
     public List<HalfProjectionDTO> getProjectionByCinema(int id) {
         List<Projection> projections = new ArrayList<>();
         Optional<Cinema> sCinema = cinemaRepository.findById(id);
@@ -144,7 +119,7 @@ public class ProjectionService extends AbstractService {
 
     public List<ProjectionDTO> getProjectionByCity(String city) {
         List<Projection> projections = new ArrayList<>();
-        List<Cinema> cinemas = cinemaRepository.findByCity(city);
+        List<Cinema> cinemas = cinemaRepository.findAllByCity(city);
         if (cinemas.isEmpty()) {
             throw new NotFoundException("Cinema is not in this city");
         }
@@ -164,9 +139,9 @@ public class ProjectionService extends AbstractService {
         return projectionDTOS;
     }
 
-    public HalfProjectionDTO editProjection(int userId, AddProjectionDTO addProjectionDTO,int projId) throws BadRequestException {
+    public HalfProjectionDTO editProjection(int userId, AddProjectionDTO addProjectionDTO,int projId) throws BadRequestException, UnauthorizedException {
         if (!isAdmin(userId)) {
-            throw new BadRequestException("Only admins can edit projections");
+            throw new UnauthorizedException("Only admins can edit projections");
         }
         Optional<Hall> sHall=hallRepository.findById(addProjectionDTO.getHallId());
         if (sHall.isEmpty()) {
@@ -178,13 +153,9 @@ public class ProjectionService extends AbstractService {
         }
         Projection p = projectionRepository.findById(projId).get();
         p.setHall(sHall.get());
-        p.setTitle(addProjectionDTO.getTitle());
-        p.setLength(addProjectionDTO.getLength());
-        p.setDescription(addProjectionDTO.getDescription());
-        p.setAgeRestriction(addProjectionDTO.getAgeRestriction());
-        p.setGenre(addProjectionDTO.getGenre());
+        p.setMovie(addProjectionDTO.getMovie());
         p.setStartAt(addProjectionDTO.getStartAt());
-        p.setEndAt(addProjectionDTO.getStartAt().plusMinutes(addProjectionDTO.getLength()));
+        p.setEndAt(addProjectionDTO.getStartAt().plusMinutes(p.getMovie().getLength()));
         return new HalfProjectionDTO(projectionRepository.save(p));
     }
 }

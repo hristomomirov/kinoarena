@@ -1,6 +1,5 @@
 package com.finals.kinoarena.Model.DTO;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.finals.kinoarena.Model.Entity.Cinema;
 import com.finals.kinoarena.Model.Entity.Hall;
 import lombok.AllArgsConstructor;
@@ -8,10 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Component;
-
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
 
 @Component
 @Getter
@@ -23,7 +18,7 @@ public class HallDTO {
     private int id;
     private int number;
     private int capacity;
-    @JsonIgnore
+    private int cinemaId;
     private Cinema cinema;
 
     public HallDTO(Hall hall) {

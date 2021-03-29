@@ -28,9 +28,6 @@ public class HalfProjectionDTO {
 
     public HalfProjectionDTO(Projection p) {
         id = p.getId();
-        title = p.getTitle();
-        length = p.getLength();
-        ageRestriction = p.getAgeRestriction();
         startAt = p.getStartAt();
         hall = new HallWithoutCinemaDTO(p.getHall());
         cinema = new CinemaWithoutHallDTO(p.getHall().getCinema());

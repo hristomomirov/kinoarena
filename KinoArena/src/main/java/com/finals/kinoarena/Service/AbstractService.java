@@ -14,7 +14,7 @@ public class AbstractService {
     @Autowired
     protected UserRepository userRepository;
 
-    protected boolean isAdmin(int id) throws BadRequestException {
+    protected boolean isAdmin(int id) {
         return userRepository.findById(id).get().getRoleId() == 2;
     }
 }

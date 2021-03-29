@@ -1,15 +1,12 @@
 package com.finals.kinoarena.Controller;
 
+import com.finals.kinoarena.DAO.SeatDAO;
 import com.finals.kinoarena.Exceptions.BadRequestException;
-import com.finals.kinoarena.Exceptions.CinemaAlreadyExistException;
 import com.finals.kinoarena.Exceptions.UnauthorizedException;
-import com.finals.kinoarena.Model.DTO.CinemaDTO;
 import com.finals.kinoarena.Model.DTO.HallDTO;
 import com.finals.kinoarena.Model.Entity.User;
-import com.finals.kinoarena.Service.CinemaService;
 import com.finals.kinoarena.Service.HallService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,50 +16,40 @@ import javax.servlet.http.HttpSession;
 @RestController
 public class HallContoller extends AbstractController {
 
-    private static final String LOGGED_USER = "LoggedUser";
+
     @Autowired
     private SessionManager sessionManager;
     @Autowired
     private HallService hallService;
-    @Autowired
-    private CinemaService cinemaService;
 
-    @GetMapping(value="/hall/{hall_id}")
-    public HallDTO getHallById(@PathVariable(name = "hall_id") int hallId){
-       return hallService.getHallById(hallId);
+    @GetMapping(value = "/hall/{hall_id}")
+    public HallDTO getHallById(@PathVariable(name = "hall_id") int hallId) {
+        return hallService.getHallById(hallId);
     }
 
-    @PutMapping(value ="/hall" )
-      public HallDTO addHall(@RequestBody HallDTO hallDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
+    @PutMapping(value = "/hall")
+    public HallDTO addHall(@RequestBody HallDTO hallDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
-        if (!validateNewHall(hallDTO.getCapacity())) {
-            throw new BadRequestException("Please fill all requested fields");
+        if (hallDTO.getCapacity() < 50) {
+            throw new BadRequestException("Hall capacity must be at least 50");
         }
-        return hallService.addHall(hallDTO,user.getId());
+        return hallService.addHall(hallDTO, user.getId());
     }
 
     @DeleteMapping(value = "/cinema/{cinema_id}/hall/{hallId}")
-    public String deleteHall(@PathVariable(name = "cinema_id") int cinemaId,@PathVariable int hallId,HttpSession ses) throws BadRequestException {
-        if (!sessionManager.isLogged(ses)) {
-            throw new BadRequestException("You need to be logged to have that functionality");
-        }
-        int userId = (int) ses.getAttribute(LOGGED_USER);
-        hallService.removeHall(cinemaId,hallId,userId);
+    public String deleteHall(@PathVariable(name = "cinema_id") int cinemaId, @PathVariable int hallId, HttpSession ses) throws BadRequestException, UnauthorizedException {
+        User user = sessionManager.getLoggedUser(ses);
+        int userId = user.getId();
+        hallService.removeHall(cinemaId, hallId, userId);
         return "Hall successfully removed";
     }
 
-    @PutMapping(value = "/cinema/{cinema_id}/hall/{hallId}")
+    @PostMapping(value = "/cinema/{cinema_id}/hall/{hallId}")
     public HallDTO editHall(@PathVariable(name = "cinema_id") int cinemaId, @PathVariable int hallId, @RequestBody HallDTO hallDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
-       User user = sessionManager.getLoggedUser(ses);
-       int userId = user.getId();
-        return hallService.editHall(hallDTO,userId,hallId,userId);
+        User user = sessionManager.getLoggedUser(ses);
+        int userId = user.getId();
+        return hallService.editHall(hallDTO, cinemaId, hallId, userId);
     }
-
-    private boolean validateNewHall(int capacity) throws BadRequestException {
-        if(capacity<20 || capacity> 250){
-            throw new BadRequestException("Capacity must be between 20 and 250");
-        }
-        return true;
-    }
-
 }
+
+

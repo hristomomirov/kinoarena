@@ -2,6 +2,7 @@ package com.finals.kinoarena.Service;
 
 import com.finals.kinoarena.Exceptions.BadRequestException;
 import com.finals.kinoarena.Exceptions.NotFoundException;
+import com.finals.kinoarena.Exceptions.UnauthorizedException;
 import com.finals.kinoarena.Model.DTO.HallDTO;
 import com.finals.kinoarena.Model.Entity.Cinema;
 import com.finals.kinoarena.Model.Entity.Hall;
@@ -29,11 +30,11 @@ public class HallService extends AbstractService {
         return new HallDTO(sHall.get());
     }
 
-    public HallDTO addHall(HallDTO hallDTO, int userId) throws BadRequestException {
+    public HallDTO addHall(HallDTO hallDTO, int userId) throws BadRequestException, UnauthorizedException {
         if (!isAdmin(userId)) {
-            throw new BadRequestException("Only admins can remove cinemas");
+            throw new UnauthorizedException("Only admins can add halls");
         }
-        Optional<Cinema> sCinema = cinemaRepository.findById(hallDTO.getCinema().getId());
+        Optional<Cinema> sCinema = cinemaRepository.findById(hallDTO.getCinemaId());
         if (sCinema.isEmpty()) {
             throw new NotFoundException("Cinema is not found");
         }
@@ -46,9 +47,9 @@ public class HallService extends AbstractService {
         return new HallDTO(hallRepository.save(hall));
     }
 
-    public void removeHall(int cinemaId, int hallId, int userId) throws BadRequestException {
+    public void removeHall(int cinemaId, int hallId, int userId) throws UnauthorizedException {
         if (!isAdmin(userId)) {
-            throw new BadRequestException("Only admins can remove cinemas");
+            throw new UnauthorizedException("Only admins can remove halls");
         }
         Optional<Cinema> sCinema = cinemaRepository.findById(cinemaId);
         if (sCinema.isEmpty()) {
@@ -61,11 +62,11 @@ public class HallService extends AbstractService {
         hallRepository.deleteById(hallId);
     }
 
-    public HallDTO editHall(HallDTO hallDTO, int cinemaID, int hallId, int userId) throws BadRequestException {
+    public HallDTO editHall(HallDTO hallDTO, int cinemaId, int hallId, int userId) throws BadRequestException, UnauthorizedException {
         if (!isAdmin(userId)) {
-            throw new BadRequestException("Only admins can remove cinemas");
+            throw new UnauthorizedException("Only admins can edit halls");
         }
-        Optional<Cinema> sCinema = cinemaRepository.findById(cinemaID);
+        Optional<Cinema> sCinema = cinemaRepository.findById(cinemaId);
         if (sCinema.isEmpty()) {
             throw new NotFoundException("Cinema is not found");
         }

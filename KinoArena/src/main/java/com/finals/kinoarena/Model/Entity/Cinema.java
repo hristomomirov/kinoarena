@@ -1,6 +1,5 @@
 package com.finals.kinoarena.Model.Entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,12 +23,12 @@ public class Cinema {
     private String name;
     private String city;
     @OneToMany(mappedBy = "cinema")
-    @JsonBackReference // TODO
+    @JsonManagedReference(value = "cinema-hall")
     List<Hall> halls;
 
     public Cinema(String name, String city) {
         this.name = name;
         this.city = city;
-        halls = new ArrayList<>();
+        this.halls = new ArrayList<>();
     }
 }

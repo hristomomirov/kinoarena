@@ -32,11 +32,6 @@ public class ProjectionDTO {
 
     public ProjectionDTO(Projection projection){
         id = projection.getId();
-        title = projection.getTitle();
-        length=projection.getLength();
-        description=projection.getDescription();
-        ageRestriction=projection.getAgeRestriction();
-        genre=projection.getGenre();
         startAt = projection.getStartAt();
         endAt = projection.getEndAt();
         hall = new HallDTO(projection.getHall());

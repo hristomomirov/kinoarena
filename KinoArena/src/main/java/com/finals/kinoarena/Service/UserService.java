@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 
 
 import java.util.List;
-import java.util.Optional;
 
 
 @Component
@@ -26,20 +25,10 @@ public class UserService {
 
     @Autowired
     private UserRepository repository;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
     private ConfirmationTokenRepository confirmationTokenRepository;
-
-
-    public User getByUsername(String username) {
-        return repository.findByUsername(username);
-    }
-
-    public User getByEmail(String email) {
-        return repository.findByEmail(email);
-    }
 
     public UserWithoutPassDTO registerUser(RegisterDTO registerDTO) throws BadRequestException {
         if (emailExist(registerDTO.getEmail())) {
@@ -59,28 +48,6 @@ public class UserService {
         return new UserWithoutPassDTO(user);
     }
 
-    private boolean usernameExists(String username) {
-        return getByUsername(username) != null;
-    }
-
-    private boolean emailExist(String email) {
-        return getByEmail(email) != null;
-    }
-
-
-    public User getById(int id) throws BadRequestException {
-        Optional<User> user = repository.findById(id);
-        if (user.isPresent()) {
-            return user.get();
-        } else {
-            throw new BadRequestException("User does not exist");
-        }
-    }
-
-    public List<User> getAllUsers() {
-        return repository.findAll();
-    }
-
     public UserWithoutTicketAndPassDTO logInUser(String username, String password) throws BadRequestException {
         if (verifyUsername(username) && verifyPassword(username, password)) {
             User user = getByUsername(username);
@@ -88,6 +55,37 @@ public class UserService {
         } else {
             throw new BadRequestException("Username or Password incorrect");
         }
+    }
+
+    public UserWithoutPassDTO changePassword(UserPasswordDTO passwordDTO) throws BadRequestException {
+        if (!passwordDTO.getNewPassword().equals(passwordDTO.getConfirmPassword())) {
+            throw new BadRequestException("Passwords must match");
+        }
+        User user = repository.findById(passwordDTO.getId()).get();
+        if (verifyPassword(user.getUsername(), passwordDTO.getOldPassword())) {
+            user.setPassword(passwordEncoder.encode(passwordDTO.getNewPassword()));
+        }
+        return new UserWithoutPassDTO(repository.save(user));
+    }
+
+    public User getByUsername(String username) {
+        return repository.findByUsername(username);
+    }
+
+    public User getByEmail(String email) {
+        return repository.findByEmail(email);
+    }
+
+    public List<User> getAllUsers() {
+        return repository.findAll();
+    }
+
+    private boolean usernameExists(String username) {
+        return getByUsername(username) != null;
+    }
+
+    private boolean emailExist(String email) {
+        return getByEmail(email) != null;
     }
 
     private boolean verifyPassword(String username, String password) {
@@ -103,16 +101,5 @@ public class UserService {
     @Bean
     public PasswordEncoder encoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    public UserWithoutPassDTO changePassword(UserPasswordDTO passwordDTO) throws BadRequestException {
-        if (!passwordDTO.getNewPassword().equals(passwordDTO.getConfirmPassword())) {
-            throw new BadRequestException("Passwords must match");
-        }
-        User user = repository.findById(passwordDTO.getId()).get();
-        if (verifyPassword(user.getUsername(), passwordDTO.getOldPassword())) {
-            user.setPassword(passwordEncoder.encode(passwordDTO.getNewPassword()));
-        }
-        return new UserWithoutPassDTO(repository.save(user));
     }
 }

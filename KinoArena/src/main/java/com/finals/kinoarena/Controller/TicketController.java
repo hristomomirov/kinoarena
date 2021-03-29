@@ -1,5 +1,6 @@
 package com.finals.kinoarena.Controller;
 
+import com.finals.kinoarena.DAO.SeatDAO;
 import com.finals.kinoarena.Exceptions.BadRequestException;
 import com.finals.kinoarena.Exceptions.UnauthorizedException;
 import com.finals.kinoarena.Model.DTO.ReserveTicketDTO;
@@ -23,6 +24,8 @@ public class TicketController extends AbstractController {
     private SessionManager sessionManager;
     @Autowired
     private TicketService ticketService;
+    @Autowired
+    private SeatDAO seatDAO;
 
     @GetMapping(value = "/tickets")
     public List<TicketWithoutUserDTO> getUserTickets(HttpSession ses) throws UnauthorizedException {
@@ -43,11 +46,12 @@ public class TicketController extends AbstractController {
         return ticketService.reserveTicket(cinemaId, projectionId, user, reserveTicketDTO);
     }
 
-    private boolean validateReservation(ReserveTicketDTO reserveTicketDTO) {
+    private boolean validateReservation(ReserveTicketDTO reserveTicketDTO) throws SQLException {
         return validateSeat(reserveTicketDTO.getSeat());
     }
 
-    private boolean validateSeat(int seat) {
-        return seat >= 1 && seat <= 200;
+    private boolean validateSeat(int seat) throws SQLException {
+
+        return seat >= 1 && seat <=seatDAO.getMaxSeatNum();
     }
 }

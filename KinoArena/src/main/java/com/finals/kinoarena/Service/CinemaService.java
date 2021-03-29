@@ -32,13 +32,12 @@ public class CinemaService extends AbstractService {
         return cinemaDTOS;
     }
 
-    public CinemaDTO getCinemaByID(int id) {
-        Optional<Cinema> schrodingerCinema = cinemaRepository.findById(id);
-        if (schrodingerCinema.isPresent()) {
-            return new CinemaDTO(schrodingerCinema.get());
-        } else {
+    public CinemaDTO getcinemabyid(int id) {
+        Optional<Cinema> sCinema = cinemaRepository.findById(id);
+        if (sCinema.isEmpty()) {
             throw new NotFoundException("Cinema not found");
         }
+        return new CinemaDTO(sCinema.get());
     }
 
     public List<CinemaDTO> getAllCinemasByCity(String city) throws MissingCinemasInDBException {
@@ -78,12 +77,12 @@ public class CinemaService extends AbstractService {
         if (!isAdmin(userId)) {
             throw new UnauthorizedException("Only admins can remove cinemas");
         }
-        CinemaDTO cinemaForDelete = getCinemaByID(id);
+        CinemaDTO cinemaForDelete = getcinemabyid(id);
         cinemaRepository.deleteById(cinemaForDelete.getId());
     }
 
     public CinemaDTO editCinema(CinemaDTO cinemaDTO, int id, int userId) throws BadRequestException {
-        if (userRepository.findById(userId).get().getRoleId() != 2) {
+        if (!isAdmin(userId)) {
             throw new BadRequestException("Only admins can remove cinemas");
         }
         Optional<Cinema> sCinema = cinemaRepository.findById(id);

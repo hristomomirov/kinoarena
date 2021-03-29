@@ -4,7 +4,6 @@ import com.finals.kinoarena.Exceptions.*;
 import com.finals.kinoarena.Model.Entity.User;
 import com.finals.kinoarena.Service.CinemaService;
 import com.finals.kinoarena.Model.DTO.CinemaDTO;
-import com.finals.kinoarena.Service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
@@ -21,8 +20,6 @@ public class CinemaController extends AbstractController {
     @Autowired
     private CinemaService cinemaService;
     @Autowired
-    private UserService userService;
-    @Autowired
     private SessionManager sessionManager;
 
 
@@ -31,9 +28,9 @@ public class CinemaController extends AbstractController {
         return cinemaService.getAllCinemas();
     }
 
-    @GetMapping(value = "/cinema/id/{id}")
-    public CinemaDTO getCinemaById(@PathVariable int id) {
-        return cinemaService.getCinemaByID(id);
+    @GetMapping(value = "/cinema/{cinema_id}")
+    public CinemaDTO getCinemaById(@PathVariable(name = "cinema_id") int cinema_Id) {
+        return cinemaService.getcinemabyid(cinema_Id);
     }
 
     @GetMapping(value = "/cinemas/city/{city}")
@@ -50,25 +47,23 @@ public class CinemaController extends AbstractController {
         if (!validateNewCinema(cinemaDTO.getCity(), cinemaDTO.getName())) {
             throw new BadRequestException("Please fill all requested fields");
         }
-        return cinemaService.addCinema(cinemaDTO,userId);
+        return cinemaService.addCinema(cinemaDTO, userId);
 
     }
 
-    @DeleteMapping(value = "/cinemas/deleteCinema/{id}")
-    public String deleteCinema(@PathVariable int id, HttpSession ses) throws BadRequestException, UnauthorizedException {
-        if (!sessionManager.isLogged(ses)) {
-            throw new BadRequestException("You need to be logged to have that functionality");
-        }
-        int userId = (int) ses.getAttribute(LOGGED_USER);
-        cinemaService.removeCinema(id,userId);
+    @DeleteMapping(value = "/cinemas/deleteCinema/{cinema_id}")
+    public String deleteCinema(@PathVariable(name = "cinema_id") int cinemaId, HttpSession ses) throws BadRequestException, UnauthorizedException {
+        User user = sessionManager.getLoggedUser(ses);
+        int userId = user.getId();
+        cinemaService.removeCinema(cinemaId, userId);
         return "Cinema successfully deleted";
     }
 
-    @PutMapping(value = "/cinemas/id/{id}")
-    public CinemaDTO editCinema(@PathVariable int id, @RequestBody CinemaDTO cinemaDTO, HttpSession ses) throws UnauthorizedException, BadRequestException {
+    @PutMapping(value = "/cinemas/{cinema_id}")
+    public CinemaDTO editCinema(@PathVariable(name = "cinema_id") int cinemaId, @RequestBody CinemaDTO cinemaDTO, HttpSession ses) throws UnauthorizedException, BadRequestException {
         User user = sessionManager.getLoggedUser(ses);
 
-        return cinemaService.editCinema(cinemaDTO,id,user.getId());
+        return cinemaService.editCinema(cinemaDTO, cinemaId, user.getId());
     }
 
     private boolean validateNewCinema(String city, String name) throws BadRequestException {

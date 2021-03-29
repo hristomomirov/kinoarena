@@ -89,7 +89,7 @@ public class UserController extends AbstractController {
         return userService.getAllUsers();
     }
 
-    @PostMapping(value = "/edit")
+    @PostMapping(value = "/users/edit")
     public UserWithoutPassDTO changePassword(@RequestBody UserPasswordDTO passwordDTO, HttpSession ses) throws UnauthorizedException, BadRequestException {
         User user = sessionManager.getLoggedUser(ses);
         passwordDTO.setId(user.getId());
@@ -99,7 +99,7 @@ public class UserController extends AbstractController {
         return userService.changePassword(passwordDTO);
     }
 
-    @PostMapping(value = "/logout")
+    @PostMapping(value = "/users/logout")
     public String logout(HttpSession ses) throws UnauthorizedException {
         if (!sessionManager.isLogged(ses)) {
             throw new UnauthorizedException("You need to be logged in");

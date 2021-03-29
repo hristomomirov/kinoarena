@@ -27,9 +27,9 @@ public class HallContoller extends AbstractController {
     @Autowired
     private CinemaService cinemaService;
 
-    @GetMapping(value="/hall/{id}")
-    public HallDTO getHallById(@PathVariable int id){
-       return hallService.getHallById(id);
+    @GetMapping(value="/hall/{hall_id}")
+    public HallDTO getHallById(@PathVariable(name = "hall_id") int hallId){
+       return hallService.getHallById(hallId);
     }
 
     @PutMapping(value ="/hall" )
@@ -41,23 +41,21 @@ public class HallContoller extends AbstractController {
         return hallService.addHall(hallDTO,user.getId());
     }
 
-    @DeleteMapping(value = "/cinema/{id}/hall/{hallId}")
-    public String deleteHall(@PathVariable int id,@PathVariable int hallId,HttpSession ses) throws BadRequestException {
+    @DeleteMapping(value = "/cinema/{cinema_id}/hall/{hallId}")
+    public String deleteHall(@PathVariable(name = "cinema_id") int cinemaId,@PathVariable int hallId,HttpSession ses) throws BadRequestException {
         if (!sessionManager.isLogged(ses)) {
             throw new BadRequestException("You need to be logged to have that functionality");
         }
         int userId = (int) ses.getAttribute(LOGGED_USER);
-        hallService.removeHall(id,hallId,userId);
+        hallService.removeHall(cinemaId,hallId,userId);
         return "Hall successfully removed";
     }
 
-    @PutMapping(value = "/cinema/{id}/hall/{hallId}")
-    public HallDTO editHall(@PathVariable int id, @PathVariable int hallId, @RequestBody HallDTO hallDTO, HttpSession ses) throws BadRequestException {
-        if (!sessionManager.isLogged(ses)) {
-            throw new BadRequestException("You need to be logged to have that functionality");
-        }
-        int userId = (int) ses.getAttribute(LOGGED_USER);
-        return hallService.editHall(hallDTO,id,hallId,userId);
+    @PutMapping(value = "/cinema/{cinema_id}/hall/{hallId}")
+    public HallDTO editHall(@PathVariable(name = "cinema_id") int cinemaId, @PathVariable int hallId, @RequestBody HallDTO hallDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
+       User user = sessionManager.getLoggedUser(ses);
+       int userId = user.getId();
+        return hallService.editHall(hallDTO,userId,hallId,userId);
     }
 
     private boolean validateNewHall(int capacity) throws BadRequestException {

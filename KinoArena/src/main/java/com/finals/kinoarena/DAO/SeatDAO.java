@@ -49,12 +49,21 @@ public class SeatDAO {
         }
         return seats;
     }
-//add int count
-    public void removeSeat(int seat,int projectionId) throws SQLException {
+
+    //add int count
+    public void removeSeat(int seat, int projectionId) throws SQLException {
         Connection c = jdbcTemplate.getDataSource().getConnection();
         PreparedStatement ps = c.prepareStatement("DELETE FROM projections_have_seats WHERE projection_id = ? AND seat_id = ?;");
         ps.setInt(1, projectionId);
-        ps.setInt(2,seat);
+        ps.setInt(2, seat);
         ps.executeUpdate();
+    }
+
+    public int getMaxSeatNum() throws SQLException {
+        Connection c = jdbcTemplate.getDataSource().getConnection();
+        PreparedStatement ps = c.prepareStatement("SELECT MAX(number) AS max FROM seats");
+        ResultSet rs = ps.executeQuery();
+        rs.next();
+        return rs.getInt("max");
     }
 }

@@ -30,10 +30,10 @@ public class HallService extends AbstractService {
     }
 
     public HallDTO addHall(HallDTO hallDTO, int userId) throws BadRequestException {
-        Optional<Cinema> sCinema = cinemaRepository.findById(hallDTO.getCinema().getId());
         if (!isAdmin(userId)) {
             throw new BadRequestException("Only admins can remove cinemas");
         }
+        Optional<Cinema> sCinema = cinemaRepository.findById(hallDTO.getCinema().getId());
         if (sCinema.isEmpty()) {
             throw new NotFoundException("Cinema is not found");
         }
@@ -47,14 +47,14 @@ public class HallService extends AbstractService {
     }
 
     public void removeHall(int cinemaId, int hallId, int userId) throws BadRequestException {
-        Optional<Cinema> sCinema = cinemaRepository.findById(cinemaId);
-        Optional<Hall> sHall = hallRepository.findById(hallId);
         if (!isAdmin(userId)) {
             throw new BadRequestException("Only admins can remove cinemas");
         }
+        Optional<Cinema> sCinema = cinemaRepository.findById(cinemaId);
         if (sCinema.isEmpty()) {
             throw new NotFoundException("Cinema is not found");
         }
+        Optional<Hall> sHall = hallRepository.findById(hallId);
         if (!cinemaHasHall(sCinema.get(), sHall)) {
             throw new NotFoundException("No hall with that id in this cinema");
         }
@@ -62,14 +62,14 @@ public class HallService extends AbstractService {
     }
 
     public HallDTO editHall(HallDTO hallDTO, int cinemaID, int hallId, int userId) throws BadRequestException {
-        Optional<Cinema> sCinema = cinemaRepository.findById(cinemaID);
-        Optional<Hall> sHall = hallRepository.findById(hallId);
         if (!isAdmin(userId)) {
             throw new BadRequestException("Only admins can remove cinemas");
         }
+        Optional<Cinema> sCinema = cinemaRepository.findById(cinemaID);
         if (sCinema.isEmpty()) {
             throw new NotFoundException("Cinema is not found");
         }
+        Optional<Hall> sHall = hallRepository.findById(hallId);
         if (!cinemaHasHall(sCinema.get(), sHall)) {
             throw new NotFoundException("No hall with that id in this cinema");
         }

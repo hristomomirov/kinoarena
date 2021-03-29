@@ -2,6 +2,7 @@ package com.finals.kinoarena.Service;
 
 import com.finals.kinoarena.Exceptions.*;
 import com.finals.kinoarena.Model.DTO.CinemaDTO;
+import com.finals.kinoarena.Model.DTO.CinemaWithoutHallDTO;
 import com.finals.kinoarena.Model.Entity.Cinema;
 import com.finals.kinoarena.Model.Repository.CinemaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,16 +18,16 @@ public class CinemaService extends AbstractService {
     @Autowired
     private CinemaRepository cinemaRepository;
 
-    public List<CinemaDTO> getAllCinemas() throws NotFoundException {
+    public List<CinemaWithoutHallDTO> getAllCinemas() throws NotFoundException {
         List<Cinema> cinemas = cinemaRepository.findAll();
         if (cinemas.isEmpty()) {
             throw new NotFoundException("No found cinemas");
         }
-        List<CinemaDTO> cinemaDTOS = new ArrayList<>();
+        List<CinemaWithoutHallDTO> cinemaWithoutHallDTOS = new ArrayList<>();
         for (Cinema c : cinemas) {
-            cinemaDTOS.add(new CinemaDTO(c));
+            cinemaWithoutHallDTOS.add(new CinemaWithoutHallDTO(c));
         }
-        return cinemaDTOS;
+        return cinemaWithoutHallDTOS;
     }
 
     public CinemaDTO getCinemaById(int cinemaId) {
@@ -37,16 +38,16 @@ public class CinemaService extends AbstractService {
         return new CinemaDTO(sCinema.get());
     }
 //TODO prob can be done in DAO
-    public List<CinemaDTO> getAllCinemasByCity(String city) throws NotFoundException {
+    public List<CinemaWithoutHallDTO> getAllCinemasByCity(String city) throws NotFoundException {
         List<Cinema> cinemas = cinemaRepository.findAllByCity(city);
         if (cinemas.isEmpty()) {
             throw new NotFoundException("No found cinemas in this city");
         }
-        List<CinemaDTO> cinemaDTOS = new ArrayList<>();
+        List<CinemaWithoutHallDTO> cinemaWithoutHallDTOS = new ArrayList<>();
         for (Cinema c : cinemas) {
-            cinemaDTOS.add(new CinemaDTO(c));
+            cinemaWithoutHallDTOS.add(new CinemaWithoutHallDTO(c));
         }
-        return cinemaDTOS;
+        return cinemaWithoutHallDTOS;
 
     }
 
@@ -70,12 +71,13 @@ public class CinemaService extends AbstractService {
         return false;
     }
 
-    public void removeCinema(int id, int userId) throws UnauthorizedException {
+    public CinemaDTO removeCinema(int cinemaId, int userId) throws UnauthorizedException {
         if (!isAdmin(userId)) {
             throw new UnauthorizedException("Only admins can remove cinemas");
         }
-        CinemaDTO cinemaForDelete = getCinemaById(id);
-        cinemaRepository.deleteById(cinemaForDelete.getId());
+        CinemaDTO cinemaForDelete = getCinemaById(cinemaId);
+        cinemaRepository.deleteById(cinemaId);
+        return cinemaForDelete;
     }
 
     public CinemaDTO editCinema(CinemaDTO cinemaDTO, int id, int userId) throws BadRequestException, UnauthorizedException {

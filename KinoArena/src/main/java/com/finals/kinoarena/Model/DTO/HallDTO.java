@@ -1,5 +1,6 @@
 package com.finals.kinoarena.Model.DTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.finals.kinoarena.Model.Entity.Cinema;
 import com.finals.kinoarena.Model.Entity.Hall;
 import lombok.AllArgsConstructor;
@@ -19,6 +20,7 @@ public class HallDTO {
     private int number;
     private int capacity;
     private int cinemaId;
+    @JsonIgnore
     private Cinema cinema;
 
     public HallDTO(Hall hall) {
@@ -26,6 +28,7 @@ public class HallDTO {
         this.number = hall.getNumber();
         this.capacity = hall.getCapacity();
         this.cinema = hall.getCinema();
+        this.cinemaId = hall.getCinema().getId();
 
     }
 }

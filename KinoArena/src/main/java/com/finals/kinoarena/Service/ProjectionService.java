@@ -87,7 +87,7 @@ public class ProjectionService extends AbstractService {
         return start.compareTo(date) * date.compareTo(end) >= 0;
     }
 
-    public void removeProjection(int id, int userId) throws UnauthorizedException {
+    public ProjectionDTO removeProjection(int id, int userId) throws UnauthorizedException {
         if (!isAdmin(userId)) {
             throw new UnauthorizedException("Only admins can remove projections");
         }
@@ -95,7 +95,10 @@ public class ProjectionService extends AbstractService {
         if (sProjection.isEmpty()) {
             throw new NotFoundException("No projection with that id");
         }
+        ProjectionDTO deletedProjection = new ProjectionDTO(sProjection.get());
         projectionRepository.deleteById(id);
+        return deletedProjection;
+
     }
 // TODO can be refactored
     public List<HalfProjectionDTO> getProjectionByCinema(int id) {

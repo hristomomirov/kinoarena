@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import java.io.IOException;
 import java.util.List;
 
 @Component
@@ -22,7 +23,7 @@ public class MovieController {
     private MovieService movieService;
 
     @GetMapping(value = "/movies/{movie_id}")
-    public MovieDTO getMovieById(@PathVariable(name = "movie_id") int movieId) {
+    public String  getMovieById(@PathVariable(name = "movie_id") int movieId) throws IOException, InterruptedException {
         return movieService.getMovieById(movieId);
     }
 

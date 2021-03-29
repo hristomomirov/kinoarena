@@ -71,10 +71,9 @@ public class ProjectionController extends AbstractController {
     }
 
     @DeleteMapping(value = "/projections/{projection_id}")
-    public String deleteProjection(@PathVariable(name = "projection_id") int projectionId, HttpSession ses) throws BadRequestException, UnauthorizedException {
+    public ProjectionDTO deleteProjection(@PathVariable(name = "projection_id") int projectionId, HttpSession ses) throws BadRequestException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
-        projectionService.removeProjection(projectionId, user.getId());
-        return "Projection successfully deleted";
+        return projectionService.removeProjection(projectionId, user.getId());
     }
 
     private boolean validateNewProjection(AddProjectionDTO dto) throws BadRequestException {

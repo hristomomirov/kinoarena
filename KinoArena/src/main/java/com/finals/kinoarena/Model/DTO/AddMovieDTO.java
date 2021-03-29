@@ -17,4 +17,5 @@ public class AddMovieDTO {
     private int ageRestriction;
     private Integer genreId;
     private Genre genre;
+    private String imdbId;
 }

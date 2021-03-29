@@ -27,6 +27,5 @@ public class HallWithoutCinemaDTO {
         this.id = hall.getId();
         this.number = hall.getNumber();
         this.capacity = hall.getCapacity();
-
     }
 }

@@ -31,6 +31,7 @@ public class Movie {
     @OneToMany(mappedBy = "movie")
     @JsonManagedReference
     private List<Projection> projections;
+    private String imdbId;
 
     public Movie(AddMovieDTO addMovieDTO) {
         this.title = addMovieDTO.getTitle();
@@ -38,5 +39,6 @@ public class Movie {
         this.length = addMovieDTO.getLength();
         this.ageRestriction = addMovieDTO.getAgeRestriction();
         this.genre = addMovieDTO.getGenre();
+        this.imdbId = addMovieDTO.getImdbId();
     }
 }

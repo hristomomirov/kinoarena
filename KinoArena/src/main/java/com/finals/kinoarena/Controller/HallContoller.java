@@ -37,11 +37,10 @@ public class HallContoller extends AbstractController {
     }
 
     @DeleteMapping(value = "/cinema/{cinema_id}/hall/{hallId}")
-    public String deleteHall(@PathVariable(name = "cinema_id") int cinemaId, @PathVariable int hallId, HttpSession ses) throws BadRequestException, UnauthorizedException {
+    public HallDTO deleteHall(@PathVariable(name = "cinema_id") int cinemaId, @PathVariable int hallId, HttpSession ses) throws BadRequestException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
         int userId = user.getId();
-        hallService.removeHall(cinemaId, hallId, userId);
-        return "Hall successfully removed";
+        return hallService.removeHall(cinemaId, hallId, userId);
     }
 
     @PostMapping(value = "/cinema/{cinema_id}/hall/{hallId}")

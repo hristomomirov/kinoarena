@@ -34,7 +34,7 @@ public class CinemaController extends AbstractController {
     }
 
     @GetMapping(value = "/cinemas/city/{city}")
-    public List<CinemaDTO> getAllCinemasByCity(@PathVariable String city) throws NotFoundException {
+    public List<CinemaWithoutHallDTO> getAllCinemasByCity(@PathVariable String city) throws NotFoundException {
         return cinemaService.getAllCinemasByCity(city);
     }
 
@@ -49,11 +49,11 @@ public class CinemaController extends AbstractController {
     }
 
     @DeleteMapping(value = "/cinemas/delete/{cinema_id}")
-    public String deleteCinema(@PathVariable(name = "cinema_id") int cinemaId, HttpSession ses) throws BadRequestException, UnauthorizedException {
+    public CinemaDTO deleteCinema(@PathVariable(name = "cinema_id") int cinemaId, HttpSession ses) throws BadRequestException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
         int userId = user.getId();
-        cinemaService.removeCinema(cinemaId, userId);
-        return "Cinema successfully deleted";
+        return cinemaService.removeCinema(cinemaId, userId);
+
     }
 
     @PostMapping(value = "/cinemas/{cinema_id}")

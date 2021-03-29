@@ -1,5 +1,7 @@
 package com.finals.kinoarena.Service;
 
+import com.fasterxml.jackson.annotation.JsonRawValue;
+import com.fasterxml.jackson.annotation.JsonValue;
 import com.finals.kinoarena.Exceptions.BadRequestException;
 import com.finals.kinoarena.Exceptions.NotFoundException;
 import com.finals.kinoarena.Exceptions.UnauthorizedException;
@@ -15,6 +17,11 @@ import com.finals.kinoarena.Model.Repository.MovieRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -27,13 +34,24 @@ public class MovieService extends AbstractService {
     @Autowired
     MovieRepository movieRepository;
 
-
-    public MovieDTO getMovieById(int movieId) {
+    @JsonValue
+    public String getMovieById(int movieId) throws IOException, InterruptedException {
         Optional<Movie> sMovie = movieRepository.findById(movieId);
         if (sMovie.isEmpty()) {
             throw new NotFoundException("Movie does not exist");
         }
-        return new MovieDTO(sMovie.get());
+        String imdbID = movieRepository.findById(movieId).get().getImdbId();
+        String url = "https://imdb-internet-movie-database-unofficial.p.rapidapi.com/film/" + imdbID;
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("x-rapidapi-key", "fb75dc0fa7mshf37a26ee181e77cp12ffc0jsn8b15cd65c1ee")
+                .header("x-rapidapi-host", "imdb-internet-movie-database-unofficial.p.rapidapi.com")
+                .method("GET", HttpRequest.BodyPublishers.noBody())
+                .build();
+
+        HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+
+        return response.body();
     }
 
     public List<MovieDTO> getMoviesByGenre(int genreId) {

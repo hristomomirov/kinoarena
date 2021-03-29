@@ -23,11 +23,11 @@ public class CinemaService extends AbstractService {
         if (cinemas.isEmpty()) {
             throw new NotFoundException("No found cinemas");
         }
-        List<CinemaWithoutHallDTO> cinemaDTOS = new ArrayList<>();
+        List<CinemaWithoutHallDTO> cinemaWithoutHallDTOS = new ArrayList<>();
         for (Cinema c : cinemas) {
-            cinemaDTOS.add(new CinemaWithoutHallDTO(c));
+            cinemaWithoutHallDTOS.add(new CinemaWithoutHallDTO(c));
         }
-        return cinemaDTOS;
+        return cinemaWithoutHallDTOS;
     }
 
     public CinemaDTO getCinemaById(int cinemaId) {
@@ -38,16 +38,16 @@ public class CinemaService extends AbstractService {
         return new CinemaDTO(sCinema.get());
     }
 //TODO prob can be done in DAO
-    public List<CinemaDTO> getAllCinemasByCity(String city) throws NotFoundException {
+    public List<CinemaWithoutHallDTO> getAllCinemasByCity(String city) throws NotFoundException {
         List<Cinema> cinemas = cinemaRepository.findAllByCity(city);
         if (cinemas.isEmpty()) {
             throw new NotFoundException("No found cinemas in this city");
         }
-        List<CinemaDTO> cinemaDTOS = new ArrayList<>();
+        List<CinemaWithoutHallDTO> cinemaWithoutHallDTOS = new ArrayList<>();
         for (Cinema c : cinemas) {
-            cinemaDTOS.add(new CinemaDTO(c));
+            cinemaWithoutHallDTOS.add(new CinemaWithoutHallDTO(c));
         }
-        return cinemaDTOS;
+        return cinemaWithoutHallDTOS;
 
     }
 
@@ -71,12 +71,13 @@ public class CinemaService extends AbstractService {
         return false;
     }
 
-    public void removeCinema(int id, int userId) throws UnauthorizedException {
+    public CinemaDTO removeCinema(int cinemaId, int userId) throws UnauthorizedException {
         if (!isAdmin(userId)) {
             throw new UnauthorizedException("Only admins can remove cinemas");
         }
-        CinemaDTO cinemaForDelete = getCinemaById(id);
-        cinemaRepository.deleteById(cinemaForDelete.getId());
+        CinemaDTO cinemaForDelete = getCinemaById(cinemaId);
+        cinemaRepository.deleteById(cinemaId);
+        return cinemaForDelete;
     }
 
     public CinemaDTO editCinema(CinemaDTO cinemaDTO, int id, int userId) throws BadRequestException, UnauthorizedException {

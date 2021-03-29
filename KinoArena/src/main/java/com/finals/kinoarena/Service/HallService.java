@@ -47,7 +47,7 @@ public class HallService extends AbstractService {
         return new HallDTO(hallRepository.save(hall));
     }
 
-    public void removeHall(int cinemaId, int hallId, int userId) throws UnauthorizedException {
+    public HallDTO removeHall(int cinemaId, int hallId, int userId) throws UnauthorizedException {
         if (!isAdmin(userId)) {
             throw new UnauthorizedException("Only admins can remove halls");
         }
@@ -59,7 +59,9 @@ public class HallService extends AbstractService {
         if (!cinemaHasHall(sCinema.get(), sHall)) {
             throw new NotFoundException("No hall with that id in this cinema");
         }
+        HallDTO deletedHall = new HallDTO(sHall.get());
         hallRepository.deleteById(hallId);
+        return deletedHall;
     }
 
     public HallDTO editHall(HallDTO hallDTO, int cinemaId, int hallId, int userId) throws BadRequestException, UnauthorizedException {

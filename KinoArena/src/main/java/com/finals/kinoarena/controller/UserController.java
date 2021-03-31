@@ -1,14 +1,17 @@
 package com.finals.kinoarena.controller;
 
-import com.finals.kinoarena.Model.DTO.*;
-import com.finals.kinoarena.Model.Entity.ConfirmationToken;
-import com.finals.kinoarena.Model.Repository.ConfirmationTokenRepository;
-import com.finals.kinoarena.Model.Repository.UserRepository;
-import com.finals.kinoarena.Service.EmailSenderService;
-import com.finals.kinoarena.Service.UserService;
-import com.finals.kinoarena.Exceptions.*;
-import com.finals.kinoarena.Model.Entity.User;
-import com.finals.kinoarena.Model.Entity.UserStatus;
+import com.fasterxml.jackson.annotation.JsonValue;
+import com.finals.kinoarena.exceptions.BadRequestException;
+import com.finals.kinoarena.exceptions.UnauthorizedException;
+import com.finals.kinoarena.model.DTO.*;
+import com.finals.kinoarena.model.entity.ConfirmationToken;
+import com.finals.kinoarena.model.repository.ConfirmationTokenRepository;
+import com.finals.kinoarena.model.repository.UserRepository;
+import com.finals.kinoarena.service.EmailSenderService;
+import com.finals.kinoarena.service.UserService;
+import com.finals.kinoarena.model.entity.User;
+import com.finals.kinoarena.model.entity.UserStatus;
+import com.finals.kinoarena.util.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;
@@ -34,6 +37,7 @@ public class UserController extends AbstractController {
     private UserRepository userRepository;
 
     @PutMapping(value = "/users")
+    @JsonValue
     public String registerUser(@RequestBody RegisterDTO registerDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
         if (sessionManager.isLogged(ses)) {
             throw new UnauthorizedException("You are currently signed in to an account.Please logout");
@@ -53,7 +57,6 @@ public class UserController extends AbstractController {
         return "A confirmation email was sent to " + registerDTO.getEmail();
     }
 
-
     @RequestMapping(value = "/confirm-account", method = {RequestMethod.GET, RequestMethod.POST})
     public String confirmUserAccount(@RequestParam("token") String confirmationToken) {
         ConfirmationToken token = confirmationTokenRepository.findByConfirmationToken(confirmationToken);
@@ -66,7 +69,6 @@ public class UserController extends AbstractController {
         return "Account verified";
     }
 
-
     @PostMapping(value = "/users")
     public UserWithoutTicketAndPassDTO login(@RequestBody LoginDTO loginDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
         if (sessionManager.isLogged(ses)) {
@@ -78,19 +80,13 @@ public class UserController extends AbstractController {
         if (!userService.getByUsername(loginDTO.getUsername()).isEnabled()) {
             throw new BadRequestException("You need to verify your email first");
         }
-        UserWithoutTicketAndPassDTO dto = userService.logInUser(loginDTO.getUsername(), loginDTO.getPassword());
-        sessionManager.loginUser(ses, dto.getId());
-        return dto;
-    }
-
-
-    @GetMapping(value = "/users")
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+        UserWithoutTicketAndPassDTO noPassDto = userService.logInUser(loginDTO.getUsername(), loginDTO.getPassword());
+        sessionManager.loginUser(ses, noPassDto.getId());
+        return noPassDto;
     }
 
     @PostMapping(value = "/users/edit")
-    public UserWithoutPassDTO changePassword(@RequestBody UserPasswordDTO passwordDTO, HttpSession ses) throws UnauthorizedException, BadRequestException {
+    public UserWithoutPassDTO changePassword(@RequestBody EditUserPasswordDTO passwordDTO, HttpSession ses) throws UnauthorizedException, BadRequestException {
         User user = sessionManager.getLoggedUser(ses);
         passwordDTO.setId(user.getId());
         if (!validatePassword(passwordDTO.getNewPassword()) && validatePassword(passwordDTO.getConfirmPassword()) && validatePassword(passwordDTO.getOldPassword())) {
@@ -174,7 +170,7 @@ public class UserController extends AbstractController {
         if (m.matches()) {
             return true;
         }
-        throw new BadRequestException("Password must be between 8 and 20 symbols and must contain at least one upper and lower case letter and number");
+        throw new BadRequestException("Password must be between 8 and 20 symbols and must contain at least one upper and lower case letters and a number");
     }
 
     private boolean validateUsername(String username) throws BadRequestException {

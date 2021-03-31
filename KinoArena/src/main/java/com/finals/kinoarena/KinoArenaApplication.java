@@ -1,9 +1,10 @@
 package com.finals.kinoarena;
 
-import com.finals.kinoarena.daemon.OldProjectionsCleaner;
+
+import com.finals.kinoarena.util.OldProjectionsCleaner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.ComponentScan;
+
 
 import java.sql.SQLException;
 

@@ -1,7 +1,9 @@
 package com.finals.kinoarena.controller;
 
-import com.finals.kinoarena.Exceptions.*;
-import com.finals.kinoarena.Model.DTO.ErrorDTO;
+import com.finals.kinoarena.exceptions.BadRequestException;
+import com.finals.kinoarena.exceptions.NotFoundException;
+import com.finals.kinoarena.exceptions.UnauthorizedException;
+import com.finals.kinoarena.model.DTO.ErrorDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -19,13 +21,13 @@ public class AbstractController {
 
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public  ErrorDTO NotFoundException(NotFoundException e){
+    public ErrorDTO NotFoundException(NotFoundException e) {
         return new ErrorDTO(e.getMessage());
     }
 
     @ExceptionHandler(DateTimeException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public  ErrorDTO NotAdminException(DateTimeException e){
+    public ErrorDTO NotAdminException(DateTimeException e) {
         return new ErrorDTO(e.getMessage());
     }
 
@@ -34,6 +36,4 @@ public class AbstractController {
     public ErrorDTO handleUserNotFoundException(UnauthorizedException e) {
         return new ErrorDTO(e.getMessage());
     }
-
-
 }

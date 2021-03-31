@@ -1,10 +1,11 @@
 package com.finals.kinoarena.controller;
 
-import com.finals.kinoarena.Exceptions.*;
-import com.finals.kinoarena.Model.DTO.CinemaWithoutHallDTO;
-import com.finals.kinoarena.Model.Entity.User;
-import com.finals.kinoarena.Service.CinemaService;
-import com.finals.kinoarena.Model.DTO.CinemaDTO;
+import com.finals.kinoarena.exceptions.*;
+import com.finals.kinoarena.model.DTO.CinemaWithoutHallDTO;
+import com.finals.kinoarena.model.entity.User;
+import com.finals.kinoarena.service.CinemaService;
+import com.finals.kinoarena.model.DTO.CinemaDTO;
+import com.finals.kinoarena.util.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @Component
 @RestController
-public class CinemaController extends AbstractController {
+public class CinemaController extends AbstractController  {
 
     @Autowired
     private CinemaService cinemaService;
@@ -49,7 +50,7 @@ public class CinemaController extends AbstractController {
     }
 
     @DeleteMapping(value = "/cinemas/{cinema_id}")
-    public CinemaDTO deleteCinema(@PathVariable(name = "cinema_id") int cinemaId, HttpSession ses) throws BadRequestException, UnauthorizedException {
+    public CinemaDTO deleteCinema(@PathVariable(name = "cinema_id") int cinemaId, HttpSession ses) throws UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
         int userId = user.getId();
         return cinemaService.removeCinema(cinemaId, userId);

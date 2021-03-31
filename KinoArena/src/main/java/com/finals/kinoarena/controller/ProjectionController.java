@@ -1,12 +1,13 @@
 package com.finals.kinoarena.controller;
 
-import com.finals.kinoarena.Exceptions.BadRequestException;
-import com.finals.kinoarena.Exceptions.UnauthorizedException;
-import com.finals.kinoarena.Model.DTO.AddProjectionDTO;
-import com.finals.kinoarena.Model.DTO.HalfProjectionDTO;
-import com.finals.kinoarena.Model.DTO.ProjectionDTO;
-import com.finals.kinoarena.Model.Entity.User;
-import com.finals.kinoarena.Service.ProjectionService;
+import com.finals.kinoarena.exceptions.BadRequestException;
+import com.finals.kinoarena.exceptions.UnauthorizedException;
+import com.finals.kinoarena.model.DTO.AddProjectionDTO;
+import com.finals.kinoarena.model.DTO.ResponseProjectionDTO;
+import com.finals.kinoarena.model.DTO.ProjectionDTO;
+import com.finals.kinoarena.model.entity.User;
+import com.finals.kinoarena.service.ProjectionService;
+import com.finals.kinoarena.util.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,7 @@ public class ProjectionController extends AbstractController {
     private ProjectionService projectionService;
 
     @GetMapping(value = "/projections/{projection_id}")
-    public HalfProjectionDTO getProjectionById(@PathVariable(name = "projection_id") int projectionId) {
+    public ResponseProjectionDTO getProjectionById(@PathVariable(name = "projection_id") int projectionId) {
         return projectionService.getProjectionById(projectionId);
     }
 
@@ -36,33 +37,32 @@ public class ProjectionController extends AbstractController {
         return projectionService.getFreePlaces(projectionId);
     }
 
-    @PutMapping(value = "/hall/{hall_id}/projection")
-    public HalfProjectionDTO addProjection(@RequestBody AddProjectionDTO addProjectionDTO, HttpSession ses,
-                                           @PathVariable(name = "hall_id") int hallId) throws BadRequestException, UnauthorizedException, SQLException {
+    @PutMapping(value = "/projections")
+    public ResponseProjectionDTO addProjection(@RequestBody AddProjectionDTO addProjectionDTO, HttpSession ses) throws BadRequestException, UnauthorizedException, SQLException {
         User user = sessionManager.getLoggedUser(ses);
         if (!validateNewProjection(addProjectionDTO)) {
             throw new BadRequestException("Please fill all requested fields");
         }
-        return projectionService.addProjection(addProjectionDTO, user.getId(), hallId);
+        return projectionService.addProjection(addProjectionDTO, user.getId());
     }
 
-    @GetMapping(value = "/projections/cinema/{cinema_id}")
-    public List<ProjectionDTO> getAllProjectionsForCinema(@PathVariable(name = "cinema_id") int cinemaId) {
+    @GetMapping(value = "/cinema/{cinema_id}/projections")
+    public List<ProjectionDTO> getAllProjectionsForCity(@PathVariable(name = "cinema_id") int cinemaId) {
         return projectionService.getProjectionByCinema(cinemaId);
     }
 
-    @GetMapping(value = "/projections/city/{city}")
-    public List<ProjectionDTO> getAllProjectionsForCinema(@PathVariable String city) {
+    @GetMapping(value = "/city/{city}/projections")
+    public List<ProjectionDTO> getAllProjectionsForCity(@PathVariable String city) {
         return projectionService.getProjectionByCity(city);
     }
-    @GetMapping(value = "/projections/genre/{genre_id}")
-    public List<ProjectionDTO> getAllProjectionsbyGenre(@PathVariable int genre_id) {
+    @GetMapping(value = "/genre/{genre_id}/projections")
+    public List<ProjectionDTO> getAllProjectionsByGenre(@PathVariable int genre_id) {
         return projectionService.getAllProjectionsByGenre(genre_id);
     }
 
-    @PostMapping(value = "/projection/{projection_id}")
-    public HalfProjectionDTO editProjection(@RequestBody AddProjectionDTO addProjectionDTO,HttpSession ses,
-                                            @PathVariable(name = "projection_id") int projectionId) throws BadRequestException, UnauthorizedException {
+    @PostMapping(value = "/projections/{projection_id}")
+    public ResponseProjectionDTO editProjection(@RequestBody AddProjectionDTO addProjectionDTO, HttpSession ses,
+                                                @PathVariable(name = "projection_id") int projectionId) throws BadRequestException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
         projectionService.getProjectionById(projectionId);//if does not exist this will throw exception
         if (!validateNewProjection(addProjectionDTO)) {
@@ -72,14 +72,20 @@ public class ProjectionController extends AbstractController {
     }
 
     @DeleteMapping(value = "/projections/{projection_id}")
-    public ProjectionDTO deleteProjection(@PathVariable(name = "projection_id") int projectionId, HttpSession ses) throws BadRequestException, UnauthorizedException {
+    public ProjectionDTO deleteProjection(@PathVariable(name = "projection_id") int projectionId, HttpSession ses) throws UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
         return projectionService.removeProjection(projectionId, user.getId());
     }
 
     private boolean validateNewProjection(AddProjectionDTO dto) throws BadRequestException {
-        return
-                validateStartAt(dto);
+        return validateStartAt(dto) && validateHall(dto.getHallId());
+    }
+
+    private boolean validateHall(Integer hallId) throws BadRequestException {
+        if (hallId == null || hallId < 0){
+            throw new BadRequestException("Please enter a valid hall");
+        }
+        return true;
     }
 
     private boolean validateStartAt(AddProjectionDTO dto) throws BadRequestException {

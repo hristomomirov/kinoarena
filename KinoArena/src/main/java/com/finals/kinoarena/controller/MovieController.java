@@ -1,10 +1,11 @@
 package com.finals.kinoarena.controller;
 
-import com.finals.kinoarena.Exceptions.BadRequestException;
-import com.finals.kinoarena.Exceptions.UnauthorizedException;
-import com.finals.kinoarena.Model.DTO.*;
-import com.finals.kinoarena.Model.Entity.User;
-import com.finals.kinoarena.Service.MovieService;
+import com.finals.kinoarena.exceptions.BadRequestException;
+import com.finals.kinoarena.exceptions.UnauthorizedException;
+import com.finals.kinoarena.model.DTO.*;
+import com.finals.kinoarena.model.entity.User;
+import com.finals.kinoarena.service.MovieService;
+import com.finals.kinoarena.util.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
@@ -15,7 +16,7 @@ import java.util.List;
 
 @Component
 @RestController
-public class MovieController {
+public class MovieController extends AbstractController {
 
     @Autowired
     private SessionManager sessionManager;
@@ -28,34 +29,34 @@ public class MovieController {
     }
 
     @GetMapping(value = "/genres/{genre_id}/movies")
-    public List<MovieDTO> getMovieByGenre(@PathVariable(name = "genre_id") int genreId) {
+    public List<ResponseMovieDTO> getMovieByGenre(@PathVariable(name = "genre_id") int genreId) {
         return movieService.getMoviesByGenre(genreId);
     }
 
     @PutMapping(value = "/movies")
-    public MovieDTO addMovie(@RequestBody AddMovieDTO addMovieDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
+    public ResponseMovieDTO addMovie(@RequestBody RequestMovieDTO requestMovieDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
-        if (!validateMovie(addMovieDTO)) {
+        if (!validateMovie(requestMovieDTO)) {
             throw new BadRequestException("Please fill all requested fields");
         }
-        return movieService.addMovie(addMovieDTO, user.getId());
+        return movieService.addMovie(requestMovieDTO, user.getId());
     }
 
     @DeleteMapping(value = "/movies{movie_id}")
-    public MovieDTO deleteMovie(@PathVariable(name = "movie_id") int movieId, HttpSession ses) throws UnauthorizedException {
+    public ResponseMovieDTO deleteMovie(@PathVariable(name = "movie_id") int movieId, HttpSession ses) throws UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
         int userId = user.getId();
         return movieService.deleteMovie(movieId, userId);
     }
 
     @PostMapping(value = "/movies{movie_id}")
-    public MovieDTO editMovie(@PathVariable(name = "movie_id") int movieId, HttpSession ses, @RequestBody AddMovieDTO addMovieDTO) throws UnauthorizedException {
+    public ResponseMovieDTO editMovie(@PathVariable(name = "movie_id") int movieId, HttpSession ses, @RequestBody RequestMovieDTO requestMovieDTO) throws UnauthorizedException, BadRequestException {
         User user = sessionManager.getLoggedUser(ses);
         int userId = user.getId();
-        return movieService.editMovie(movieId, addMovieDTO, userId);
+        return movieService.editMovie(movieId, requestMovieDTO, userId);
     }
 
-    private boolean validateMovie(AddMovieDTO dto) throws BadRequestException {
+    private boolean validateMovie(RequestMovieDTO dto) throws BadRequestException {
         return validateTitle(dto.getTitle()) &&
                 validateLength(dto.getLength()) &&
                 validateDescription(dto.getDescription()) &&
@@ -63,7 +64,7 @@ public class MovieController {
                 validateGenre(dto);
     }
 
-    private boolean validateGenre(AddMovieDTO dto) throws BadRequestException {
+    private boolean validateGenre(RequestMovieDTO dto) throws BadRequestException {
         if (dto.getGenreId() == null) {
             throw new BadRequestException("Please fill all requested fields");
         }

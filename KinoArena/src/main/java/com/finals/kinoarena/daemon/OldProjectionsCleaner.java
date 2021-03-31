@@ -14,7 +14,7 @@ public class OldProjectionsCleaner implements Runnable {
     private static final int DAEMON_THREAD_CLEANER_TIME_TO_SLEEP_ONE_DAY_MILLIS = 1000*60*60*24;
     private static final String SELECT_ALL_PROJECTIONS = "SELECT * FROM `kinoarena`.projections";
     private static final int PROJECTIONS_DAYS_LIMIT = 5;
-    private static final String DELETE_PROJECTION = "delete from projections where id = ";
+    private static final String DELETE_PROJECTION = "DELETE FROM projections WHERE id = ";
 
     private List<ProjectionToCleanDTO> projections = new LinkedList<>();
     private Statement statement;
@@ -26,7 +26,8 @@ public class OldProjectionsCleaner implements Runnable {
 
         Connection con =
                 DriverManager.getConnection
-                        ("jdbc:mysql://localhost/kinoarena?user=kadet&password=survivor2021&useLegacyDatetimeCode=false&serverTimezone=EET");
+                        ("jdbc:mysql://84.238.145.199:7777/kinoarena?user=cadet&password=survivor2021&useLegacyDatetimeCode=false&serverTimezone=EET");
+
         statement = con.createStatement();
         statement1 = con.createStatement();
 

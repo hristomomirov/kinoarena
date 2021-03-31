@@ -13,7 +13,7 @@ import java.util.List;
 
 
 @Component
-public class SeatDAO {
+public class    SeatDAO {
 
     @Autowired
     private JdbcTemplate jdbcTemplate;

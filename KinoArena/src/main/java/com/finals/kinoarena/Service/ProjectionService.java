@@ -129,7 +129,6 @@ public class ProjectionService extends AbstractService {
         if (cinemas.isEmpty()) {
             throw new NotFoundException("Cinema is not in this city");
         }
-        // TODO can be done in DAO
         for (Cinema c : cinemas) {
             for (Hall h : c.getHalls()) {
                 projections.addAll(projectionRepository.findByHallId(h.getId()));

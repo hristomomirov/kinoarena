@@ -27,7 +27,7 @@ public class MovieController {
         return movieService.getMovieById(movieId);
     }
 
-    @GetMapping(value = "/genres{genre_id}/movies")
+    @GetMapping(value = "/genres/{genre_id}/movies")
     public List<MovieDTO> getMovieByGenre(@PathVariable(name = "genre_id") int genreId) {
         return movieService.getMoviesByGenre(genreId);
     }

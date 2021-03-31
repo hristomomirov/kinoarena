@@ -46,14 +46,18 @@ public class ProjectionController extends AbstractController {
         return projectionService.addProjection(addProjectionDTO, user.getId(), hallId);
     }
 
-    @GetMapping(value = "/cinema/{cinema_id}/projections")
-    public List<HalfProjectionDTO> getAllProjectionsForCinema(@PathVariable(name = "cinema_id") int cinemaId) {
+    @GetMapping(value = "/projections/cinema/{cinema_id}")
+    public List<ProjectionDTO> getAllProjectionsForCinema(@PathVariable(name = "cinema_id") int cinemaId) {
         return projectionService.getProjectionByCinema(cinemaId);
     }
 
     @GetMapping(value = "/projections/city/{city}")
     public List<ProjectionDTO> getAllProjectionsForCinema(@PathVariable String city) {
         return projectionService.getProjectionByCity(city);
+    }
+    @GetMapping(value = "/projections/genre/{genre_id}")
+    public List<ProjectionDTO> getAllProjectionsbyGenre(@PathVariable int genre_id) {
+        return projectionService.getAllProjectionsByGenre(genre_id);
     }
 
     @PostMapping(value = "/projection/{projection_id}")

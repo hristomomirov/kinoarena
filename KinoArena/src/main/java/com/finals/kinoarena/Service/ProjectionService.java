@@ -4,10 +4,7 @@ import com.finals.kinoarena.DAO.SeatDAO;
 import com.finals.kinoarena.Exceptions.BadRequestException;
 import com.finals.kinoarena.Exceptions.NotFoundException;
 import com.finals.kinoarena.Exceptions.UnauthorizedException;
-import com.finals.kinoarena.Model.DTO.AddProjectionDTO;
-import com.finals.kinoarena.Model.DTO.GenreDTO;
-import com.finals.kinoarena.Model.DTO.HalfProjectionDTO;
-import com.finals.kinoarena.Model.DTO.ProjectionDTO;
+import com.finals.kinoarena.Model.DTO.*;
 import com.finals.kinoarena.Model.Entity.*;
 import com.finals.kinoarena.Model.Repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -107,7 +104,7 @@ public class ProjectionService extends AbstractService {
     }
 
     // TODO can be refactored
-    public List<HalfProjectionDTO> getProjectionByCinema(int id) {
+    public List<ProjectionDTO> getProjectionByCinema(int id) {
         List<Projection> projections = new ArrayList<>();
         Optional<Cinema> sCinema = cinemaRepository.findById(id);
         if (sCinema.isEmpty()) {
@@ -119,9 +116,9 @@ public class ProjectionService extends AbstractService {
         if (projections.isEmpty()) {
             throw new NotFoundException("No projections found for this cinema");
         }
-        List<HalfProjectionDTO> projectionDTOS = new ArrayList<>();
+        List<ProjectionDTO> projectionDTOS = new ArrayList<>();
         for (Projection p : projections) {
-            projectionDTOS.add(new HalfProjectionDTO(p));
+            projectionDTOS.add(new ProjectionDTO(p));
         }
         return projectionDTOS;
     }
@@ -170,5 +167,25 @@ public class ProjectionService extends AbstractService {
         p.setStartAt(addProjectionDTO.getStartAt());
         p.setEndAt(addProjectionDTO.getStartAt().plusMinutes(p.getMovie().getLength()));
         return new HalfProjectionDTO(projectionRepository.save(p));
+    }
+
+    public List<ProjectionDTO> getAllProjectionsByGenre(int genre_id) {
+        List<Movie> sMovies = movieRepository.findAllByGenreId(genre_id);
+        if (sMovies.isEmpty()) {
+            throw new NotFoundException("There are no movies with that genre");
+        }
+        List<Projection> sProjections = new ArrayList<>();
+        for (Movie m:sMovies
+             ) {
+            sProjections.addAll(projectionRepository.findByMovie_id(m.getId()));
+        }
+        if(sProjections.isEmpty()){
+            throw new NotFoundException("There are no projections with that genre");
+        }
+        List<ProjectionDTO> projectionDTOS = new ArrayList<>();
+        for (Projection p : sProjections) {
+            projectionDTOS.add(new ProjectionDTO(p));
+        }
+        return projectionDTOS;
     }
 }

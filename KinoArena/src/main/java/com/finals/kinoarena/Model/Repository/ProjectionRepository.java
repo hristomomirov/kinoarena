@@ -12,5 +12,6 @@ public interface ProjectionRepository extends JpaRepository<Projection, Integer>
 
     List<Projection> findByHall(Hall hall);
     List<Projection> findByHallId(int hallId);
+    List<Projection> findByMovie_id(int movieID);
 
 }

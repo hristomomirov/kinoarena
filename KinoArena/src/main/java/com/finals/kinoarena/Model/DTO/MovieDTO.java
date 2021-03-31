@@ -1,5 +1,6 @@
 package com.finals.kinoarena.Model.DTO;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.finals.kinoarena.Model.Entity.Genre;
 import com.finals.kinoarena.Model.Entity.Movie;
 import lombok.Getter;
@@ -16,6 +17,7 @@ public class MovieDTO {
     private String description;
     private int length;
     private int ageRestriction;
+    @JsonIgnore
     private Genre genre;
 
     public MovieDTO(Movie movie) {

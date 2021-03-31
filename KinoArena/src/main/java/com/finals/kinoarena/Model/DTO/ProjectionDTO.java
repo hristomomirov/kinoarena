@@ -25,7 +25,7 @@ public class ProjectionDTO {
     private int length;
     private String description;
     private int ageRestriction;
-    private Genre genre;
+    private String genre;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
     private HallDTO hall;
@@ -35,5 +35,8 @@ public class ProjectionDTO {
         startAt = projection.getStartAt();
         endAt = projection.getEndAt();
         hall = new HallDTO(projection.getHall());
+        title =projection.getMovie().getTitle();
+        description = projection.getMovie().getDescription();
+        genre = projection.getMovie().getGenre().getType();
     }
 }

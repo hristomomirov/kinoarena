@@ -5,6 +5,7 @@ import com.finals.kinoarena.exceptions.BadRequestException;
 import com.finals.kinoarena.exceptions.UnauthorizedException;
 import com.finals.kinoarena.model.DTO.ReserveTicketDTO;
 import com.finals.kinoarena.model.DTO.ResponseTicketDTO;
+import com.finals.kinoarena.model.DTO.StatisticsDTO;
 import com.finals.kinoarena.model.entity.User;
 import com.finals.kinoarena.service.TicketService;
 import com.finals.kinoarena.util.SessionManager;
@@ -33,6 +34,10 @@ public class TicketController extends AbstractController {
         User user = sessionManager.getLoggedUser(ses);
         return ticketService.getAllUserTickets(user);
     }
+    @GetMapping(value = "/tickets/statistics")
+    public List<StatisticsDTO> getAllSoldTickets(){
+        return ticketService.getAllSoldTickets();
+    }
 
     @PutMapping(value = "/projection/{projection_id}/ticket")
     public ResponseTicketDTO reserveTicket(@RequestBody ReserveTicketDTO reserveTicketDTO, HttpSession ses,
@@ -44,6 +49,7 @@ public class TicketController extends AbstractController {
         }
         return ticketService.reserveTicket(projectionId, user, reserveTicketDTO);
     }
+
 
     private boolean validateReservation(ReserveTicketDTO reserveTicketDTO) throws SQLException {
         return validateSeat(reserveTicketDTO.getSeat());

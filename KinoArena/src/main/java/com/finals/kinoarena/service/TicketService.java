@@ -1,10 +1,12 @@
 package com.finals.kinoarena.service;
 
 import com.finals.kinoarena.DAO.SeatDAO;
+import com.finals.kinoarena.DAO.StatisticsDAO;
 import com.finals.kinoarena.exceptions.BadRequestException;
 import com.finals.kinoarena.exceptions.NotFoundException;
 import com.finals.kinoarena.model.DTO.ReserveTicketDTO;
 import com.finals.kinoarena.model.DTO.ResponseTicketDTO;
+import com.finals.kinoarena.model.DTO.StatisticsDTO;
 import com.finals.kinoarena.model.entity.Cinema;
 import com.finals.kinoarena.model.entity.Projection;
 import com.finals.kinoarena.model.entity.Ticket;
@@ -31,8 +33,8 @@ public class TicketService {
     private ProjectionRepository projectionRepository;
     @Autowired
     private SeatDAO seatDAO;
-    @Autowired
-    ProjectionService projectionService;
+   @Autowired
+   private StatisticsDAO statisticsDAO;
 
     public List<ResponseTicketDTO> getAllUserTickets(User user) {
         return ticketRepository.findAllByOwnerId(user.getId());
@@ -62,5 +64,8 @@ public class TicketService {
             throw new BadRequestException("We are sorry, all seats are taken");
         }
         return !freeSeats.contains(seat);
+    }
+    public List<StatisticsDTO> getAllSoldTickets(){
+        return statisticsDAO.soldTicketsPerProjection();
     }
 }

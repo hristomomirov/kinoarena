@@ -2,31 +2,28 @@ package com.finals.kinoarena.service;
 
 import com.finals.kinoarena.util.exceptions.BadRequestException;
 import com.finals.kinoarena.model.DTO.RegisterDTO;
-
 import com.finals.kinoarena.model.DTO.EditUserPasswordDTO;
 import com.finals.kinoarena.model.DTO.UserWithoutPassDTO;
 import com.finals.kinoarena.model.DTO.UserWithoutTicketAndPassDTO;
 import com.finals.kinoarena.model.entity.ConfirmationToken;
 import com.finals.kinoarena.model.entity.User;
 import com.finals.kinoarena.model.repository.ConfirmationTokenRepository;
-import com.finals.kinoarena.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 
-@Component
-public class UserService {
+@Service
+public class UserService extends AbstractService {
 
-    @Autowired
-    private UserRepository repository;
     @Autowired
     private PasswordEncoder passwordEncoder;
     @Autowired
     private ConfirmationTokenRepository confirmationTokenRepository;
 
+// TODO Transaction
     public UserWithoutPassDTO registerUser(RegisterDTO registerDTO) throws BadRequestException {
         if (emailExist(registerDTO.getEmail())) {
             throw new BadRequestException("There is already a user with that email address: " + registerDTO.getEmail());
@@ -39,7 +36,7 @@ public class UserService {
         }
         registerDTO.setPassword(passwordEncoder.encode(registerDTO.getPassword()));
         User user = new User(registerDTO);
-        user = repository.save(user);
+        user = userRepository.save(user);
         ConfirmationToken confirmationToken = new ConfirmationToken(user);
         confirmationTokenRepository.save(confirmationToken);
         return new UserWithoutPassDTO(user);
@@ -58,19 +55,19 @@ public class UserService {
         if (!passwordDTO.getNewPassword().equals(passwordDTO.getConfirmPassword())) {
             throw new BadRequestException("Passwords must match");
         }
-        User user = repository.findById(passwordDTO.getId()).get();
+        User user = userRepository.findById(passwordDTO.getId()).get();
         if (verifyPassword(user.getUsername(), passwordDTO.getOldPassword())) {
             user.setPassword(passwordEncoder.encode(passwordDTO.getNewPassword()));
         }
-        return new UserWithoutPassDTO(repository.save(user));
+        return new UserWithoutPassDTO(userRepository.save(user));
     }
 
     public User getByUsername(String username) {
-        return repository.findByUsername(username);
+        return userRepository.findByUsername(username);
     }
 
     public User getByEmail(String email) {
-        return repository.findByEmail(email);
+        return userRepository.findByEmail(email);
     }
 
     private boolean usernameExists(String username) {
@@ -82,13 +79,13 @@ public class UserService {
     }
 
     private boolean verifyPassword(String username, String password) {
-        String hashedPass = repository.findByUsername(username).getPassword();
+        String hashedPass = userRepository.findByUsername(username).getPassword();
         return passwordEncoder.matches(password, hashedPass);
 
     }
 
     private boolean verifyUsername(String username) {
-        return repository.findByUsername(username) != null;
+        return userRepository.findByUsername(username) != null;
     }
 
     @Bean

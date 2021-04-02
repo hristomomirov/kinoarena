@@ -4,7 +4,6 @@ import com.finals.kinoarena.util.exceptions.BadRequestException;
 import com.finals.kinoarena.util.exceptions.UnauthorizedException;
 import com.finals.kinoarena.model.DTO.AddProjectionDTO;
 import com.finals.kinoarena.model.DTO.ResponseProjectionDTO;
-import com.finals.kinoarena.model.DTO.ProjectionDTO;
 import com.finals.kinoarena.model.entity.User;
 import com.finals.kinoarena.service.ProjectionService;
 import com.finals.kinoarena.util.SessionManager;
@@ -22,8 +21,6 @@ import java.util.List;
 @RestController
 public class ProjectionController extends AbstractController {
 
-    @Autowired
-    private SessionManager sessionManager;
     @Autowired
     private ProjectionService projectionService;
 
@@ -72,7 +69,7 @@ public class ProjectionController extends AbstractController {
     }
 
     @DeleteMapping(value = "/projections/{projection_id}")
-    public ProjectionDTO deleteProjection(@PathVariable(name = "projection_id") int projectionId, HttpSession ses) throws UnauthorizedException {
+    public ResponseProjectionDTO deleteProjection(@PathVariable(name = "projection_id") int projectionId, HttpSession ses) throws UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
         return projectionService.removeProjection(projectionId, user.getId());
     }

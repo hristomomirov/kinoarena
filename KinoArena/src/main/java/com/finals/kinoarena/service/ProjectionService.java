@@ -1,6 +1,5 @@
 package com.finals.kinoarena.service;
 
-import com.finals.kinoarena.DAO.SeatDAO;
 import com.finals.kinoarena.util.exceptions.BadRequestException;
 import com.finals.kinoarena.util.exceptions.NotFoundException;
 import com.finals.kinoarena.util.exceptions.UnauthorizedException;
@@ -9,30 +8,15 @@ import com.finals.kinoarena.model.entity.Cinema;
 import com.finals.kinoarena.model.entity.Hall;
 import com.finals.kinoarena.model.entity.Movie;
 import com.finals.kinoarena.model.entity.Projection;
-import com.finals.kinoarena.model.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
+import org.springframework.stereotype.Service;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Service
 public class ProjectionService extends AbstractService {
-
-    @Autowired
-    private ProjectionRepository projectionRepository;
-    @Autowired
-    private CinemaRepository cinemaRepository;
-    @Autowired
-    private HallRepository hallRepository;
-    @Autowired
-    private SeatDAO seatDAO;
-    @Autowired
-    private MovieRepository movieRepository;
-
 
     public ResponseProjectionDTO getProjectionById(int id) {
         Optional<Projection> sProjection = projectionRepository.findById(id);
@@ -90,7 +74,7 @@ public class ProjectionService extends AbstractService {
         return start.compareTo(date) * date.compareTo(end) >= 0;
     }
 
-    public ProjectionDTO removeProjection(int projectionId, int userId) throws UnauthorizedException {
+    public ResponseProjectionDTO removeProjection(int projectionId, int userId) throws UnauthorizedException {
         if (!isAdmin(userId)) {
             throw new UnauthorizedException("Only admins can remove projections");
         }
@@ -98,7 +82,7 @@ public class ProjectionService extends AbstractService {
         if (sProjection.isEmpty()) {
             throw new NotFoundException("No projection with that id");
         }
-        ProjectionDTO deletedProjection = new ProjectionDTO(sProjection.get());
+        ResponseProjectionDTO deletedProjection = new ResponseProjectionDTO(sProjection.get());
         projectionRepository.deleteById(projectionId);
         return deletedProjection;
 

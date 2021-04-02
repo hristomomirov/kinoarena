@@ -11,7 +11,6 @@ import com.finals.kinoarena.service.EmailSenderService;
 import com.finals.kinoarena.service.UserService;
 import com.finals.kinoarena.model.entity.User;
 import com.finals.kinoarena.model.entity.UserStatus;
-import com.finals.kinoarena.util.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;
@@ -24,10 +23,9 @@ import java.util.regex.Pattern;
 @Component
 @RestController
 public class UserController extends AbstractController {
+
     @Autowired
     private UserService userService;
-    @Autowired
-    private SessionManager sessionManager;
     @Autowired
     private EmailSenderService emailSenderService;
     @Autowired
@@ -119,7 +117,6 @@ public class UserController extends AbstractController {
     }
 
     private boolean validateAge(Integer age) throws BadRequestException {
-        //TODO age cant be letters
         if (age == null) {
             throw new BadRequestException("Please fill all necessary fields");
         }

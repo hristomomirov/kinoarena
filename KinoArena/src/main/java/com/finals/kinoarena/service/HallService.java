@@ -11,17 +11,15 @@ import com.finals.kinoarena.model.repository.CinemaRepository;
 import com.finals.kinoarena.model.repository.HallRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Service
 public class HallService extends AbstractService {
 
-    @Autowired
-    private HallRepository hallRepository;
-    @Autowired
-    private CinemaRepository cinemaRepository;
+
 
     public ResponseHallDTO getHallById(int id) {
         Optional<Hall> sHall = hallRepository.findById(id);

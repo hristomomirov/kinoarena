@@ -3,6 +3,7 @@ package com.finals.kinoarena.model.entity;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.finals.kinoarena.model.DTO.RegisterDTO;
 
+import com.finals.kinoarena.util.Constants;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -19,9 +20,6 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 public class User {
-
-    public static final int ROLE_USER = 1;
-    public static final int ROLE_ADMIN = 2;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -47,7 +45,7 @@ public class User {
         this.firstName = dto.getFirstName();
         this.lastName = dto.getLastName();
         this.age = dto.getAge();
-        this.roleId = ROLE_USER;
+        this.roleId = Constants.ROLE_USER;
         this.statusId = UserStatus.valueOf(dto.getStatus().toUpperCase()).ordinal() + 1;
         this.createdAt = LocalDateTime.now();
         this.tickets = new ArrayList<>();

@@ -7,16 +7,14 @@ import com.finals.kinoarena.model.entity.Cinema;
 import com.finals.kinoarena.model.repository.CinemaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Service
 public class CinemaService extends AbstractService {
-
-    @Autowired
-    private CinemaRepository cinemaRepository;
 
     public List<ResponseCinemaDTO> getAllCinemas() throws NotFoundException {
         List<Cinema> cinemas = cinemaRepository.findAll();

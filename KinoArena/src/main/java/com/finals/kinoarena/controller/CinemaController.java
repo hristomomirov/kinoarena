@@ -5,7 +5,6 @@ import com.finals.kinoarena.util.exceptions.*;
 import com.finals.kinoarena.model.entity.User;
 import com.finals.kinoarena.service.CinemaService;
 import com.finals.kinoarena.model.DTO.ResponseCinemaDTO;
-import com.finals.kinoarena.util.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
@@ -20,9 +19,6 @@ public class CinemaController extends AbstractController  {
 
     @Autowired
     private CinemaService cinemaService;
-    @Autowired
-    private SessionManager sessionManager;
-
 
     @GetMapping(value = "/cinemas")
     public List<ResponseCinemaDTO> getAllCinemas() throws NotFoundException {

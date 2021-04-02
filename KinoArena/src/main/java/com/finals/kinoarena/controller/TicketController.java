@@ -8,7 +8,6 @@ import com.finals.kinoarena.model.DTO.ResponseTicketDTO;
 import com.finals.kinoarena.model.DTO.StatisticsDTO;
 import com.finals.kinoarena.model.entity.User;
 import com.finals.kinoarena.service.TicketService;
-import com.finals.kinoarena.util.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +21,6 @@ import java.util.List;
 @RestController
 public class TicketController extends AbstractController {
 
-    @Autowired
-    private SessionManager sessionManager;
     @Autowired
     private TicketService ticketService;
     @Autowired

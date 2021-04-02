@@ -5,7 +5,6 @@ import com.finals.kinoarena.util.exceptions.UnauthorizedException;
 import com.finals.kinoarena.model.DTO.*;
 import com.finals.kinoarena.model.entity.User;
 import com.finals.kinoarena.service.MovieService;
-import com.finals.kinoarena.util.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +18,10 @@ import java.util.List;
 public class MovieController extends AbstractController {
 
     @Autowired
-    private SessionManager sessionManager;
-    @Autowired
     private MovieService movieService;
 
     @GetMapping(value = "/movies/{movie_id}")
-    public String  getMovieById(@PathVariable(name = "movie_id") int movieId) throws IOException, InterruptedException {
+    public ResponseMovieDTO getMovieById(@PathVariable(name = "movie_id") int movieId) {
         return movieService.getMovieById(movieId);
     }
 
@@ -34,7 +31,7 @@ public class MovieController extends AbstractController {
     }
 
     @PutMapping(value = "/movies")
-    public ResponseMovieDTO addMovie(@RequestBody RequestMovieDTO requestMovieDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
+    public ResponseMovieDTO addMovie(@RequestBody RequestMovieDTO requestMovieDTO, HttpSession ses) throws BadRequestException, UnauthorizedException, IOException, InterruptedException {
         User user = sessionManager.getLoggedUser(ses);
         if (!validateMovie(requestMovieDTO)) {
             throw new BadRequestException("Please fill all requested fields");
@@ -42,26 +39,24 @@ public class MovieController extends AbstractController {
         return movieService.addMovie(requestMovieDTO, user.getId());
     }
 
-    @DeleteMapping(value = "/movies{movie_id}")
+    @DeleteMapping(value = "/movies/{movie_id}")
     public ResponseMovieDTO deleteMovie(@PathVariable(name = "movie_id") int movieId, HttpSession ses) throws UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
         int userId = user.getId();
         return movieService.deleteMovie(movieId, userId);
     }
 
-    @PostMapping(value = "/movies{movie_id}")
-    public ResponseMovieDTO editMovie(@PathVariable(name = "movie_id") int movieId, HttpSession ses, @RequestBody RequestMovieDTO requestMovieDTO) throws UnauthorizedException, BadRequestException {
-        User user = sessionManager.getLoggedUser(ses);
-        int userId = user.getId();
-        return movieService.editMovie(movieId, requestMovieDTO, userId);
+    private boolean validateMovie(RequestMovieDTO dto) throws BadRequestException {
+        return validateLength(dto.getLength()) &&
+                validateAgeRestriction(dto.getAgeRestriction()) &&
+                validateGenre(dto) && validateImdbId(dto.getImdbId());
     }
 
-    private boolean validateMovie(RequestMovieDTO dto) throws BadRequestException {
-        return validateTitle(dto.getTitle()) &&
-                validateLength(dto.getLength()) &&
-                validateDescription(dto.getDescription()) &&
-                validateAgeRestriction(dto.getAgeRestriction()) &&
-                validateGenre(dto);
+    private boolean validateImdbId(String imdbId) throws BadRequestException {
+        if (!imdbId.isBlank()) {
+            return true;
+        }
+        throw new BadRequestException("Name cannot be empty or more than 200 characters");
     }
 
     private boolean validateGenre(RequestMovieDTO dto) throws BadRequestException {
@@ -78,25 +73,11 @@ public class MovieController extends AbstractController {
         throw new BadRequestException("Age restriction cannot be less than 3");
     }
 
-    private boolean validateDescription(String description) throws BadRequestException {
-        if (!description.isBlank()) {
-            return true;
-        }
-        throw new BadRequestException("Description cannot be empty");
-    }
-
     private boolean validateLength(int length) throws BadRequestException {
         if (length > 60 && length <= 300) {
             return true;
         }
         throw new BadRequestException("Length must be between 60 and 300 minutes");
-    }
-
-    private boolean validateTitle(String title) throws BadRequestException {
-        if (!title.isBlank() && title.length() <= 200) {
-            return true;
-        }
-        throw new BadRequestException("Name cannot be empty or more than 200 characters");
     }
 }
 

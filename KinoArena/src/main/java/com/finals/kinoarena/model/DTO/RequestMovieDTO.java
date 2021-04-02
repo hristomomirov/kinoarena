@@ -9,10 +9,8 @@ import lombok.Setter;
 @NoArgsConstructor
 public class RequestMovieDTO {
 
-    private String title;
-    private String description;
+    private String imdbId;
     private int length;
     private int ageRestriction;
     private Integer genreId;
-    private String imdbId;
 }

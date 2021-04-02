@@ -6,7 +6,6 @@ import com.finals.kinoarena.util.exceptions.UnauthorizedException;
 import com.finals.kinoarena.model.DTO.RequestHallDTO;
 import com.finals.kinoarena.model.entity.User;
 import com.finals.kinoarena.service.HallService;
-import com.finals.kinoarena.util.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
@@ -17,9 +16,6 @@ import javax.servlet.http.HttpSession;
 @RestController
 public class HallController extends AbstractController {
 
-
-    @Autowired
-    private SessionManager sessionManager;
     @Autowired
     private HallService hallService;
 
@@ -37,14 +33,14 @@ public class HallController extends AbstractController {
         return hallService.addHall(requestHallDTO, user.getId());
     }
 
-    @DeleteMapping(value = "/hall/{hallId}")
+    @DeleteMapping(value = "/halls/{hallId}")
     public ResponseHallDTO deleteHall(@PathVariable int hallId, HttpSession ses) throws UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
         int userId = user.getId();
         return hallService.removeHall(hallId, userId);
     }
 
-    @PostMapping(value = "/hall/{hallId}")
+    @PostMapping(value = "/halls/{hallId}")
     public ResponseHallDTO editHall(@PathVariable int hallId, @RequestBody RequestHallDTO requestHallDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
         int userId = user.getId();

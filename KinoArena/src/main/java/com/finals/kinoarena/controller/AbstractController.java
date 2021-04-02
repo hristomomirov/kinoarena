@@ -1,9 +1,11 @@
 package com.finals.kinoarena.controller;
 
+import com.finals.kinoarena.util.SessionManager;
 import com.finals.kinoarena.util.exceptions.BadRequestException;
 import com.finals.kinoarena.util.exceptions.NotFoundException;
 import com.finals.kinoarena.util.exceptions.UnauthorizedException;
 import com.finals.kinoarena.model.DTO.ErrorDTO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -12,6 +14,8 @@ import java.time.DateTimeException;
 
 public class AbstractController {
 
+    @Autowired
+    protected SessionManager sessionManager;
 
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)

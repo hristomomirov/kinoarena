@@ -1,8 +1,8 @@
 package com.finals.kinoarena.service;
 
-import com.finals.kinoarena.exceptions.*;
-import com.finals.kinoarena.model.DTO.CinemaDTO;
-import com.finals.kinoarena.model.DTO.CinemaWithoutHallDTO;
+import com.finals.kinoarena.model.DTO.RequestCinemaDTO;
+import com.finals.kinoarena.util.exceptions.*;
+import com.finals.kinoarena.model.DTO.ResponseCinemaDTO;
 import com.finals.kinoarena.model.entity.Cinema;
 import com.finals.kinoarena.model.repository.CinemaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,83 +18,86 @@ public class CinemaService extends AbstractService {
     @Autowired
     private CinemaRepository cinemaRepository;
 
-    public List<CinemaWithoutHallDTO> getAllCinemas() throws NotFoundException {
+    public List<ResponseCinemaDTO> getAllCinemas() throws NotFoundException {
         List<Cinema> cinemas = cinemaRepository.findAll();
         if (cinemas.isEmpty()) {
             throw new NotFoundException("No found cinemas");
         }
-        List<CinemaWithoutHallDTO> cinemaWithoutHallDTOS = new ArrayList<>();
+        List<ResponseCinemaDTO> responseCinemaDTOS = new ArrayList<>();
         for (Cinema c : cinemas) {
-            cinemaWithoutHallDTOS.add(new CinemaWithoutHallDTO(c));
+            responseCinemaDTOS.add(new ResponseCinemaDTO(c));
         }
-        return cinemaWithoutHallDTOS;
+        return responseCinemaDTOS;
     }
 
-    public CinemaDTO getCinemaById(int cinemaId) {
+    public ResponseCinemaDTO getCinemaById(int cinemaId) {
         Optional<Cinema> sCinema = cinemaRepository.findById(cinemaId);
         if (sCinema.isEmpty()) {
             throw new NotFoundException("Cinema not found");
         }
-        return new CinemaDTO(sCinema.get());
+        return new ResponseCinemaDTO(sCinema.get());
     }
-//TODO prob can be done in DAO
-    public List<CinemaWithoutHallDTO> getAllCinemasByCity(String city) throws NotFoundException {
+
+    public List<ResponseCinemaDTO> getAllCinemasByCity(String city) throws NotFoundException {
         List<Cinema> cinemas = cinemaRepository.findAllByCity(city);
         if (cinemas.isEmpty()) {
             throw new NotFoundException("No found cinemas in this city");
         }
-        List<CinemaWithoutHallDTO> cinemaWithoutHallDTOS = new ArrayList<>();
+        List<ResponseCinemaDTO> responseCinemaDTOS = new ArrayList<>();
         for (Cinema c : cinemas) {
-            cinemaWithoutHallDTOS.add(new CinemaWithoutHallDTO(c));
+            responseCinemaDTOS.add(new ResponseCinemaDTO(c));
         }
-        return cinemaWithoutHallDTOS;
-
+        return responseCinemaDTOS;
     }
 
-    public CinemaDTO addCinema(CinemaDTO cinemaDTO, int userId) throws BadRequestException, UnauthorizedException {
+    public ResponseCinemaDTO addCinema(RequestCinemaDTO requestCinemaDTO, int userId) throws BadRequestException, UnauthorizedException {
         if (!isAdmin(userId)) {
             throw new UnauthorizedException("Only admins can remove cinemas");
         }
-        if (cinemaExists(cinemaDTO)) {
+        if (cinemaExists(requestCinemaDTO)) {
             throw new BadRequestException("There is already a cinema with that name in that city");
         }
-      return new CinemaDTO(cinemaRepository.save(new Cinema(cinemaDTO.getName(),cinemaDTO.getCity()))); // работи!
+      return new ResponseCinemaDTO(cinemaRepository.save(new Cinema(requestCinemaDTO.getName(), requestCinemaDTO.getCity()))); // работи!
     }
 
-    public boolean cinemaExists(CinemaDTO cinemaDTO) {
-        List<Cinema> cinemas = cinemaRepository.findAllByCity(cinemaDTO.getCity());
+    public boolean cinemaExists(RequestCinemaDTO requestCinemaDTO) {
+        List<Cinema> cinemas = cinemaRepository.findAllByCity(requestCinemaDTO.getCity());
         for (Cinema c : cinemas) {
-            if (c.getName().equals(cinemaDTO.getName())) {
+            if (c.getName().equals(requestCinemaDTO.getName())) {
                 return true;
             }
         }
         return false;
     }
 
-    public CinemaDTO removeCinema(int cinemaId, int userId) throws UnauthorizedException {
+    public ResponseCinemaDTO removeCinema(int cinemaId, int userId) throws UnauthorizedException {
         if (!isAdmin(userId)) {
             throw new UnauthorizedException("Only admins can remove cinemas");
         }
-        CinemaDTO cinemaForDelete = getCinemaById(cinemaId);
+        Optional<Cinema> sCinema = cinemaRepository.findById(cinemaId);
+        if (sCinema.isEmpty()) {
+            throw new NotFoundException("Cinema does not exist");
+        }
+        ResponseCinemaDTO cinemaForDelete = getCinemaById(cinemaId);
         cinemaRepository.deleteById(cinemaId);
         return cinemaForDelete;
     }
 
-    public CinemaDTO editCinema(CinemaDTO cinemaDTO, int id, int userId) throws BadRequestException, UnauthorizedException {
+    public ResponseCinemaDTO editCinema(RequestCinemaDTO requestCinemaDTO, int cinemaId, int userId) throws BadRequestException, UnauthorizedException {
         if (!isAdmin(userId)) {
             throw new UnauthorizedException("Only admins can remove cinemas");
         }
-        Optional<Cinema> sCinema = cinemaRepository.findById(id);
+        Optional<Cinema> sCinema = cinemaRepository.findById(cinemaId);
         if (sCinema.isEmpty()) {
-            throw new NotFoundException("Cinema is not found");
+            throw new NotFoundException("Cinema does not exist");
         }
         Cinema cinema = sCinema.get();
-        if (cinema.getName().equals(cinemaDTO.getName()) && cinema.getCity().equals(cinemaDTO.getCity())) {
+        if (cinema.getName().equals(requestCinemaDTO.getName()) && cinema.getCity().equals(requestCinemaDTO.getCity())) {
             throw new BadRequestException("You need to change the fields for an edit");
         }
-        cinema.setCity(cinemaDTO.getCity());
-        cinema.setName(cinemaDTO.getName());
+        cinema.setCity(requestCinemaDTO.getCity());
+        cinema.setName(requestCinemaDTO.getName());
         cinemaRepository.save(cinema);
-        return new CinemaDTO(cinemaRepository.findById(id).get());
+        return new ResponseCinemaDTO(cinemaRepository.findById(cinemaId).get());
     }
 }

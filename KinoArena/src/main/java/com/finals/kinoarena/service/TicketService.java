@@ -2,12 +2,11 @@ package com.finals.kinoarena.service;
 
 import com.finals.kinoarena.DAO.SeatDAO;
 import com.finals.kinoarena.DAO.StatisticsDAO;
-import com.finals.kinoarena.exceptions.BadRequestException;
-import com.finals.kinoarena.exceptions.NotFoundException;
+import com.finals.kinoarena.util.exceptions.BadRequestException;
+import com.finals.kinoarena.util.exceptions.NotFoundException;
 import com.finals.kinoarena.model.DTO.ReserveTicketDTO;
 import com.finals.kinoarena.model.DTO.ResponseTicketDTO;
 import com.finals.kinoarena.model.DTO.StatisticsDTO;
-import com.finals.kinoarena.model.entity.Cinema;
 import com.finals.kinoarena.model.entity.Projection;
 import com.finals.kinoarena.model.entity.Ticket;
 import com.finals.kinoarena.model.entity.User;

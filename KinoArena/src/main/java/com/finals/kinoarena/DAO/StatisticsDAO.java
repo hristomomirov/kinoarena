@@ -25,10 +25,8 @@ public class StatisticsDAO {
 
     public List<StatisticsDTO> soldTicketsPerProjection(){
             List<StatisticsDTO> statisticsDAOS = new ArrayList<>();
-
-        ResultSet rs = null;
         try (Connection c = jdbcTemplate.getDataSource().getConnection()){
-            rs = c.createStatement().executeQuery(SELECT_TICKETS);
+           ResultSet rs = c.createStatement().executeQuery(SELECT_TICKETS);
             while (rs.next()){
                 StatisticsDTO s = new StatisticsDTO();
                 s.setCinemaName(rs.getString(1));
@@ -37,12 +35,9 @@ public class StatisticsDAO {
                 s.setTotalTicketsSold(rs.getInt(4));
                 statisticsDAOS.add(s);
             }
-
-        } catch (SQLException throwables) {
-            throwables.printStackTrace();
+        } catch (SQLException е) {
+            е.printStackTrace();
         }
-
         return statisticsDAOS;
-
     }
 }

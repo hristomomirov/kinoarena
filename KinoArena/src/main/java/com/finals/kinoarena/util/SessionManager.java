@@ -1,6 +1,6 @@
 package com.finals.kinoarena.util;
 
-import com.finals.kinoarena.exceptions.UnauthorizedException;
+import com.finals.kinoarena.util.exceptions.UnauthorizedException;
 import com.finals.kinoarena.model.entity.User;
 import com.finals.kinoarena.model.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;

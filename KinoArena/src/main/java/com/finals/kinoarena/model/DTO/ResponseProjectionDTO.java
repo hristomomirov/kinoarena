@@ -1,7 +1,6 @@
 package com.finals.kinoarena.model.DTO;
 
 
-import com.finals.kinoarena.model.entity.Movie;
 import com.finals.kinoarena.model.entity.Projection;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

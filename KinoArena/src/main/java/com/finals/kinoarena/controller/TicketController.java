@@ -1,8 +1,8 @@
 package com.finals.kinoarena.controller;
 
 import com.finals.kinoarena.DAO.SeatDAO;
-import com.finals.kinoarena.exceptions.BadRequestException;
-import com.finals.kinoarena.exceptions.UnauthorizedException;
+import com.finals.kinoarena.util.exceptions.BadRequestException;
+import com.finals.kinoarena.util.exceptions.UnauthorizedException;
 import com.finals.kinoarena.model.DTO.ReserveTicketDTO;
 import com.finals.kinoarena.model.DTO.ResponseTicketDTO;
 import com.finals.kinoarena.model.DTO.StatisticsDTO;

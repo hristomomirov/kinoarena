@@ -1,6 +1,6 @@
 package com.finals.kinoarena.service;
 
-import com.finals.kinoarena.exceptions.BadRequestException;
+import com.finals.kinoarena.util.exceptions.BadRequestException;
 import com.finals.kinoarena.model.DTO.RegisterDTO;
 
 import com.finals.kinoarena.model.DTO.EditUserPasswordDTO;
@@ -15,9 +15,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-
-import java.util.List;
 
 
 @Component

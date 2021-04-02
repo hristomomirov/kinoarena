@@ -1,7 +1,7 @@
 package com.finals.kinoarena.controller;
 
-import com.finals.kinoarena.exceptions.BadRequestException;
-import com.finals.kinoarena.exceptions.UnauthorizedException;
+import com.finals.kinoarena.util.exceptions.BadRequestException;
+import com.finals.kinoarena.util.exceptions.UnauthorizedException;
 import com.finals.kinoarena.model.DTO.*;
 import com.finals.kinoarena.model.entity.User;
 import com.finals.kinoarena.service.MovieService;

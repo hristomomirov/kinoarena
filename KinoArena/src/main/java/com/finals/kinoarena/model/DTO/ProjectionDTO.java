@@ -20,13 +20,13 @@ public class ProjectionDTO {
     private String genre;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
-    private HallDTO hall;
+    private ResponseHallDTO hall;
 
     public ProjectionDTO(Projection projection){
         id = projection.getId();
         startAt = projection.getStartAt();
         endAt = projection.getEndAt();
-        hall = new HallDTO(projection.getHall());
+        hall = new ResponseHallDTO(projection.getHall());
         title =projection.getMovie().getTitle();
         description = projection.getMovie().getDescription();
         genre = projection.getMovie().getGenre().getType();

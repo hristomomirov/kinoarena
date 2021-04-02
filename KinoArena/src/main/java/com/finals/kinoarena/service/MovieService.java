@@ -1,9 +1,9 @@
 package com.finals.kinoarena.service;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.finals.kinoarena.exceptions.BadRequestException;
-import com.finals.kinoarena.exceptions.NotFoundException;
-import com.finals.kinoarena.exceptions.UnauthorizedException;
+import com.finals.kinoarena.util.exceptions.BadRequestException;
+import com.finals.kinoarena.util.exceptions.NotFoundException;
+import com.finals.kinoarena.util.exceptions.UnauthorizedException;
 import com.finals.kinoarena.model.DTO.RequestMovieDTO;
 import com.finals.kinoarena.model.DTO.ResponseMovieDTO;
 import com.finals.kinoarena.model.entity.Genre;

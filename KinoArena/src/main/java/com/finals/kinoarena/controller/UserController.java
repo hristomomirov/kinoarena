@@ -1,8 +1,8 @@
 package com.finals.kinoarena.controller;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.finals.kinoarena.exceptions.BadRequestException;
-import com.finals.kinoarena.exceptions.UnauthorizedException;
+import com.finals.kinoarena.util.exceptions.BadRequestException;
+import com.finals.kinoarena.util.exceptions.UnauthorizedException;
 import com.finals.kinoarena.model.DTO.*;
 import com.finals.kinoarena.model.entity.ConfirmationToken;
 import com.finals.kinoarena.model.repository.ConfirmationTokenRepository;
@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 

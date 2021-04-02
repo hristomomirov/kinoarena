@@ -1,4 +1,4 @@
-package com.finals.kinoarena.exceptions;
+package com.finals.kinoarena.util.exceptions;
 
 public class UnauthorizedException extends Throwable {
     public UnauthorizedException(String message) {

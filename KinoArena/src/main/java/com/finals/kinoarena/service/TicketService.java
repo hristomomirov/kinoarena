@@ -1,40 +1,22 @@
 package com.finals.kinoarena.service;
 
-import com.finals.kinoarena.DAO.SeatDAO;
-import com.finals.kinoarena.DAO.StatisticsDAO;
-import com.finals.kinoarena.exceptions.BadRequestException;
-import com.finals.kinoarena.exceptions.NotFoundException;
+import com.finals.kinoarena.util.exceptions.BadRequestException;
+import com.finals.kinoarena.util.exceptions.NotFoundException;
 import com.finals.kinoarena.model.DTO.ReserveTicketDTO;
 import com.finals.kinoarena.model.DTO.ResponseTicketDTO;
 import com.finals.kinoarena.model.DTO.StatisticsDTO;
-import com.finals.kinoarena.model.entity.Cinema;
 import com.finals.kinoarena.model.entity.Projection;
 import com.finals.kinoarena.model.entity.Ticket;
 import com.finals.kinoarena.model.entity.User;
-import com.finals.kinoarena.model.repository.CinemaRepository;
-import com.finals.kinoarena.model.repository.ProjectionRepository;
-import com.finals.kinoarena.model.repository.TicketRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-@Component
-public class TicketService {
-
-    @Autowired
-    private TicketRepository ticketRepository;
-    @Autowired
-    private CinemaRepository cinemaRepository;
-    @Autowired
-    private ProjectionRepository projectionRepository;
-    @Autowired
-    private SeatDAO seatDAO;
-   @Autowired
-   private StatisticsDAO statisticsDAO;
+@Service
+public class TicketService extends AbstractService {
 
     public List<ResponseTicketDTO> getAllUserTickets(User user) {
         return ticketRepository.findAllByOwnerId(user.getId());

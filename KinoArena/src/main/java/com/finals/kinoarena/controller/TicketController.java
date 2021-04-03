@@ -1,14 +1,13 @@
 package com.finals.kinoarena.controller;
 
 import com.finals.kinoarena.DAO.SeatDAO;
-import com.finals.kinoarena.exceptions.BadRequestException;
-import com.finals.kinoarena.exceptions.UnauthorizedException;
+import com.finals.kinoarena.util.exceptions.BadRequestException;
+import com.finals.kinoarena.util.exceptions.UnauthorizedException;
 import com.finals.kinoarena.model.DTO.ReserveTicketDTO;
 import com.finals.kinoarena.model.DTO.ResponseTicketDTO;
 import com.finals.kinoarena.model.DTO.StatisticsDTO;
 import com.finals.kinoarena.model.entity.User;
 import com.finals.kinoarena.service.TicketService;
-import com.finals.kinoarena.util.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
@@ -22,8 +21,6 @@ import java.util.List;
 @RestController
 public class TicketController extends AbstractController {
 
-    @Autowired
-    private SessionManager sessionManager;
     @Autowired
     private TicketService ticketService;
     @Autowired

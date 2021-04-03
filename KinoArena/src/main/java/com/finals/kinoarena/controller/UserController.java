@@ -1,8 +1,8 @@
 package com.finals.kinoarena.controller;
 
 import com.fasterxml.jackson.annotation.JsonValue;
-import com.finals.kinoarena.exceptions.BadRequestException;
-import com.finals.kinoarena.exceptions.UnauthorizedException;
+import com.finals.kinoarena.util.exceptions.BadRequestException;
+import com.finals.kinoarena.util.exceptions.UnauthorizedException;
 import com.finals.kinoarena.model.DTO.*;
 import com.finals.kinoarena.model.entity.ConfirmationToken;
 import com.finals.kinoarena.model.repository.ConfirmationTokenRepository;
@@ -11,24 +11,21 @@ import com.finals.kinoarena.service.EmailSenderService;
 import com.finals.kinoarena.service.UserService;
 import com.finals.kinoarena.model.entity.User;
 import com.finals.kinoarena.model.entity.UserStatus;
-import com.finals.kinoarena.util.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
 @RestController
 public class UserController extends AbstractController {
+
     @Autowired
     private UserService userService;
-    @Autowired
-    private SessionManager sessionManager;
     @Autowired
     private EmailSenderService emailSenderService;
     @Autowired
@@ -120,7 +117,6 @@ public class UserController extends AbstractController {
     }
 
     private boolean validateAge(Integer age) throws BadRequestException {
-        //TODO age cant be letters
         if (age == null) {
             throw new BadRequestException("Please fill all necessary fields");
         }
@@ -185,4 +181,5 @@ public class UserController extends AbstractController {
         }
         throw new BadRequestException("Username must include only letters and numbers");
     }
+
 }

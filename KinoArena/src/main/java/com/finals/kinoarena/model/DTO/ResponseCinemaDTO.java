@@ -15,14 +15,14 @@ import java.util.List;
 @Setter
 @Getter
 @AllArgsConstructor
-public class CinemaDTO {
+public class ResponseCinemaDTO {
 
     private int id;
     private String name;
     private String city;
     private List<HallWithoutCinemaDTO> halls;
 
-    public CinemaDTO(Cinema c){
+    public ResponseCinemaDTO(Cinema c){
         this.id = c.getId();
         this.name = c.getName();
         this.city = c.getCity();

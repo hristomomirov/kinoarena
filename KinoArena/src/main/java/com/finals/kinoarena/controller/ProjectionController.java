@@ -1,10 +1,9 @@
 package com.finals.kinoarena.controller;
 
-import com.finals.kinoarena.exceptions.BadRequestException;
-import com.finals.kinoarena.exceptions.UnauthorizedException;
+import com.finals.kinoarena.util.exceptions.BadRequestException;
+import com.finals.kinoarena.util.exceptions.UnauthorizedException;
 import com.finals.kinoarena.model.DTO.AddProjectionDTO;
 import com.finals.kinoarena.model.DTO.ResponseProjectionDTO;
-import com.finals.kinoarena.model.DTO.ProjectionDTO;
 import com.finals.kinoarena.model.entity.User;
 import com.finals.kinoarena.service.ProjectionService;
 import com.finals.kinoarena.util.SessionManager;
@@ -23,8 +22,6 @@ import java.util.List;
 public class ProjectionController extends AbstractController {
 
     @Autowired
-    private SessionManager sessionManager;
-    @Autowired
     private ProjectionService projectionService;
 
     @GetMapping(value = "/projections/{projection_id}")
@@ -33,7 +30,7 @@ public class ProjectionController extends AbstractController {
     }
 
     @GetMapping(value = "/projections/{projection_id}/places")
-    public List<Integer> getFreePlacesForProjection(@PathVariable(name = "projection_id") int projectionId) throws BadRequestException, SQLException {
+    public List<Integer> getFreePlacesForProjection(@PathVariable(name = "projection_id") int projectionId) throws BadRequestException {
         return projectionService.getFreePlaces(projectionId);
     }
 
@@ -47,16 +44,16 @@ public class ProjectionController extends AbstractController {
     }
 
     @GetMapping(value = "/cinema/{cinema_id}/projections")
-    public List<ProjectionDTO> getAllProjectionsForCity(@PathVariable(name = "cinema_id") int cinemaId) {
+    public List<ResponseProjectionDTO> getAllProjectionsForCity(@PathVariable(name = "cinema_id") int cinemaId) {
         return projectionService.getProjectionByCinema(cinemaId);
     }
 
     @GetMapping(value = "/city/{city}/projections")
-    public List<ProjectionDTO> getAllProjectionsForCity(@PathVariable String city) {
+    public List<ResponseProjectionDTO> getAllProjectionsForCity(@PathVariable String city) {
         return projectionService.getProjectionByCity(city);
     }
     @GetMapping(value = "/genre/{genre_id}/projections")
-    public List<ProjectionDTO> getAllProjectionsByGenre(@PathVariable int genre_id) {
+    public List<ResponseProjectionDTO> getAllProjectionsByGenre(@PathVariable int genre_id) {
         return projectionService.getAllProjectionsByGenre(genre_id);
     }
 
@@ -64,7 +61,7 @@ public class ProjectionController extends AbstractController {
     public ResponseProjectionDTO editProjection(@RequestBody AddProjectionDTO addProjectionDTO, HttpSession ses,
                                                 @PathVariable(name = "projection_id") int projectionId) throws BadRequestException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
-        projectionService.getProjectionById(projectionId);//if does not exist this will throw exception
+        projectionService.getProjectionById(projectionId);
         if (!validateNewProjection(addProjectionDTO)) {
             throw new BadRequestException("Please fill all requested fields");
         }
@@ -72,7 +69,7 @@ public class ProjectionController extends AbstractController {
     }
 
     @DeleteMapping(value = "/projections/{projection_id}")
-    public ProjectionDTO deleteProjection(@PathVariable(name = "projection_id") int projectionId, HttpSession ses) throws UnauthorizedException {
+    public ResponseProjectionDTO deleteProjection(@PathVariable(name = "projection_id") int projectionId, HttpSession ses) throws UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
         return projectionService.removeProjection(projectionId, user.getId());
     }

@@ -2,7 +2,7 @@ package com.finals.kinoarena.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.finals.kinoarena.model.DTO.HallDTO;
+import com.finals.kinoarena.model.DTO.RequestHallDTO;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -30,8 +30,8 @@ public class Hall {
     @JsonManagedReference(value = "hall-projection")
     private List<Projection> projections;
 
-    public Hall(HallDTO hallDTO) {
-        number = hallDTO.getNumber();
-        capacity=hallDTO.getCapacity();
+    public Hall(RequestHallDTO requestHallDTO) {
+        number = requestHallDTO.getNumber();
+        capacity= requestHallDTO.getCapacity();
     }
 }

@@ -1,41 +1,22 @@
 package com.finals.kinoarena.service;
 
-import com.finals.kinoarena.DAO.SeatDAO;
-import com.finals.kinoarena.exceptions.BadRequestException;
-import com.finals.kinoarena.exceptions.NotFoundException;
-import com.finals.kinoarena.exceptions.UnauthorizedException;
+import com.finals.kinoarena.util.exceptions.BadRequestException;
+import com.finals.kinoarena.util.exceptions.NotFoundException;
+import com.finals.kinoarena.util.exceptions.UnauthorizedException;
 import com.finals.kinoarena.model.DTO.*;
 import com.finals.kinoarena.model.entity.Cinema;
 import com.finals.kinoarena.model.entity.Hall;
 import com.finals.kinoarena.model.entity.Movie;
 import com.finals.kinoarena.model.entity.Projection;
-import com.finals.kinoarena.model.repository.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-@Component
+@Service
 public class ProjectionService extends AbstractService {
-
-    @Autowired
-    private ProjectionRepository projectionRepository;
-    @Autowired
-    private CinemaRepository cinemaRepository;
-    @Autowired
-    private HallRepository hallRepository;
-    @Autowired
-    private SeatDAO seatDAO;
-    @Autowired
-    private MovieRepository movieRepository;
-
 
     public ResponseProjectionDTO getProjectionById(int id) {
         Optional<Projection> sProjection = projectionRepository.findById(id);
@@ -70,7 +51,7 @@ public class ProjectionService extends AbstractService {
         return responseProjectionDTO;
     }
 
-    public List<Integer> getFreePlaces(int id) throws BadRequestException, SQLException {
+    public List<Integer> getFreePlaces(int id) throws BadRequestException {
         Optional<Projection> sProjection = projectionRepository.findById(id);
         if (sProjection.isEmpty()) {
             throw new BadRequestException("Projection does not exist");
@@ -93,7 +74,7 @@ public class ProjectionService extends AbstractService {
         return start.compareTo(date) * date.compareTo(end) >= 0;
     }
 
-    public ProjectionDTO removeProjection(int projectionId, int userId) throws UnauthorizedException {
+    public ResponseProjectionDTO removeProjection(int projectionId, int userId) throws UnauthorizedException {
         if (!isAdmin(userId)) {
             throw new UnauthorizedException("Only admins can remove projections");
         }
@@ -101,13 +82,13 @@ public class ProjectionService extends AbstractService {
         if (sProjection.isEmpty()) {
             throw new NotFoundException("No projection with that id");
         }
-        ProjectionDTO deletedProjection = new ProjectionDTO(sProjection.get());
+        ResponseProjectionDTO deletedProjection = new ResponseProjectionDTO(sProjection.get());
         projectionRepository.deleteById(projectionId);
         return deletedProjection;
 
     }
 
-    public List<ProjectionDTO> getProjectionByCinema(int cinemaId) {
+    public List<ResponseProjectionDTO> getProjectionByCinema(int cinemaId) {
         List<Projection> projections = new ArrayList<>();
         Optional<Cinema> sCinema = cinemaRepository.findById(cinemaId);
         if (sCinema.isEmpty()) {
@@ -119,14 +100,14 @@ public class ProjectionService extends AbstractService {
         if (projections.isEmpty()) {
             throw new NotFoundException("No projections found for this cinema");
         }
-        List<ProjectionDTO> projectionDTOS = new ArrayList<>();
+        List<ResponseProjectionDTO> projectionDTOS = new ArrayList<>();
         for (Projection p : projections) {
-            projectionDTOS.add(new ProjectionDTO(p));
+            projectionDTOS.add(new ResponseProjectionDTO(p));
         }
         return projectionDTOS;
     }
 
-    public List<ProjectionDTO> getProjectionByCity(String city) {
+    public List<ResponseProjectionDTO> getProjectionByCity(String city) {
         List<Projection> projections = new ArrayList<>();
         List<Cinema> cinemas = cinemaRepository.findAllByCity(city);
         if (cinemas.isEmpty()) {
@@ -140,9 +121,9 @@ public class ProjectionService extends AbstractService {
         if (projections.isEmpty()) {
             throw new NotFoundException("No projections found for this city");
         }
-        List<ProjectionDTO> projectionDTOS = new ArrayList<>();
+        List<ResponseProjectionDTO> projectionDTOS = new ArrayList<>();
         for (Projection p : projections) {
-            projectionDTOS.add(new ProjectionDTO(p));
+            projectionDTOS.add(new ResponseProjectionDTO(p));
         }
         return projectionDTOS;
     }
@@ -157,7 +138,7 @@ public class ProjectionService extends AbstractService {
         }
         Hall hall = sHall.get();
         if (!projectionValidation(addProjectionDTO, hall)) {
-            throw new BadRequestException("The edit of this projection is in constrain to the time or hall");
+            throw new BadRequestException("There is already a projection during this time in the hall");
         }
         Optional<Movie> sMovie = movieRepository.findById(addProjectionDTO.getMovieId());
         if (sMovie.isEmpty()) {
@@ -171,7 +152,7 @@ public class ProjectionService extends AbstractService {
         return new ResponseProjectionDTO(projectionRepository.save(p));
     }
 
-    public List<ProjectionDTO> getAllProjectionsByGenre(int genre_id) {
+    public List<ResponseProjectionDTO> getAllProjectionsByGenre(int genre_id) {
         List<Movie> sMovies = movieRepository.findAllByGenreId(genre_id);
         if (sMovies.isEmpty()) {
             throw new NotFoundException("There are no movies with that genre");
@@ -184,9 +165,9 @@ public class ProjectionService extends AbstractService {
         if (sProjections.isEmpty()) {
             throw new NotFoundException("There are no projections with that genre");
         }
-        List<ProjectionDTO> projectionDTOS = new ArrayList<>();
+        List<ResponseProjectionDTO> projectionDTOS = new ArrayList<>();
         for (Projection p : sProjections) {
-            projectionDTOS.add(new ProjectionDTO(p));
+            projectionDTOS.add(new ResponseProjectionDTO(p));
         }
         return projectionDTOS;
     }

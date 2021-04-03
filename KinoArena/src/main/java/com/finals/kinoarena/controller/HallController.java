@@ -1,11 +1,11 @@
 package com.finals.kinoarena.controller;
 
-import com.finals.kinoarena.exceptions.BadRequestException;
-import com.finals.kinoarena.exceptions.UnauthorizedException;
-import com.finals.kinoarena.model.DTO.HallDTO;
-import com.finals.kinoarena.model.entity.User;
 import com.finals.kinoarena.service.HallService;
-import com.finals.kinoarena.util.SessionManager;
+import com.finals.kinoarena.model.DTO.ResponseHallDTO;
+import com.finals.kinoarena.util.exceptions.BadRequestException;
+import com.finals.kinoarena.util.exceptions.UnauthorizedException;
+import com.finals.kinoarena.model.DTO.RequestHallDTO;
+import com.finals.kinoarena.model.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
@@ -16,38 +16,38 @@ import javax.servlet.http.HttpSession;
 @RestController
 public class HallController extends AbstractController {
 
-
-    @Autowired
-    private SessionManager sessionManager;
     @Autowired
     private HallService hallService;
 
     @GetMapping(value = "/hall/{hall_id}")
-    public HallDTO getHallById(@PathVariable(name = "hall_id") int hallId) {
+    public ResponseHallDTO getHallById(@PathVariable(name = "hall_id") int hallId) {
         return hallService.getHallById(hallId);
     }
 
-    @PutMapping(value = "/hall")
-    public HallDTO addHall(@RequestBody HallDTO hallDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
+    @PutMapping(value = "/halls")
+    public ResponseHallDTO addHall(@RequestBody RequestHallDTO requestHallDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
-        if (hallDTO.getCapacity() < 50) {
+        if (requestHallDTO.getCapacity() < 50) {
             throw new BadRequestException("Hall capacity must be at least 50");
         }
-        return hallService.addHall(hallDTO, user.getId());
+        return hallService.addHall(requestHallDTO, user.getId());
     }
 
-    @DeleteMapping(value = "/cinema/{cinema_id}/hall/{hallId}")
-    public HallDTO deleteHall(@PathVariable(name = "cinema_id") int cinemaId, @PathVariable int hallId, HttpSession ses) throws UnauthorizedException {
+    @DeleteMapping(value = "/halls/{hallId}")
+    public ResponseHallDTO deleteHall(@PathVariable int hallId, HttpSession ses) throws UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
         int userId = user.getId();
-        return hallService.removeHall(cinemaId, hallId, userId);
+        return hallService.removeHall(hallId, userId);
     }
 
-    @PostMapping(value = "/cinema/{cinema_id}/hall/{hallId}")
-    public HallDTO editHall(@PathVariable(name = "cinema_id") int cinemaId, @PathVariable int hallId, @RequestBody HallDTO hallDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
+    @PostMapping(value = "/halls/{hallId}")
+    public ResponseHallDTO editHall(@PathVariable int hallId, @RequestBody RequestHallDTO requestHallDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
         int userId = user.getId();
-        return hallService.editHall(hallDTO, cinemaId, hallId, userId);
+        if (requestHallDTO.getCapacity() < 50) {
+            throw new BadRequestException("Hall capacity must be at least 50");
+        }
+        return hallService.editHall(requestHallDTO, hallId, userId);
     }
 }
 

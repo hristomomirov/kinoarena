@@ -4,8 +4,9 @@ import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Component;
 import org.springframework.scheduling.annotation.Async;
+import org.springframework.stereotype.Service;
 
-@Component
+@Service
 public class EmailSenderService {
 
     private JavaMailSender javaMailSender;

@@ -42,14 +42,14 @@ public class MovieController extends AbstractController {
         return movieService.addMovie(requestMovieDTO, user.getId());
     }
 
-    @DeleteMapping(value = "/movies{movie_id}")
+    @DeleteMapping(value = "/movies/{movie_id}")
     public ResponseMovieDTO deleteMovie(@PathVariable(name = "movie_id") int movieId, HttpSession ses) throws UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
         int userId = user.getId();
         return movieService.deleteMovie(movieId, userId);
     }
 
-    @PostMapping(value = "/movies{movie_id}")
+    @PostMapping(value = "/movies/{movie_id}")
     public ResponseMovieDTO editMovie(@PathVariable(name = "movie_id") int movieId, HttpSession ses, @RequestBody RequestMovieDTO requestMovieDTO) throws UnauthorizedException, BadRequestException {
         User user = sessionManager.getLoggedUser(ses);
         int userId = user.getId();

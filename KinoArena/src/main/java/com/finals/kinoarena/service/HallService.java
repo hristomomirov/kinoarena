@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Component
-public class HallService extends AbstractService {
+public class HallService extends com.finals.kinoarena.service.AbstractService {
 
     @Autowired
     private HallRepository hallRepository;

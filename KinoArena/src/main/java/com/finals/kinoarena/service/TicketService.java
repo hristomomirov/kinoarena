@@ -8,6 +8,7 @@ import com.finals.kinoarena.model.DTO.StatisticsDTO;
 import com.finals.kinoarena.model.entity.Projection;
 import com.finals.kinoarena.model.entity.Ticket;
 import com.finals.kinoarena.model.entity.User;
+import com.finals.kinoarena.util.exceptions.UnauthorizedException;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
@@ -47,7 +48,10 @@ public class TicketService extends AbstractService {
         }
         return !freeSeats.contains(seat);
     }
-    public List<StatisticsDTO> getAllSoldTickets(){
+    public List<StatisticsDTO> getAllSoldTickets(User user) throws UnauthorizedException {
+        if (!isAdmin(user.getId())) {
+            throw new UnauthorizedException("Only admins can remove cinemas");
+        }
         return statisticsDAO.soldTicketsPerProjection();
     }
 }

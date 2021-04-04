@@ -32,8 +32,9 @@ public class TicketController extends AbstractController {
         return ticketService.getAllUserTickets(user);
     }
     @GetMapping(value = "/tickets/statistics")
-    public List<StatisticsDTO> getAllSoldTickets(){
-        return ticketService.getAllSoldTickets();
+    public List<StatisticsDTO> getAllSoldTickets(HttpSession ses) throws UnauthorizedException {
+        User user = sessionManager.getLoggedUser(ses);
+        return ticketService.getAllSoldTickets(user);
     }
 
     @PutMapping(value = "/projection/{projection_id}/ticket")

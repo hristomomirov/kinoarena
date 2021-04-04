@@ -27,12 +27,14 @@ import java.sql.SQLException;
     @RunWith(SpringJUnit4ClassRunner.class)
     @SpringBootTest
     public class RegistrationTest {
+
         @Autowired
         protected CinemaService cinemaService;
         @Autowired
         protected UserService userService;
+
         @Test
-        public void testRegistrationUser() throws SQLException, InvalidNameException, BadRequestException {
+        public void testRegistrationUser() throws BadRequestException {
             int regSize = userService.findAll().size();
             userService.registerUser(new RegisterDTO("Tester","MalkiqMuk1","MalkiqMuk1","bigboy@gmail.com","Vasil","Aprilov",17,"student"));
             int regSize2 = userService.findAll().size();
@@ -42,7 +44,7 @@ import java.sql.SQLException;
         }
 
         @Test
-        public void toAddCinema() throws SQLException, InvalidNameException, BadRequestException, UnauthorizedException {
+        public void toAddCinema() throws BadRequestException, UnauthorizedException {
             int regSize = cinemaService.getAllCinemas().size();
             cinemaService.addCinema(new RequestCinemaDTO("Test Cinema","New York"),33);
             int regSize2 = cinemaService.getAllCinemas().size();
@@ -50,8 +52,5 @@ import java.sql.SQLException;
             if(regSize == regSize2) areSame = true;
             assertFalse(areSame);
         }
-
-
-
     }
 

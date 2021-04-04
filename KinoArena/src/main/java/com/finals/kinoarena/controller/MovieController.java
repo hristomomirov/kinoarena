@@ -25,7 +25,7 @@ public class MovieController extends AbstractController {
         return movieService.getMovieById(movieId);
     }
 
-    @GetMapping(value = "/genres/{genre_id}/movies")
+    @GetMapping(value = "/genre/{genre_id}/movies")
     public List<ResponseMovieDTO> getMovieByGenre(@PathVariable(name = "genre_id") int genreId) {
         return movieService.getMoviesByGenre(genreId);
     }

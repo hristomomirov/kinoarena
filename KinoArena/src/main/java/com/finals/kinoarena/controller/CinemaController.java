@@ -25,12 +25,12 @@ public class CinemaController extends AbstractController  {
         return cinemaService.getAllCinemas();
     }
 
-    @GetMapping(value = "/cinema/{cinema_id}")
+    @GetMapping(value = "/cinemas/{cinema_id}")
     public ResponseCinemaDTO getCinemaById(@PathVariable(name = "cinema_id") int cinema_Id) {
         return cinemaService.getCinemaById(cinema_Id);
     }
 
-    @GetMapping(value = "/cinemas/city/{city}")
+    @GetMapping(value = "/city/{city}/cinemas")
     public List<ResponseCinemaDTO> getAllCinemasByCity(@PathVariable String city) throws NotFoundException {
         return cinemaService.getAllCinemasByCity(city);
     }

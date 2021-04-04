@@ -6,7 +6,6 @@ import com.finals.kinoarena.model.DTO.AddProjectionDTO;
 import com.finals.kinoarena.model.DTO.ResponseProjectionDTO;
 import com.finals.kinoarena.model.entity.User;
 import com.finals.kinoarena.service.ProjectionService;
-import com.finals.kinoarena.util.SessionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
@@ -61,7 +60,6 @@ public class ProjectionController extends AbstractController {
     public ResponseProjectionDTO editProjection(@RequestBody AddProjectionDTO addProjectionDTO, HttpSession ses,
                                                 @PathVariable(name = "projection_id") int projectionId) throws BadRequestException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
-        projectionService.getProjectionById(projectionId);
         if (!validateNewProjection(addProjectionDTO)) {
             throw new BadRequestException("Please fill all requested fields");
         }

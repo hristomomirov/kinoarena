@@ -82,14 +82,19 @@ public class UserController extends AbstractController {
         return noPassDto;
     }
 
+    private boolean validateLogIn(LoginDTO loginDTO) {
+        return !loginDTO.getUsername().isBlank() &&
+                !loginDTO.getPassword().isBlank();
+    }
+
     @PostMapping(value = "/users/edit")
     public UserWithoutPassDTO changePassword(@RequestBody EditUserPasswordDTO passwordDTO, HttpSession ses) throws UnauthorizedException, BadRequestException {
         User user = sessionManager.getLoggedUser(ses);
-        passwordDTO.setId(user.getId());
+        int userId = user.getId();
         if (!validatePassword(passwordDTO.getNewPassword()) && validatePassword(passwordDTO.getConfirmPassword()) && validatePassword(passwordDTO.getOldPassword())) {
             throw new BadRequestException("Password must be between 8 and 20 symbols and must contain at least one upper and lower case letter and number");
         }
-        return userService.changePassword(passwordDTO);
+        return userService.changePassword(passwordDTO,userId);
     }
 
     @PostMapping(value = "/users/logout")
@@ -99,11 +104,6 @@ public class UserController extends AbstractController {
         }
         sessionManager.logoutUser(ses);
         return "You have been successfully logged out";
-    }
-
-    private boolean validateLogIn(LoginDTO loginDTO) {
-        return !loginDTO.getUsername().isBlank() &&
-                !loginDTO.getPassword().isBlank();
     }
 
     private boolean validateRegister(RegisterDTO registerDTO) throws BadRequestException {
@@ -120,7 +120,7 @@ public class UserController extends AbstractController {
         if (age == null) {
             throw new BadRequestException("Please fill all necessary fields");
         }
-        if (age >= 0 && age <= 120) {
+        if (age >= 0 && age <= 100) {
             return true;
         }
         throw new BadRequestException("Incorrect age.Age cannot be less than 0 and more than 120");

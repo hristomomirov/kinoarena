@@ -50,7 +50,7 @@ public class CinemaService extends AbstractService {
 
     public ResponseCinemaDTO addCinema(RequestCinemaDTO requestCinemaDTO, int userId) throws BadRequestException, UnauthorizedException {
         if (!isAdmin(userId)) {
-            throw new UnauthorizedException("Only admins can remove cinemas");
+            throw new UnauthorizedException("Only admins can add cinemas");
         }
         if (cinemaExists(requestCinemaDTO)) {
             throw new BadRequestException("There is already a cinema with that name in that city");
@@ -83,7 +83,7 @@ public class CinemaService extends AbstractService {
 
     public ResponseCinemaDTO editCinema(RequestCinemaDTO requestCinemaDTO, int cinemaId, int userId) throws BadRequestException, UnauthorizedException {
         if (!isAdmin(userId)) {
-            throw new UnauthorizedException("Only admins can remove cinemas");
+            throw new UnauthorizedException("Only admins can edit cinemas");
         }
         Optional<Cinema> sCinema = cinemaRepository.findById(cinemaId);
         if (sCinema.isEmpty()) {

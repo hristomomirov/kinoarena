@@ -111,7 +111,7 @@ public class ProjectionService extends AbstractService {
         List<Projection> projections = new ArrayList<>();
         List<Cinema> cinemas = cinemaRepository.findAllByCity(city);
         if (cinemas.isEmpty()) {
-            throw new NotFoundException("Cinema is not in this city");
+            throw new NotFoundException("No found cinemas in this city");
         }
         for (Cinema c : cinemas) {
             for (Hall h : c.getHalls()) {

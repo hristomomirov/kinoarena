@@ -23,6 +23,8 @@ public class UserService extends AbstractService {
     @Autowired
     private ConfirmationTokenRepository confirmationTokenRepository;
 
+
+
     public UserWithoutPassDTO registerUser(RegisterDTO registerDTO) throws BadRequestException {
         if (emailExist(registerDTO.getEmail())) {
             throw new BadRequestException("There is already a user with that email address: " + registerDTO.getEmail());

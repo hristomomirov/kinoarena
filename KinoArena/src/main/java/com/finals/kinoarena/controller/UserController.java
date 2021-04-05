@@ -33,6 +33,7 @@ public class UserController extends AbstractController {
     @Autowired
     private UserRepository userRepository;
 
+
     @PostMapping(value = "/users")
     @JsonValue
     public String registerUser(@RequestBody RegisterDTO registerDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {

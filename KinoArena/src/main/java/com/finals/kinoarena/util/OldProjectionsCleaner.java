@@ -23,8 +23,9 @@ public class OldProjectionsCleaner implements Runnable {
 
     public OldProjectionsCleaner() throws SQLException{
 
-        statement = jdbcTemplate.getDataSource().getConnection().createStatement();
-        statement1 = jdbcTemplate.getDataSource().getConnection().createStatement();
+        Connection con = DriverManager.getConnection("jdbc:mysql://84.238.145.199:7777/kinoarena?user=cadet&password=survivor2021&useLegacyDatetimeCode=false&serverTimezone=EET");
+        statement = con.createStatement();
+        statement1 = con.createStatement();
     }
 
     @Override

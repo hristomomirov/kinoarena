@@ -100,4 +100,16 @@ public class MovieService extends com.finals.kinoarena.service.AbstractService {
         JsonNode jsonNode = om.readTree(response.body());
         return new IMDBMovieDTO(jsonNode);
     }
+
+    public String findMovies(String title) throws IOException, InterruptedException {
+        String url = "https://imdb-internet-movie-database-unofficial.p.rapidapi.com/search/" + title;
+        HttpRequest request = HttpRequest.newBuilder()
+                .uri(URI.create(url))
+                .header("x-rapidapi-key", "fb75dc0fa7mshf37a26ee181e77cp12ffc0jsn8b15cd65c1ee")
+                .header("x-rapidapi-host", "imdb-internet-movie-database-unofficial.p.rapidapi.com")
+                .method("GET", HttpRequest.BodyPublishers.noBody())
+                .build();
+        HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
+        return response.body();
+    }
 }

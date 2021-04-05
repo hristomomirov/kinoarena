@@ -29,6 +29,10 @@ public class MovieController extends AbstractController {
     public List<ResponseMovieDTO> getMovieByGenre(@PathVariable(name = "genre_id") int genreId) {
         return movieService.getMoviesByGenre(genreId);
     }
+    @GetMapping(value = "/movies/title/{title}")
+    public String findMoviesByName(@PathVariable(name ="title") String title) throws IOException, InterruptedException {
+        return movieService.findMovies(title);
+    }
 
     @PostMapping(value = "/movies")
     public ResponseMovieDTO addMovie(@RequestBody RequestMovieDTO requestMovieDTO, HttpSession ses) throws BadRequestException, UnauthorizedException, IOException, InterruptedException {

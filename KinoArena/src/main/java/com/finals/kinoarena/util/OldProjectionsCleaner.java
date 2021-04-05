@@ -1,6 +1,8 @@
 package com.finals.kinoarena.util;
 
 import com.finals.kinoarena.model.DTO.ProjectionToCleanDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.sql.*;
 import java.time.LocalDate;
@@ -16,12 +18,13 @@ public class OldProjectionsCleaner implements Runnable {
     private List<ProjectionToCleanDTO> projections = new LinkedList<>();
     private Statement statement;
     private Statement statement1;
+    @Autowired
+    JdbcTemplate jdbcTemplate;
 
-    public OldProjectionsCleaner() throws SQLException, ClassNotFoundException{
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection con = DriverManager.getConnection("jdbc:mysql://84.238.145.199:7777/kinoarena?user=cadet&password=survivor2021&useLegacyDatetimeCode=false&serverTimezone=EET");
-        statement = con.createStatement();
-        statement1 = con.createStatement();
+    public OldProjectionsCleaner() throws SQLException{
+
+        statement = jdbcTemplate.getDataSource().getConnection().createStatement();
+        statement1 = jdbcTemplate.getDataSource().getConnection().createStatement();
     }
 
     @Override

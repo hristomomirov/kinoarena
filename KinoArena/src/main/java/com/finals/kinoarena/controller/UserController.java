@@ -33,7 +33,7 @@ public class UserController extends AbstractController {
     @Autowired
     private UserRepository userRepository;
 
-    @PutMapping(value = "/users")
+    @PostMapping(value = "/users")
     @JsonValue
     public String registerUser(@RequestBody RegisterDTO registerDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
         if (sessionManager.isLogged(ses)) {
@@ -66,7 +66,7 @@ public class UserController extends AbstractController {
         return "Account verified";
     }
 
-    @PostMapping(value = "/users")
+    @PostMapping(value = "/users/login")
     public UserWithoutTicketAndPassDTO login(@RequestBody LoginDTO loginDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
         if (sessionManager.isLogged(ses)) {
             throw new UnauthorizedException("You are currently signed in to an account.Please logout");
@@ -87,7 +87,7 @@ public class UserController extends AbstractController {
                 !loginDTO.getPassword().isBlank();
     }
 
-    @PostMapping(value = "/users/edit")
+    @PutMapping(value = "/users/edit")
     public UserWithoutPassDTO changePassword(@RequestBody EditUserPasswordDTO passwordDTO, HttpSession ses) throws UnauthorizedException, BadRequestException {
         User user = sessionManager.getLoggedUser(ses);
         int userId = user.getId();

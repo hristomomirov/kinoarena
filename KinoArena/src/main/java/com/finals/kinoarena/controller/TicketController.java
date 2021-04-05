@@ -38,7 +38,7 @@ public class TicketController extends AbstractController {
         return ticketService.getAllSoldTickets(user);
     }
 
-    @PutMapping(value = "/projection/{projection_id}/ticket")
+    @PostMapping(value = "/projection/{projection_id}/ticket")
     public ResponseTicketDTO reserveTicket(@RequestBody ReserveTicketDTO reserveTicketDTO, HttpSession ses,
                                            @PathVariable(name = "projection_id") int projectionId)
                                            throws UnauthorizedException, BadRequestException, SQLException {

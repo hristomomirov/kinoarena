@@ -35,7 +35,7 @@ public class CinemaController extends AbstractController  {
         return cinemaService.getAllCinemasByCity(city);
     }
 
-    @PutMapping(value = "/cinemas")
+    @PostMapping(value = "/cinemas")
     public ResponseCinemaDTO addCinema(@RequestBody RequestCinemaDTO requestCinemaDTO, HttpSession ses) throws BadRequestException, NotFoundException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
         int userId = user.getId();
@@ -53,7 +53,7 @@ public class CinemaController extends AbstractController  {
 
     }
 
-    @PostMapping(value = "/cinemas/{cinema_id}")
+    @PutMapping(value = "/cinemas/{cinema_id}")
     public ResponseCinemaDTO editCinema(@PathVariable(name = "cinema_id") int cinemaId, @RequestBody RequestCinemaDTO requestCinemaDTO, HttpSession ses) throws UnauthorizedException, BadRequestException {
         User user = sessionManager.getLoggedUser(ses);
         if (!validateNewCinema(requestCinemaDTO.getCity(), requestCinemaDTO.getName())) {

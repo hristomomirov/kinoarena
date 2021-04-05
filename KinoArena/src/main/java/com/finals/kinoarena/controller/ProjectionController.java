@@ -33,7 +33,7 @@ public class ProjectionController extends AbstractController {
         return projectionService.getFreePlaces(projectionId);
     }
 
-    @PutMapping(value = "/projections")
+    @PostMapping(value = "/projections")
     public ResponseProjectionDTO addProjection(@RequestBody AddProjectionDTO addProjectionDTO, HttpSession ses) throws BadRequestException, UnauthorizedException, SQLException {
         User user = sessionManager.getLoggedUser(ses);
         if (!validateNewProjection(addProjectionDTO)) {
@@ -56,7 +56,7 @@ public class ProjectionController extends AbstractController {
         return projectionService.getAllProjectionsByGenre(genre_id);
     }
 
-    @PostMapping(value = "/projections/{projection_id}")
+    @PutMapping(value = "/projections/{projection_id}")
     public ResponseProjectionDTO editProjection(@RequestBody AddProjectionDTO addProjectionDTO, HttpSession ses,
                                                 @PathVariable(name = "projection_id") int projectionId) throws BadRequestException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);

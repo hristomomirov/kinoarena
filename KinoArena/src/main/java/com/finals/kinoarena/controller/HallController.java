@@ -24,7 +24,7 @@ public class HallController extends AbstractController {
         return hallService.getHallById(hallId);
     }
 
-    @PutMapping(value = "/halls")
+    @PostMapping(value = "/halls")
     public ResponseHallDTO addHall(@RequestBody RequestHallDTO requestHallDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
         if (requestHallDTO.getCapacity() < 50) {
@@ -40,7 +40,7 @@ public class HallController extends AbstractController {
         return hallService.removeHall(hallId, userId);
     }
 
-    @PostMapping(value = "/halls/{hallId}")
+    @PutMapping(value = "/halls/{hallId}")
     public ResponseHallDTO editHall(@PathVariable int hallId, @RequestBody RequestHallDTO requestHallDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
         int userId = user.getId();

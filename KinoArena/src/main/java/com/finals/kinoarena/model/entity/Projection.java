@@ -39,11 +39,11 @@ public class Projection {
             inverseJoinColumns = {@JoinColumn(name = "seat_id")}
     )
     @JsonManagedReference
-    List<Seat> freeSeats;
+    List<Seat> reservedSeats;
 
     public Projection(AddProjectionDTO dto) {
         startAt = dto.getStartAt();
-        freeSeats = new ArrayList<>();
+        reservedSeats = new ArrayList<>();
     }
 }
 

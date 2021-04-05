@@ -21,7 +21,7 @@ public class Seat {
 
     @Id
     private int id;
-    @ManyToMany(mappedBy = "freeSeats")
+    @ManyToMany(mappedBy = "reservedSeats")
     @JsonBackReference
     List<Projection> projections;
 }

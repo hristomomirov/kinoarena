@@ -38,8 +38,8 @@ public class Movie {
     private List<Projection> projections;
 
     public Movie(RequestMovieDTO requestMovieDTO) {
-        this.length = requestMovieDTO.getLength();
+
+        this.title = requestMovieDTO.getTitle();
         this.ageRestriction = requestMovieDTO.getAgeRestriction();
-        this.imdbId = requestMovieDTO.getImdbId();
     }
 }

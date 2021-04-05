@@ -1,3 +1,4 @@
+
 package com.finals.kinoarena.DAO;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,18 +20,16 @@ public class    SeatDAO {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public void addFreeSeats(int projectionId, int capacity) throws SQLException {
+    public void reserveSeat(int projectionId, int seat) throws SQLException {
         Connection c = Objects.requireNonNull(jdbcTemplate.getDataSource()).getConnection();
         PreparedStatement ps = c.prepareStatement("INSERT INTO projections_have_seats (projection_id,seat_id) VALUES (?,?);");
-        for (int i = 1; i <= capacity; i++) {
             ps.setInt(1, projectionId);
-            ps.setInt(2, i);
+            ps.setInt(2, seat);
             ps.executeUpdate();
-        }
         c.close();
     }
 
-    public List<Integer> getFreeSeatsForProjection(int projectionId) {
+    public List<Integer> getReservedSeats(int projectionId) {
         List<Integer> seats = new ArrayList<>();
         try(Connection c = jdbcTemplate.getDataSource().getConnection();
             PreparedStatement ps = c.prepareStatement("SELECT seat_id FROM projections_have_seats WHERE projection_id = ?")) {

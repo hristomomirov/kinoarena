@@ -49,30 +49,34 @@ public class MovieService extends com.finals.kinoarena.service.AbstractService {
         if (!isAdmin(userId)) {
             throw new UnauthorizedException("Only admins can add movies");
         }
-        Movie sMovie = movieRepository.findByImdbId(requestMovieDTO.getImdbId());
+        Movie sMovie = movieRepository.findByTitle(requestMovieDTO.getTitle());
         if (sMovie != null) {
-            throw new BadRequestException("There is already a movie with that IMDB ID");
+            throw new BadRequestException("There is already a movie with that title");
         }
         Optional<Genre> sGenre = genreRepository.findById(requestMovieDTO.getGenreId());
         if (sGenre.isEmpty()) {
             throw new BadRequestException("Invalid genre");
         }
+
+        String title = requestMovieDTO.getTitle();
+        IMDBMovieDTO imdb = getImdbInfo(title);
+        if (imdb.getImdbId().isBlank()){
+            throw new BadRequestException("Movie with that name does not exist");
+        }
+
         Genre genre = sGenre.get();
         Movie movie = new Movie(requestMovieDTO);
+
         movie.setGenre(genre);
-
-        String imdbId = requestMovieDTO.getImdbId();
-        IMDBMovieDTO imdb = getImdbInfo(imdbId);
-
-        movie.setTitle(imdb.getTitle());
+        movie.setImdbId(imdb.getImdbId());
         movie.setYear(imdb.getYear());
+        movie.setLength(imdb.getLength());
         movie.setPlot(imdb.getPlot());
         movie.setRating(imdb.getRating());
         movie.setPoster(imdb.getPoster());
         movie.setLeadingActor(imdb.getLead());
 
         return new ResponseMovieDTO(movieRepository.save(movie));
-
     }
 
     public ResponseMovieDTO deleteMovie(int movieId, int userId) throws UnauthorizedException {
@@ -87,8 +91,9 @@ public class MovieService extends com.finals.kinoarena.service.AbstractService {
         return new ResponseMovieDTO(sMovie.get());
     }
 
-    private IMDBMovieDTO getImdbInfo(String imdbId) throws IOException, InterruptedException {
-        String url = Constants.API_URL + imdbId;
+    private IMDBMovieDTO getImdbInfo(String title) throws IOException, InterruptedException {
+
+        String url = Constants.API_URL + title.replaceAll("\\s", "");
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
                 .header("x-rapidapi-key", "fb75dc0fa7mshf37a26ee181e77cp12ffc0jsn8b15cd65c1ee")

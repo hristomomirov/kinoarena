@@ -10,6 +10,7 @@ import com.finals.kinoarena.model.entity.Ticket;
 import com.finals.kinoarena.model.entity.User;
 import com.finals.kinoarena.util.exceptions.UnauthorizedException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.sql.SQLException;
 import java.time.LocalDateTime;
@@ -23,31 +24,33 @@ public class TicketService extends AbstractService {
         return ticketRepository.findAllByOwnerId(user.getId());
     }
 
+    @Transactional
     public ResponseTicketDTO reserveTicket(int projectionId, User user, ReserveTicketDTO reserveTicketDTO) throws BadRequestException, SQLException {
         Optional<Projection> sProjection = projectionRepository.findById(projectionId);
         if (sProjection.isEmpty()) {
             throw new NotFoundException("Projection does not exist");
         }
         Projection projection = sProjection.get();
-        if (seatsAreTaken(projectionId, reserveTicketDTO.getSeat())) {
-            throw new BadRequestException("Seats already taken.Please select different seats");
+        if (seatsAreTaken(projection, reserveTicketDTO.getSeat())) {
+            throw new BadRequestException("Seat already taken.Please select different seat");
         }
         Ticket ticket = new Ticket();
         ticket.setOwner(user);
         ticket.setProjection(projection);
         ticket.setSeat(reserveTicketDTO.getSeat());
-        seatDAO.removeSeat(reserveTicketDTO.getSeat(), projectionId);
+        seatDAO.reserveSeat(projectionId, reserveTicketDTO.getSeat());
         ticket.setPurchasedAt(LocalDateTime.now());
         return new ResponseTicketDTO(ticketRepository.save(ticket));
     }
 
-    private boolean seatsAreTaken(int projectionId, int seat) throws BadRequestException {
-        List<Integer> freeSeats = seatDAO.getFreeSeatsForProjection(projectionId);
-        if (freeSeats.isEmpty()) {
+    private boolean seatsAreTaken(Projection projection, int seat) throws BadRequestException {
+        List<Integer> freeSeats = seatDAO.getReservedSeats(projection.getId());
+        if (freeSeats.size() == projection.getHall().getCapacity()) {
             throw new BadRequestException("We are sorry, all seats are taken");
         }
-        return !freeSeats.contains(seat);
+        return freeSeats.contains(seat);
     }
+
     public List<StatisticsDTO> getAllSoldTickets(User user) throws UnauthorizedException {
         if (!isAdmin(user.getId())) {
             throw new UnauthorizedException("Only admins can remove cinemas");

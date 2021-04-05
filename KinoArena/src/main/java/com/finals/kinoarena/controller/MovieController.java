@@ -1,6 +1,7 @@
 package com.finals.kinoarena.controller;
 
 import com.finals.kinoarena.service.MovieService;
+import com.finals.kinoarena.util.Constants;
 import com.finals.kinoarena.util.exceptions.BadRequestException;
 import com.finals.kinoarena.util.exceptions.UnauthorizedException;
 import com.finals.kinoarena.model.DTO.*;
@@ -52,9 +53,8 @@ public class MovieController extends AbstractController {
 
 
     private boolean validateMovie(RequestMovieDTO dto) throws BadRequestException {
-        return validateLength(dto.getLength()) &&
-                validateAgeRestriction(dto.getAgeRestriction()) &&
-                validateGenre(dto) && validateImdbId(dto.getImdbId());
+        return  validateAgeRestriction(dto.getAgeRestriction()) &&
+                validateGenre(dto) && validateImdbId(dto.getTitle());
     }
 
     private boolean validateImdbId(String imdbId) throws BadRequestException {
@@ -78,11 +78,5 @@ public class MovieController extends AbstractController {
         throw new BadRequestException("Age restriction cannot be less than 3");
     }
 
-    private boolean validateLength(int length) throws BadRequestException {
-        if (length > 60 && length <= 300) {
-            return true;
-        }
-        throw new BadRequestException("Length must be between 60 and 300 minutes");
-    }
 }
 

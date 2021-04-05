@@ -47,17 +47,15 @@ public class ProjectionService extends AbstractService {
         projection.setHall(hall);
         projection.setMovie(sMovie.get());
         projection.setEndAt(projection.getStartAt().plusMinutes(sMovie.get().getLength())); // proj start + movie.getLength
-        ResponseProjectionDTO responseProjectionDTO = new ResponseProjectionDTO(projectionRepository.save(projection));
-        seatDAO.addFreeSeats(responseProjectionDTO.getId(), responseProjectionDTO.getHall().getCapacity());
-        return responseProjectionDTO;
+        return new ResponseProjectionDTO(projectionRepository.save(projection));
     }
 
-    public List<Integer> getFreePlaces(int id) throws BadRequestException {
-        Optional<Projection> sProjection = projectionRepository.findById(id);
+    public List<Integer> getFreePlaces(int projectionId) throws BadRequestException {
+        Optional<Projection> sProjection = projectionRepository.findById(projectionId);
         if (sProjection.isEmpty()) {
             throw new BadRequestException("Projection does not exist");
         }
-        return seatDAO.getFreeSeatsForProjection(id);
+        return seatDAO.getReservedSeats(projectionId);
     }
 
     private boolean projectionValidation(AddProjectionDTO addProjectionDTO, Hall hall) throws BadRequestException {

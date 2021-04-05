@@ -1,5 +1,6 @@
 package com.finals.kinoarena.controller;
 
+import com.finals.kinoarena.model.DTO.GenreDTO;
 import com.finals.kinoarena.util.exceptions.BadRequestException;
 import com.finals.kinoarena.util.exceptions.UnauthorizedException;
 import com.finals.kinoarena.model.DTO.AddProjectionDTO;
@@ -43,7 +44,7 @@ public class ProjectionController extends AbstractController {
     }
 
     @GetMapping(value = "/cinema/{cinema_id}/projections")
-    public List<ResponseProjectionDTO> getAllProjectionsForCity(@PathVariable(name = "cinema_id") int cinemaId) {
+    public List<ResponseProjectionDTO> getAllProjectionsForCinema(@PathVariable(name = "cinema_id") int cinemaId) {
         return projectionService.getProjectionByCinema(cinemaId);
     }
 
@@ -70,6 +71,11 @@ public class ProjectionController extends AbstractController {
     public ResponseProjectionDTO deleteProjection(@PathVariable(name = "projection_id") int projectionId, HttpSession ses) throws UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
         return projectionService.removeProjection(projectionId, user.getId());
+    }
+
+    @GetMapping(value = "/genres")
+    public List<GenreDTO> getAllgenres(){
+        return projectionService.getAllGenres();
     }
 
     private boolean validateNewProjection(AddProjectionDTO dto) throws BadRequestException {

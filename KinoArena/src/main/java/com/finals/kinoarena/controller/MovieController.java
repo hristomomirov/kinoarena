@@ -31,7 +31,7 @@ public class MovieController extends AbstractController {
         return movieService.getMoviesByGenre(genreId);
     }
     @GetMapping(value = "/movies/title/{title}")
-    public String findMoviesByName(@PathVariable(name ="title") String title) throws IOException, InterruptedException {
+    public IMDBDataDTO findMoviesByName(@PathVariable(name ="title") String title) throws IOException, InterruptedException {
         return movieService.findMovies(title);
     }
 

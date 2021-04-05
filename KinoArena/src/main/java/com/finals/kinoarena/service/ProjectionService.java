@@ -1,13 +1,10 @@
 package com.finals.kinoarena.service;
 
+import com.finals.kinoarena.model.entity.*;
 import com.finals.kinoarena.util.exceptions.BadRequestException;
 import com.finals.kinoarena.util.exceptions.NotFoundException;
 import com.finals.kinoarena.util.exceptions.UnauthorizedException;
 import com.finals.kinoarena.model.DTO.*;
-import com.finals.kinoarena.model.entity.Cinema;
-import com.finals.kinoarena.model.entity.Hall;
-import com.finals.kinoarena.model.entity.Movie;
-import com.finals.kinoarena.model.entity.Projection;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
@@ -168,5 +165,18 @@ public class ProjectionService extends AbstractService {
             projectionDTOS.add(new ResponseProjectionDTO(p));
         }
         return projectionDTOS;
+    }
+
+    public List<GenreDTO> getAllGenres() {
+        List<Genre> genres = genreRepository.findAll();
+        if (genres.isEmpty()) {
+            throw new NotFoundException("No found genres");
+        }
+        List<GenreDTO> genreDTOS = new ArrayList<>();
+        for (Genre g : genres
+        ) {
+            genreDTOS.add(new GenreDTO(g));
+        }
+        return genreDTOS;
     }
 }

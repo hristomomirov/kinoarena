@@ -2,6 +2,7 @@ package com.finals.kinoarena.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.finals.kinoarena.model.DTO.IMDBDataDTO;
 import com.finals.kinoarena.model.DTO.IMDBMovieDTO;
 import com.finals.kinoarena.util.Constants;
 import com.finals.kinoarena.util.exceptions.BadRequestException;
@@ -66,7 +67,7 @@ public class MovieService extends com.finals.kinoarena.service.AbstractService {
 
         Genre genre = sGenre.get();
         Movie movie = new Movie(requestMovieDTO);
-
+        movie.setTitle(imdb.getTitle());
         movie.setGenre(genre);
         movie.setImdbId(imdb.getImdbId());
         movie.setYear(imdb.getYear());
@@ -106,7 +107,7 @@ public class MovieService extends com.finals.kinoarena.service.AbstractService {
         return new IMDBMovieDTO(jsonNode);
     }
 
-    public String findMovies(String title) throws IOException, InterruptedException {
+    public IMDBDataDTO findMovies(String title) throws IOException, InterruptedException {
         String url = "https://imdb-internet-movie-database-unofficial.p.rapidapi.com/search/" + title;
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(url))
@@ -115,6 +116,8 @@ public class MovieService extends com.finals.kinoarena.service.AbstractService {
                 .method("GET", HttpRequest.BodyPublishers.noBody())
                 .build();
         HttpResponse<String> response = HttpClient.newHttpClient().send(request, HttpResponse.BodyHandlers.ofString());
-        return response.body();
+        ObjectMapper om = new ObjectMapper();
+        JsonNode jsonNode = om.readTree(response.body());
+        return new IMDBDataDTO(jsonNode);
     }
 }

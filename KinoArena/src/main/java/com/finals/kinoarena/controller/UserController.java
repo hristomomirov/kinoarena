@@ -89,7 +89,7 @@ public class UserController extends AbstractController {
     }
 
     @PutMapping(value = "/users/edit")
-    public UserWithoutPassDTO changePassword(@RequestBody EditUserPasswordDTO passwordDTO, HttpSession ses) throws UnauthorizedException, BadRequestException {
+    public UserWithoutTicketAndPassDTO changePassword(@RequestBody EditUserPasswordDTO passwordDTO, HttpSession ses) throws UnauthorizedException, BadRequestException {
         User user = sessionManager.getLoggedUser(ses);
         int userId = user.getId();
         if (!validatePassword(passwordDTO.getNewPassword()) && validatePassword(passwordDTO.getConfirmPassword()) && validatePassword(passwordDTO.getOldPassword())) {

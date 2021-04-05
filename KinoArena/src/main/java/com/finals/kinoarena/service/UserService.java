@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
@@ -22,7 +23,6 @@ public class UserService extends AbstractService {
     private PasswordEncoder passwordEncoder;
     @Autowired
     private ConfirmationTokenRepository confirmationTokenRepository;
-
 
 
     public UserWithoutPassDTO registerUser(RegisterDTO registerDTO) throws BadRequestException {
@@ -47,20 +47,22 @@ public class UserService extends AbstractService {
         if (verifyUsername(username) && verifyPassword(username, password)) {
             User user = getByUsername(username);
             return new UserWithoutTicketAndPassDTO(user);
-        } else {
-            throw new BadRequestException("Username or Password incorrect");
         }
+        throw new BadRequestException("Username or Password incorrect");
     }
 
-    public UserWithoutPassDTO changePassword(EditUserPasswordDTO passwordDTO,int userId) throws BadRequestException {
+    public UserWithoutTicketAndPassDTO changePassword(EditUserPasswordDTO passwordDTO, int userId) throws BadRequestException {
+
         if (!passwordDTO.getNewPassword().equals(passwordDTO.getConfirmPassword())) {
             throw new BadRequestException("Passwords must match");
         }
         User user = userRepository.findById(userId).get();
+        System.out.println(user.getPassword());
         if (verifyPassword(user.getUsername(), passwordDTO.getOldPassword())) {
             user.setPassword(passwordEncoder.encode(passwordDTO.getNewPassword()));
+            return new UserWithoutTicketAndPassDTO(userRepository.save(user));
         }
-        return new UserWithoutPassDTO(userRepository.save(user));
+        throw new BadRequestException("Username or Password incorrect");
     }
 
     public User getByUsername(String username) {
@@ -82,10 +84,9 @@ public class UserService extends AbstractService {
     private boolean verifyPassword(String username, String password) {
         String hashedPass = userRepository.findByUsername(username).getPassword();
         return passwordEncoder.matches(password, hashedPass);
-
     }
 
-    public List<User> findAll(){
+    public List<User> findAll() {
         return userRepository.findAll();
     }
 

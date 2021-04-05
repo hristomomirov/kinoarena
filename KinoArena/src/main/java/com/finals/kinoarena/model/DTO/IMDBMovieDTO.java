@@ -50,9 +50,9 @@ public class IMDBMovieDTO {
                 }
             }
         }
-        if(listMinutes.size() == 1){
+        if (listMinutes.size() == 1) {
             minutes = listMinutes.get(0);
-        }else {
+        } else {
             minutes = listMinutes.get(0) * 10 + listMinutes.get(1);
         }
         return hours + minutes;

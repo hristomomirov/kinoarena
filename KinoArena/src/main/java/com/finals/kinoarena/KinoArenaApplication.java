@@ -11,7 +11,7 @@ import java.sql.SQLException;
 @SpringBootApplication
 public class KinoArenaApplication {
 
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+    public static void main(String[] args) throws SQLException {
         
         SpringApplication.run(KinoArenaApplication.class, args);
         Thread cleaner = new Thread(new OldProjectionsCleaner());

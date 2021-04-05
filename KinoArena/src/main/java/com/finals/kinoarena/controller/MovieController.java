@@ -25,12 +25,12 @@ public class MovieController extends AbstractController {
         return movieService.getMovieById(movieId);
     }
 
-    @GetMapping(value = "/genres/{genre_id}/movies")
+    @GetMapping(value = "/genre/{genre_id}/movies")
     public List<ResponseMovieDTO> getMovieByGenre(@PathVariable(name = "genre_id") int genreId) {
         return movieService.getMoviesByGenre(genreId);
     }
 
-    @PutMapping(value = "/movies")
+    @PostMapping(value = "/movies")
     public ResponseMovieDTO addMovie(@RequestBody RequestMovieDTO requestMovieDTO, HttpSession ses) throws BadRequestException, UnauthorizedException, IOException, InterruptedException {
         User user = sessionManager.getLoggedUser(ses);
         if (!validateMovie(requestMovieDTO)) {

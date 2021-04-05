@@ -31,13 +31,14 @@ public class TicketController extends AbstractController {
         User user = sessionManager.getLoggedUser(ses);
         return ticketService.getAllUserTickets(user);
     }
+
     @GetMapping(value = "/tickets/statistics")
     public List<StatisticsDTO> getAllSoldTickets(HttpSession ses) throws UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
         return ticketService.getAllSoldTickets(user);
     }
 
-    @PutMapping(value = "/projection/{projection_id}/ticket")
+    @PostMapping(value = "/projection/{projection_id}/ticket")
     public ResponseTicketDTO reserveTicket(@RequestBody ReserveTicketDTO reserveTicketDTO, HttpSession ses,
                                            @PathVariable(name = "projection_id") int projectionId)
                                            throws UnauthorizedException, BadRequestException, SQLException {

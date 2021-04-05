@@ -9,7 +9,6 @@ import lombok.Setter;
 @Setter
 public class EditUserPasswordDTO {
 
-    private int id;
     private String oldPassword;
     private String newPassword;
     private String confirmPassword;

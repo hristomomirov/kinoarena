@@ -9,6 +9,7 @@ import com.finals.kinoarena.model.entity.Hall;
 import com.finals.kinoarena.model.entity.Movie;
 import com.finals.kinoarena.model.entity.Projection;
 import org.springframework.stereotype.Service;
+
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class ProjectionService extends AbstractService {
         }
         return new ResponseProjectionDTO(sProjection.get());
     }
-// TODO must be transaction , transactional doesnt work
+
     public ResponseProjectionDTO addProjection(AddProjectionDTO addProjectionDTO, int userId) throws BadRequestException, SQLException, UnauthorizedException {
         if (!isAdmin(userId)) {
             throw new UnauthorizedException("Only admins can add projections");
@@ -128,7 +129,7 @@ public class ProjectionService extends AbstractService {
         return projectionDTOS;
     }
 
-    public ResponseProjectionDTO editProjection(int userId, AddProjectionDTO addProjectionDTO, int projId) throws BadRequestException, UnauthorizedException {
+    public ResponseProjectionDTO editProjection(int userId, AddProjectionDTO addProjectionDTO, int projectionId) throws BadRequestException, UnauthorizedException {
         if (!isAdmin(userId)) {
             throw new UnauthorizedException("Only admins can edit projections");
         }
@@ -144,7 +145,7 @@ public class ProjectionService extends AbstractService {
         if (sMovie.isEmpty()) {
             throw new NotFoundException("Movie with that id does not exist");
         }
-        Projection p = projectionRepository.findById(projId).get();
+        Projection p = projectionRepository.findById(projectionId).get();
         p.setHall(sHall.get());
         p.setMovie(sMovie.get());
         p.setStartAt(addProjectionDTO.getStartAt());
@@ -158,8 +159,7 @@ public class ProjectionService extends AbstractService {
             throw new NotFoundException("There are no movies with that genre");
         }
         List<Projection> sProjections = new ArrayList<>();
-        for (Movie m : sMovies
-        ) {
+        for (Movie m : sMovies) {
             sProjections.addAll(projectionRepository.findByMovie_id(m.getId()));
         }
         if (sProjections.isEmpty()) {

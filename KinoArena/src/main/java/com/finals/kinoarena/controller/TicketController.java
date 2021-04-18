@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -23,8 +24,7 @@ public class TicketController extends AbstractController {
 
     @Autowired
     private TicketService ticketService;
-    @Autowired
-    private SeatDAO seatDAO;
+
 
     @GetMapping(value = "/tickets")
     public List<ResponseTicketDTO> getUserTickets(HttpSession ses) throws UnauthorizedException {
@@ -39,23 +39,11 @@ public class TicketController extends AbstractController {
     }
 
     @PostMapping(value = "/projection/{projection_id}/ticket")
-    public ResponseTicketDTO reserveTicket(@RequestBody ReserveTicketDTO reserveTicketDTO, HttpSession ses,
+    public ResponseTicketDTO reserveTicket(@Valid @RequestBody ReserveTicketDTO reserveTicketDTO, HttpSession ses,
                                            @PathVariable(name = "projection_id") int projectionId)
-                                           throws UnauthorizedException, BadRequestException, SQLException {
+            throws UnauthorizedException, BadRequestException, SQLException {
         User user = sessionManager.getLoggedUser(ses);
-        if (!validateReservation(reserveTicketDTO)) {
-            throw new BadRequestException("Invalid seat number");
-        }
         return ticketService.reserveTicket(projectionId, user, reserveTicketDTO);
     }
-
-
-    private boolean validateReservation(ReserveTicketDTO reserveTicketDTO) throws SQLException {
-        return validateSeat(reserveTicketDTO.getSeat());
-    }
-
-    private boolean validateSeat(int seat) throws SQLException {
-
-        return seat >= 1 && seat <=seatDAO.getMaxSeatNum();
-    }
 }
+

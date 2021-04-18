@@ -4,9 +4,6 @@ import com.finals.kinoarena.model.DTO.RequestCinemaDTO;
 import com.finals.kinoarena.util.exceptions.*;
 import com.finals.kinoarena.model.DTO.ResponseCinemaDTO;
 import com.finals.kinoarena.model.entity.Cinema;
-import com.finals.kinoarena.model.repository.CinemaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,7 +16,7 @@ public class CinemaService extends AbstractService {
     public List<ResponseCinemaDTO> getAllCinemas() throws NotFoundException {
         List<Cinema> cinemas = cinemaRepository.findAll();
         if (cinemas.isEmpty()) {
-            throw new NotFoundException("No found cinemas");
+            throw new NotFoundException("No cinemas found");
         }
         List<ResponseCinemaDTO> responseCinemaDTOS = new ArrayList<>();
         for (Cinema c : cinemas) {
@@ -52,20 +49,16 @@ public class CinemaService extends AbstractService {
         if (!isAdmin(userId)) {
             throw new UnauthorizedException("Only admins can add cinemas");
         }
-        if (cinemaExists(requestCinemaDTO)) {
+        Cinema sCinema = cinemaRepository.findByCityAndName(requestCinemaDTO.getCity(), requestCinemaDTO.getName());
+        if (sCinema != null) {
             throw new BadRequestException("There is already a cinema with that name in that city");
         }
-      return new ResponseCinemaDTO(cinemaRepository.save(new Cinema(requestCinemaDTO.getName(), requestCinemaDTO.getCity()))); // работи!
-    }
-
-    public boolean cinemaExists(RequestCinemaDTO requestCinemaDTO) {
-        List<Cinema> cinemas = cinemaRepository.findAllByCity(requestCinemaDTO.getCity());
-        for (Cinema c : cinemas) {
-            if (c.getName().equals(requestCinemaDTO.getName())) {
-                return true;
-            }
-        }
-        return false;
+        Cinema cinema = Cinema.builder()
+                .name(requestCinemaDTO.getName())
+                .city(requestCinemaDTO.getCity())
+                .halls(new ArrayList<>())
+                .build();
+      return new ResponseCinemaDTO(cinemaRepository.save(cinema));
     }
 
     public ResponseCinemaDTO removeCinema(int cinemaId, int userId) throws UnauthorizedException {
@@ -76,8 +69,8 @@ public class CinemaService extends AbstractService {
         if (sCinema.isEmpty()) {
             throw new NotFoundException("Cinema does not exist");
         }
-        ResponseCinemaDTO cinemaForDelete = getCinemaById(cinemaId);
-        cinemaRepository.deleteById(cinemaId);
+        ResponseCinemaDTO cinemaForDelete = new ResponseCinemaDTO(sCinema.get());
+        cinemaRepository.delete(sCinema.get());
         return cinemaForDelete;
     }
 
@@ -95,8 +88,7 @@ public class CinemaService extends AbstractService {
         }
         cinema.setCity(requestCinemaDTO.getCity());
         cinema.setName(requestCinemaDTO.getName());
-        cinemaRepository.save(cinema);
-        return new ResponseCinemaDTO(cinemaRepository.findById(cinemaId).get());
+        return new ResponseCinemaDTO(cinemaRepository.save(cinema));
     }
 
 }

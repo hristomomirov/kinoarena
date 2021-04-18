@@ -4,20 +4,22 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.finals.kinoarena.model.DTO.RegisterDTO;
 
 import com.finals.kinoarena.util.Constants;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+
 @Component
 @NoArgsConstructor
+@AllArgsConstructor
 @Getter
 @Setter
 @Entity
+@Builder
 @Table(name = "users")
 public class User {
 
@@ -37,22 +39,6 @@ public class User {
     @JsonManagedReference
     private List<Ticket> tickets;
     private boolean isEnabled;
-
-    public User(RegisterDTO dto) {
-        this.username = dto.getUsername();
-        this.password = dto.getPassword();
-        this.email = dto.getEmail();
-        this.firstName = dto.getFirstName();
-        this.lastName = dto.getLastName();
-        this.age = dto.getAge();
-        this.roleId = Constants.ROLE_USER;
-        this.statusId = UserStatus.valueOf(dto.getStatus().toUpperCase()).ordinal() + 1;
-        this.createdAt = LocalDateTime.now();
-        this.tickets = new ArrayList<>();
-        this.isEnabled=false;
-
-    }
-
-
 }
+
 

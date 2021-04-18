@@ -15,11 +15,11 @@ public class ResponseTicketDTO {
     private ResponseProjectionDTO projection;
     private int seat;
 
-    public ResponseTicketDTO(Ticket t) {
-        id = t.getId();
-        owner = new UserWithoutTicketAndPassDTO(t.getOwner());
-        projection = new ResponseProjectionDTO(t.getProjection());
-        seat = t.getSeat();
+    public ResponseTicketDTO(Ticket ticket) {
+        id = ticket.getId();
+        owner = new UserWithoutTicketAndPassDTO(ticket.getOwner());
+        projection = new ResponseProjectionDTO(ticket.getProjection());
+        seat = ticket.getSeat();
 
     }
 }

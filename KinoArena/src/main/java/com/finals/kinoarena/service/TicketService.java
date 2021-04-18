@@ -34,12 +34,13 @@ public class TicketService extends AbstractService {
         if (seatsAreTaken(projection, reserveTicketDTO.getSeat())) {
             throw new BadRequestException("Seat already taken.Please select different seat");
         }
-        Ticket ticket = new Ticket();
-        ticket.setOwner(user);
-        ticket.setProjection(projection);
-        ticket.setSeat(reserveTicketDTO.getSeat());
+        Ticket ticket = Ticket.builder()
+                .owner(user)
+                .projection(projection)
+                .seat(reserveTicketDTO.getSeat())
+                .purchasedAt(LocalDateTime.now())
+                .build();
         seatDAO.reserveSeat(projectionId, reserveTicketDTO.getSeat());
-        ticket.setPurchasedAt(LocalDateTime.now());
         return new ResponseTicketDTO(ticketRepository.save(ticket));
     }
 
@@ -53,7 +54,7 @@ public class TicketService extends AbstractService {
 
     public List<StatisticsDTO> getAllSoldTickets(User user) throws UnauthorizedException {
         if (!isAdmin(user.getId())) {
-            throw new UnauthorizedException("Only admins can remove cinemas");
+            throw new UnauthorizedException("Only admins can get statistic");
         }
         return statisticsDAO.soldTicketsPerProjection();
     }

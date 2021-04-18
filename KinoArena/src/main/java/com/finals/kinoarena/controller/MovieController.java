@@ -1,7 +1,9 @@
 package com.finals.kinoarena.controller;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.finals.kinoarena.service.MovieService;
 import com.finals.kinoarena.util.Constants;
+import com.finals.kinoarena.util.exceptions.BadGetawayException;
 import com.finals.kinoarena.util.exceptions.BadRequestException;
 import com.finals.kinoarena.util.exceptions.UnauthorizedException;
 import com.finals.kinoarena.model.DTO.*;
@@ -11,7 +13,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
-import java.io.IOException;
+import javax.validation.Valid;
+import java.io.FileNotFoundException;
 import java.util.List;
 
 @Component
@@ -30,53 +33,23 @@ public class MovieController extends AbstractController {
     public List<ResponseMovieDTO> getMovieByGenre(@PathVariable(name = "genre_id") int genreId) {
         return movieService.getMoviesByGenre(genreId);
     }
+
     @GetMapping(value = "/movies/title/{title}")
-    public IMDBDataDTO findMoviesByName(@PathVariable(name ="title") String title) throws IOException, InterruptedException {
-        return movieService.findMovies(title);
+    public IMDBDataDTO findMoviesByName(@PathVariable(name = "title") String title) throws BadGetawayException, FileNotFoundException {
+        JsonNode node = movieService.getImdbInfo(Constants.API_URL_SEARCH_ALL_FILMS + title);
+        return new IMDBDataDTO(node);
     }
 
     @PostMapping(value = "/movies")
-    public ResponseMovieDTO addMovie(@RequestBody RequestMovieDTO requestMovieDTO, HttpSession ses) throws BadRequestException, UnauthorizedException, IOException, InterruptedException {
+    public ResponseMovieDTO addMovie(@Valid @RequestBody addMovieDTO addMovieDTO, HttpSession ses) throws BadRequestException, UnauthorizedException, BadGetawayException, FileNotFoundException {
         User user = sessionManager.getLoggedUser(ses);
-        if (!validateMovie(requestMovieDTO)) {
-            throw new BadRequestException("Please fill all requested fields");
-        }
-        return movieService.addMovie(requestMovieDTO, user.getId());
+        return movieService.addMovie(addMovieDTO, user.getId());
     }
 
     @DeleteMapping(value = "/movies/{movie_id}")
     public ResponseMovieDTO deleteMovie(@PathVariable(name = "movie_id") int movieId, HttpSession ses) throws UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
-        int userId = user.getId();
-        return movieService.deleteMovie(movieId, userId);
+        return movieService.deleteMovie(movieId,user.getId());
     }
-
-
-    private boolean validateMovie(RequestMovieDTO dto) throws BadRequestException {
-        return  validateAgeRestriction(dto.getAgeRestriction()) &&
-                validateGenre(dto) && validateImdbId(dto.getTitle());
-    }
-
-    private boolean validateImdbId(String imdbId) throws BadRequestException {
-        if (!imdbId.isBlank()) {
-            return true;
-        }
-        throw new BadRequestException("Name cannot be empty or more than 200 characters");
-    }
-
-    private boolean validateGenre(RequestMovieDTO dto) throws BadRequestException {
-        if (dto.getGenreId() == null) {
-            throw new BadRequestException("Please fill all requested fields");
-        }
-        return true;
-    }
-
-    private boolean validateAgeRestriction(int ageRestriction) throws BadRequestException {
-        if (ageRestriction >= 3) {
-            return true;
-        }
-        throw new BadRequestException("Age restriction cannot be less than 3");
-    }
-
 }
 

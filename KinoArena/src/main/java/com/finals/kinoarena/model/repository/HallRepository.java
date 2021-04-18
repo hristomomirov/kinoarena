@@ -7,5 +7,4 @@ import java.util.List;
 
 public interface HallRepository extends JpaRepository<Hall,Integer> {
 
-    List<Hall> findNumberByCinemaId(int cinemaId);
 }

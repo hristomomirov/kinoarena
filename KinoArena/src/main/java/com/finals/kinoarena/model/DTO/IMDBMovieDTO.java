@@ -2,12 +2,13 @@ package com.finals.kinoarena.model.DTO;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.finals.kinoarena.util.Constants;
+import com.finals.kinoarena.util.exceptions.BadRequestException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Getter
 @Setter
@@ -23,7 +24,7 @@ public class IMDBMovieDTO {
     private String poster;
     private String lead;
 
-    public IMDBMovieDTO(JsonNode jsonNode) {
+    public IMDBMovieDTO(JsonNode jsonNode) throws BadRequestException {
         this.imdbId = jsonNode.get("id").asText().trim();
         this.title = jsonNode.get("title").asText().trim();
         this.year = jsonNode.get("year").asText().trim();
@@ -32,29 +33,22 @@ public class IMDBMovieDTO {
         this.rating = jsonNode.get("rating").asDouble();
         this.poster = jsonNode.get("poster").asText().trim();
         ArrayNode arrayNode = (ArrayNode) jsonNode.get("cast");
-        this.lead = arrayNode.get(1).get("actor").asText().trim();
+        this.lead = arrayNode.get(0).get("actor").asText().trim();
     }
 
-    private int calculateLength(String length) {
-        int minutes;
-        char[] chars = length.toCharArray();
-        int hours = Character.getNumericValue(chars[0]) * 60;
-        List<Integer> listMinutes = new ArrayList<>();
-        for (int i = 0; i < chars.length - 1; i++) {
-            if (chars[i] == ' ') {
-                listMinutes.add(Character.getNumericValue(chars[i + 1]));
-                if (Character.isDigit(chars[i + 2])) {
-                    listMinutes.add(Character.getNumericValue(chars[i + 2]));
-                } else {
-                    break;
-                }
-            }
+    private int calculateLength(String length) throws BadRequestException {
+        int minutes = 0;
+        Pattern pattern = Pattern.compile(Constants.MOVIE_LENGTH_REGEX);
+        Matcher matcher = pattern.matcher(length);
+        if (!matcher.matches()) {
+            throw new BadRequestException("Invalid Length");
         }
-        if (listMinutes.size() == 1) {
-            minutes = listMinutes.get(0);
-        } else {
-            minutes = listMinutes.get(0) * 10 + listMinutes.get(1);
+        if (matcher.group(6) != null) {
+            return Integer.parseInt(matcher.group(6));
         }
-        return hours + minutes;
+        if (matcher.group(4) != null) {
+            minutes = Integer.parseInt(matcher.group(4));
+        }
+        return Integer.parseInt(matcher.group(2)) * 60 + minutes;
     }
 }

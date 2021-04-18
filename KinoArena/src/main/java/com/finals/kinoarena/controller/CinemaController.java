@@ -10,12 +10,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.util.List;
 
 
 @Component
 @RestController
-public class CinemaController extends AbstractController  {
+public class CinemaController extends AbstractController {
 
     @Autowired
     private CinemaService cinemaService;
@@ -36,42 +37,22 @@ public class CinemaController extends AbstractController  {
     }
 
     @PostMapping(value = "/cinemas")
-    public ResponseCinemaDTO addCinema(@RequestBody RequestCinemaDTO requestCinemaDTO, HttpSession ses) throws BadRequestException, NotFoundException, UnauthorizedException {
+    public ResponseCinemaDTO addCinema(@Valid @RequestBody RequestCinemaDTO requestCinemaDTO, HttpSession ses) throws BadRequestException, NotFoundException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
-        int userId = user.getId();
-        if (!validateNewCinema(requestCinemaDTO.getCity(), requestCinemaDTO.getName())) {
-            throw new BadRequestException("Please fill all requested fields");
-        }
-        return cinemaService.addCinema(requestCinemaDTO, userId);
+        return cinemaService.addCinema(requestCinemaDTO, user.getId());
     }
 
     @DeleteMapping(value = "/cinemas/{cinema_id}")
     public ResponseCinemaDTO deleteCinema(@PathVariable(name = "cinema_id") int cinemaId, HttpSession ses) throws UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
-        int userId = user.getId();
-        return cinemaService.removeCinema(cinemaId, userId);
+        return cinemaService.removeCinema(cinemaId, user.getId());
 
     }
 
     @PutMapping(value = "/cinemas/{cinema_id}")
-    public ResponseCinemaDTO editCinema(@PathVariable(name = "cinema_id") int cinemaId, @RequestBody RequestCinemaDTO requestCinemaDTO, HttpSession ses) throws UnauthorizedException, BadRequestException {
+    public ResponseCinemaDTO editCinema(@PathVariable(name = "cinema_id") int cinemaId,
+                                        @Valid @RequestBody RequestCinemaDTO requestCinemaDTO, HttpSession ses) throws UnauthorizedException, BadRequestException {
         User user = sessionManager.getLoggedUser(ses);
-        if (!validateNewCinema(requestCinemaDTO.getCity(), requestCinemaDTO.getName())) {
-            throw new BadRequestException("Please fill all requested fields");
-        }
         return cinemaService.editCinema(requestCinemaDTO, cinemaId, user.getId());
-    }
-
-    private boolean validateNewCinema(String city, String name) throws BadRequestException {
-        if (city.isBlank() || name.isBlank()) {
-            throw new BadRequestException("Please fill all necessary fields");
-        }
-        if (city.length() > 20 || city.length() < 3) {
-            throw new BadRequestException("City names must be with at least 3 letters or max with 20");
-        }
-        if (name.length() > 25) {
-            throw new BadRequestException("Name can contain maximum 25 letters");
-        }
-        return true;
     }
 }

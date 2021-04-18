@@ -3,7 +3,7 @@ package com.finals.kinoarena.controller;
 import com.finals.kinoarena.model.DTO.GenreDTO;
 import com.finals.kinoarena.util.exceptions.BadRequestException;
 import com.finals.kinoarena.util.exceptions.UnauthorizedException;
-import com.finals.kinoarena.model.DTO.AddProjectionDTO;
+import com.finals.kinoarena.model.DTO.RequestProjectionDTO;
 import com.finals.kinoarena.model.DTO.ResponseProjectionDTO;
 import com.finals.kinoarena.model.entity.User;
 import com.finals.kinoarena.service.ProjectionService;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -34,15 +35,6 @@ public class ProjectionController extends AbstractController {
         return projectionService.getFreePlaces(projectionId);
     }
 
-    @PostMapping(value = "/projections")
-    public ResponseProjectionDTO addProjection(@RequestBody AddProjectionDTO addProjectionDTO, HttpSession ses) throws BadRequestException, UnauthorizedException, SQLException {
-        User user = sessionManager.getLoggedUser(ses);
-        if (!validateNewProjection(addProjectionDTO)) {
-            throw new BadRequestException("Please fill all requested fields");
-        }
-        return projectionService.addProjection(addProjectionDTO, user.getId());
-    }
-
     @GetMapping(value = "/cinema/{cinema_id}/projections")
     public List<ResponseProjectionDTO> getAllProjectionsForCinema(@PathVariable(name = "cinema_id") int cinemaId) {
         return projectionService.getProjectionByCinema(cinemaId);
@@ -57,14 +49,23 @@ public class ProjectionController extends AbstractController {
         return projectionService.getAllProjectionsByGenre(genre_id);
     }
 
-    @PutMapping(value = "/projections/{projection_id}")
-    public ResponseProjectionDTO editProjection(@RequestBody AddProjectionDTO addProjectionDTO, HttpSession ses,
-                                                @PathVariable(name = "projection_id") int projectionId) throws BadRequestException, UnauthorizedException {
+    @PostMapping(value = "/projections")
+    public ResponseProjectionDTO addProjection(@Valid @RequestBody RequestProjectionDTO requestProjectionDTO, HttpSession ses) throws BadRequestException, UnauthorizedException, SQLException {
         User user = sessionManager.getLoggedUser(ses);
-        if (!validateNewProjection(addProjectionDTO)) {
+        if (!validateStartAt(requestProjectionDTO)) {
             throw new BadRequestException("Please fill all requested fields");
         }
-        return projectionService.editProjection(user.getId(), addProjectionDTO,projectionId);
+        return projectionService.addProjection(requestProjectionDTO, user.getId());
+    }
+
+    @PutMapping(value = "/projections/{projection_id}")
+    public ResponseProjectionDTO editProjection(@Valid @RequestBody RequestProjectionDTO requestProjectionDTO, HttpSession ses,
+                                                @PathVariable(name = "projection_id") int projectionId) throws BadRequestException, UnauthorizedException {
+        User user = sessionManager.getLoggedUser(ses);
+        if (!validateStartAt(requestProjectionDTO)) {
+            throw new BadRequestException("Please fill all requested fields");
+        }
+        return projectionService.editProjection(user.getId(), requestProjectionDTO,projectionId);
     }
 
     @DeleteMapping(value = "/projections/{projection_id}")
@@ -74,25 +75,11 @@ public class ProjectionController extends AbstractController {
     }
 
     @GetMapping(value = "/genres")
-    public List<GenreDTO> getAllgenres(){
+    public List<GenreDTO> getAllGenres(){
         return projectionService.getAllGenres();
     }
 
-    private boolean validateNewProjection(AddProjectionDTO dto) throws BadRequestException {
-        return validateStartAt(dto) && validateHall(dto.getHallId());
-    }
-
-    private boolean validateHall(Integer hallId) throws BadRequestException {
-        if (hallId == null || hallId < 0){
-            throw new BadRequestException("Please enter a valid hall");
-        }
-        return true;
-    }
-
-    private boolean validateStartAt(AddProjectionDTO dto) throws BadRequestException {
-        if (dto.getTime().isBlank()) {
-            throw new BadRequestException("Please fill all requested fields");
-        }
+    private boolean validateStartAt(RequestProjectionDTO dto) throws BadRequestException {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
         LocalDateTime dateTime = LocalDateTime.parse(dto.getTime(), formatter);
         if (dateTime.isAfter(LocalDateTime.now())) {

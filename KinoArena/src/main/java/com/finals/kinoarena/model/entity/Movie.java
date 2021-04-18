@@ -2,15 +2,15 @@ package com.finals.kinoarena.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.finals.kinoarena.model.DTO.RequestMovieDTO;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.finals.kinoarena.model.DTO.addMovieDTO;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.List;
 
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
@@ -36,10 +36,4 @@ public class Movie {
     @OneToMany(mappedBy = "movie")
     @JsonManagedReference
     private List<Projection> projections;
-
-    public Movie(RequestMovieDTO requestMovieDTO) {
-
-        this.title = requestMovieDTO.getTitle();
-        this.ageRestriction = requestMovieDTO.getAgeRestriction();
-    }
 }

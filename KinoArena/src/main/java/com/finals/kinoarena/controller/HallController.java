@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpSession;
+import javax.validation.Valid;
 
 @Component
 @RestController
@@ -25,29 +26,22 @@ public class HallController extends AbstractController {
     }
 
     @PostMapping(value = "/halls")
-    public ResponseHallDTO addHall(@RequestBody RequestHallDTO requestHallDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
+    public ResponseHallDTO addHall(@Valid @RequestBody RequestHallDTO requestHallDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
-        if (requestHallDTO.getCapacity() < 50) {
-            throw new BadRequestException("Hall capacity must be at least 50");
-        }
         return hallService.addHall(requestHallDTO, user.getId());
     }
 
-    @DeleteMapping(value = "/halls/{hallId}")
-    public ResponseHallDTO deleteHall(@PathVariable int hallId, HttpSession ses) throws UnauthorizedException {
+    @DeleteMapping(value = "/halls/{hall_id}")
+    public ResponseHallDTO deleteHall(@PathVariable(name = "hall_id") int hallId, HttpSession ses) throws UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
-        int userId = user.getId();
-        return hallService.removeHall(hallId, userId);
+        return hallService.removeHall(hallId, user.getId());
     }
 
-    @PutMapping(value = "/halls/{hallId}")
-    public ResponseHallDTO editHall(@PathVariable int hallId, @RequestBody RequestHallDTO requestHallDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
+    @PutMapping(value = "/halls/{hall_id}")
+    public ResponseHallDTO editHall(@PathVariable(name = "hall_id") int hallId,
+                                    @Valid @RequestBody RequestHallDTO requestHallDTO, HttpSession ses) throws BadRequestException, UnauthorizedException {
         User user = sessionManager.getLoggedUser(ses);
-        int userId = user.getId();
-        if (requestHallDTO.getCapacity() < 50) {
-            throw new BadRequestException("Hall capacity must be at least 50");
-        }
-        return hallService.editHall(requestHallDTO, hallId, userId);
+        return hallService.editHall(requestHallDTO, hallId, user.getId());
     }
 }
 

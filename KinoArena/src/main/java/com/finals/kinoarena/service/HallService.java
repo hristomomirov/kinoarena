@@ -9,7 +9,7 @@ import com.finals.kinoarena.model.entity.Cinema;
 import com.finals.kinoarena.model.entity.Hall;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 
 
@@ -33,11 +33,15 @@ public class HallService extends com.finals.kinoarena.service.AbstractService {
             throw new NotFoundException("Cinema is not found");
         }
         Cinema cinema = sCinema.get();
-        if (cinemaHasHall(cinema.getId(), requestHallDTO.getNumber())) {
+        if (cinemaHasHall(cinema,requestHallDTO.getNumber())) {
             throw new BadRequestException("There is already a hall with that number in that cinema");
         }
-        Hall hall = new Hall(requestHallDTO);
-        hall.setCinema(cinema);
+        Hall hall = Hall.builder()
+                .number(requestHallDTO.getNumber())
+                .capacity(requestHallDTO.getCapacity())
+                .cinema(cinema)
+                .projections(new ArrayList<>())
+                .build();
         return new ResponseHallDTO(hallRepository.save(hall));
     }
 
@@ -79,9 +83,8 @@ public class HallService extends com.finals.kinoarena.service.AbstractService {
         return hall.isPresent() && cinema.getHalls().contains(hall.get());
     }
 
-    private boolean cinemaHasHall(int cinemaId, int hallNumber) {
-        List<Hall> halls = hallRepository.findNumberByCinemaId(cinemaId);
-        for (Hall h : halls) {
+    private boolean cinemaHasHall(Cinema cinema, int hallNumber) {
+        for (Hall h : cinema.getHalls()) {
             if (h.getNumber() == hallNumber){
                 return true;
             }

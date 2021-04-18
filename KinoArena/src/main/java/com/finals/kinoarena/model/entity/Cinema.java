@@ -1,9 +1,7 @@
 package com.finals.kinoarena.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -12,7 +10,8 @@ import java.util.List;
 @Getter
 @Setter
 @NoArgsConstructor
-
+@AllArgsConstructor
+@Builder
 @Entity
 @Table(name = "cinemas")
 public class Cinema {
@@ -25,10 +24,4 @@ public class Cinema {
     @OneToMany(mappedBy = "cinema")
     @JsonManagedReference(value = "cinema-hall")
     List<Hall> halls;
-
-    public Cinema(String name, String city) {
-        this.name = name;
-        this.city = city;
-        this.halls = new ArrayList<>();
-    }
 }

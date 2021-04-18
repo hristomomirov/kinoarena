@@ -8,6 +8,7 @@ import java.util.List;
 public interface CinemaRepository extends JpaRepository<Cinema, Integer> {
 
     List<Cinema> findAllByCity(String city);
+    Cinema findByCityAndName(String city,String name);
 
 
 

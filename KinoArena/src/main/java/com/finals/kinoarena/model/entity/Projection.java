@@ -2,17 +2,16 @@ package com.finals.kinoarena.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.finals.kinoarena.model.DTO.AddProjectionDTO;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.finals.kinoarena.model.DTO.RequestProjectionDTO;
+import lombok.*;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
+@AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Getter
 @Setter
 @Entity
@@ -40,11 +39,6 @@ public class Projection {
     )
     @JsonManagedReference
     List<Seat> reservedSeats;
-
-    public Projection(AddProjectionDTO dto) {
-        startAt = dto.getStartAt();
-        reservedSeats = new ArrayList<>();
-    }
 }
 
 
